@@ -16,8 +16,10 @@ Outputs:
     blender/renders/bake_*.png   the baked texture sheets
 
 What it does:
-  1. Hides Alex (he moves, so he must not leave a shadow in the bake). The drum
-     kit stays, so its shadow lands on the rug, but the kit itself is not baked.
+  1. Removes Alex and the duvet. Both move on the page, so a shadow baked under
+     them would be left behind as a black patch when they move away. The drum
+     kit never moves, so it stays and its shadow lands on the rug; the kit
+     itself is not baked, because it ships as its own file.
   2. Applies modifiers and joins each piece of furniture into a single mesh,
      named after its group (Bed, Desk, GamingPC, Phone ...) so the site can
      still tell the pieces apart for clicks.
@@ -41,6 +43,7 @@ SIZE = 1024 if QUICK else (4096 if HQ else 2048)
 SAMPLES = 12 if QUICK else (64 if HQ else 32)
 
 NOT_BAKED = ("Alex", "DrumKit")  # these ship as their own files
+MOVES = ("Alex", "Duvet")  # these change shape on the page, so they must leave no shadow in the bake
 SEE_THROUGH = ("Glass_",)  # kept as real transparent materials
 
 
@@ -166,7 +169,7 @@ def main():
 
     # Alex is taken out entirely; the kit stays for its shadow
     # (collect first: removing a parent would hide its children from the check)
-    for o in [o for o in scene.objects if under(o, ("Alex",))]:
+    for o in [o for o in scene.objects if under(o, MOVES)]:
         bpy.data.objects.remove(o, do_unlink=True)
 
     meshes = [o for o in scene.objects if o.type == "MESH" and not under(o, NOT_BAKED) and not o.hide_render]

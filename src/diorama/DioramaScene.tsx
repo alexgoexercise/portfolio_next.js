@@ -53,13 +53,10 @@ function Room({ awake }: { awake: boolean }) {
   const { scene } = useGLTF(sceneConfig.roomUrl);
   const room = useMemo(() => prepareRoom(scene), [scene]);
 
-  // The chest half of the duvet is thrown back when he sits up; his spare
-  // glasses leave the nightstand because he is wearing them.
+  // His spare glasses leave the nightstand when he wakes: he is wearing them
   useEffect(() => {
-    for (const name of ['Duvet_Upper', 'Glasses_On_Nightstand']) {
-      const part = room.getObjectByName(name);
-      if (part) part.visible = !awake;
-    }
+    const glasses = room.getObjectByName('Glasses_On_Nightstand');
+    if (glasses) glasses.visible = !awake;
   }, [room, awake]);
 
   return <primitive object={room} />;
@@ -110,19 +107,32 @@ function Alex({ awake }: { awake: boolean }) {
     };
   }, [scene]);
 
+  const started = useRef(false);
   useEffect(() => {
     const next = actions[awake ? 'Awake' : 'Asleep'];
     const previous = actions[awake ? 'Asleep' : 'Awake'];
     if (!next) return;
-    next.reset().fadeIn(0.9).play();
-    previous?.fadeOut(0.9);
-    if (glasses) glasses.visible = awake;
-    // The lashes do not follow the eyelid shapes, so they are hidden while his eyes are shut
-    if (lashes) lashes.visible = awake;
+    const move = () => {
+      next.reset().fadeIn(sceneConfig.motion.sitUp).play();
+      previous?.fadeOut(sceneConfig.motion.sitUp);
+      if (glasses) glasses.visible = awake;
+      // The lashes do not follow the eyelid shapes, so they are hidden while his eyes are shut
+      if (lashes) lashes.visible = awake;
+    };
+    // Waking up, he gives the duvet a moment to slide clear before he sits up.
+    // Lying back down (and the very first pose on load) happens straight away.
+    if (!awake || !started.current) {
+      started.current = true;
+      move();
+      return;
+    }
+    const timer = setTimeout(move, sceneConfig.motion.sitUpDelay * 1000);
+    return () => clearTimeout(timer);
   }, [actions, awake, glasses, lashes]);
 
   useFrame((_, delta) => {
     if (!body?.morphTargetDictionary || !body.morphTargetInfluences) return;
+    // His eyes react at once, before he moves
     const target = awake ? 0 : 1;
     eyelids.current += (target - eyelids.current) * Math.min(1, delta * 5);
     for (const side of ['eye-left-closure', 'eye-right-closure']) {
@@ -131,6 +141,55 @@ function Alex({ awake }: { awake: boolean }) {
   });
 
   return <primitive ref={group} object={scene} />;
+}
+
+/**
+ * The duvet was draped twice in Blender: once over Alex asleep, once pushed
+ * down with him sat up. The file holds both shapes and this slides between
+ * them.
+ *
+ * A straight slide would drag the cloth through his hands and toes, and
+ * sliding while he sits up would put his chest through it. So the slide is
+ * timed around him (see sceneConfig.motion) and the duvet rises a little in
+ * the middle of the slide, as if it were being lifted and thrown back.
+ */
+function Duvet({ awake }: { awake: boolean }) {
+  const { scene } = useGLTF(sceneConfig.duvetUrl, sceneConfig.dracoPath);
+  const progress = useRef(awake ? 1 : 0); // 0 = over him, 1 = pushed down
+  const waiting = useRef(0);
+  const started = useRef(false);
+
+  useEffect(() => {
+    // Going back to sleep, the duvet waits for him to lie down first
+    waiting.current = started.current && !awake ? sceneConfig.motion.duvetReturnDelay : 0;
+    started.current = true;
+  }, [awake]);
+
+  const cloth = useMemo(() => {
+    let found: THREE.Mesh | undefined;
+    scene.traverse((node) => {
+      const mesh = node as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      mesh.frustumCulled = false; // the second shape reaches outside the first one's bounds
+      if (mesh.morphTargetInfluences?.length) found = mesh;
+    });
+    return found;
+  }, [scene]);
+
+  useFrame((_, delta) => {
+    if (!cloth?.morphTargetInfluences) return;
+    if (waiting.current > 0) {
+      waiting.current -= delta;
+    } else {
+      const step = delta / sceneConfig.motion.duvetSlide;
+      progress.current = awake ? Math.min(1, progress.current + step) : Math.max(0, progress.current - step);
+    }
+    const p = progress.current;
+    cloth.morphTargetInfluences[0] = p * p * (3 - 2 * p); // ease in and out
+    scene.position.y = Math.sin(Math.PI * p) * sceneConfig.motion.duvetLift;
+  });
+
+  return <primitive object={scene} />;
 }
 
 /** The drum kit keeps real, shiny materials, so it is lit live by <Lamps /> below. */
@@ -281,6 +340,7 @@ function Scene({ awake, hoveredId, onHover, onPick }: SceneProps) {
         <Room awake={awake} />
         <DrumKit />
         <Alex awake={awake} />
+        <Duvet awake={awake} />
         <Hotspots hoveredId={hoveredId} onHover={onHover} onPick={onPick} />
       </Suspense>
     </>
@@ -394,3 +454,4 @@ export default function DioramaScene({ editable, initialSpot }: DioramaSceneProp
 useGLTF.preload(sceneConfig.roomUrl);
 useGLTF.preload(sceneConfig.drumKitUrl, sceneConfig.dracoPath);
 useGLTF.preload(sceneConfig.alexUrl, sceneConfig.dracoPath);
+useGLTF.preload(sceneConfig.duvetUrl, sceneConfig.dracoPath);

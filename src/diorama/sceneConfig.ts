@@ -23,6 +23,30 @@ export const sceneConfig = {
   /** Alex with his skeleton and poses, exported by blender/export_alex.py, already in bed. */
   alexUrl: '/models/alex.glb',
 
+  /**
+   * The duvet, draped by a cloth simulation in blender/duvet.py. It carries a
+   * second shape, "Awake", pushed down toward the foot of the bed.
+   */
+  duvetUrl: '/models/duvet.glb',
+
+  /**
+   * Timing of waking up and going back to sleep, in seconds. The two moves are
+   * taken in turn so the duvet never passes through him: waking, the duvet
+   * slides off first and then he sits up; going back to sleep, he lies down
+   * first and then the duvet comes back over him.
+   */
+  motion: {
+    duvetSlide: 0.7,
+    /** Waking: how long he waits for the duvet to clear before sitting up. */
+    sitUpDelay: 0.6,
+    /** How long sitting up or lying down takes. */
+    sitUp: 0.9,
+    /** Going back to sleep: how long the duvet waits for him to lie down. */
+    duvetReturnDelay: 0.8,
+    /** How far the duvet rises mid-slide, in metres, to clear his hands and toes. */
+    duvetLift: 0.07,
+  },
+
   /** Folder in /public holding three.js's decoder for compressed models. */
   dracoPath: '/draco/',
 

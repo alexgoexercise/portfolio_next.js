@@ -8,7 +8,9 @@ Run from the repo root:
 Outputs:
     blender/room.blend             open this in Blender to look around or edit by hand
     blender/renders/room_*.png     preview renders
-    public/models/room.glb         the web export used by the site
+    public/models/duvet.glb        the cloth-simulated duvet, for the site
+
+Then run bake_room.py to produce public/models/room.glb from room.blend.
 
 Units are metres, Z is up. The room is centred on the origin with its floor at
 z = 0. The back wall is at +Y and the left wall at -X; the front and right
@@ -26,6 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 from alex import build_glasses, set_visible  # noqa: E402
+from duvet import build_duvet, export_duvet, set_duvet_awake  # noqa: E402
 from alex_human import GLASSES_REAL, build_alex_human, pose_asleep, pose_awake, style_alex  # noqa: E402
 from lib import M, PALETTE, ball, box, cyl, group, look_at, mat, point_light, rod, srgb  # noqa: E402
 REPO = os.path.dirname(HERE)
@@ -124,17 +127,7 @@ def build_bed():
     box("Headboard", (1.04, 0.06, 0.75), (0, 0.985, 0.5), wood, g, bevel=0.03)
     box("Mattress", (0.98, 1.9, 0.18), (0, -0.02, 0.37), M("sheet", rough=0.95), g, bevel=0.04)
     ball("Pillow", 0.2, (0.02, 0.72, 0.5), M("cream", rough=0.95, kind="fabric"), g, scale=(1.75, 0.95, 0.26))
-    # Puffy duvet in two parts: the lower part stays over his legs, the upper
-    # part covers his chest while he sleeps and is hidden when he sits up.
-    duvet = M("duvet", rough=0.95)
-    for name, length, y in (("Duvet_Lower", 0.9, -0.4), ("Duvet_Upper", 0.42, 0.24)):
-        ob = box(name, (0.96, length, 0.43), (0, y, 0.655), duvet, g, bevel=0.11)
-        ob.modifiers[0].segments = 6
-        for poly in ob.data.polygons:
-            poly.use_smooth = True
-    fold = box("Duvet_Upper_Fold", (0.9, 0.09, 0.05), (0, 0.4, 0.79), M("mustard", rough=0.95, kind="fabric"), g, bevel=0.02)
-    fold.parent = bpy.data.objects["Duvet_Upper"]
-    fold.location = (0, 0.16, 0.205)
+    # The duvet is draped over Alex by a cloth simulation: see duvet.py
     return g
 
 
@@ -583,11 +576,9 @@ def main():
     build_rugs()
     build_plant("Plant_Floor", (X0 + 0.3, Y0 + 0.18, 0), scale=1.25)
 
-    # The room is exported before Alex and the lights exist: he ships as his
-    # own file (see build_alex.py) so the site can animate him separately.
-    out = os.path.join(REPO, "public", "models", "room.glb")
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    bpy.ops.export_scene.gltf(filepath=out, export_format="GLB", export_apply=True)
+    # The room's web file is made by bake_room.py from the .blend saved below.
+    # Alex, the drum kit and the duvet each ship as their own file.
+    os.makedirs(os.path.join(REPO, "public", "models"), exist_ok=True)
 
     build_lighting()
     build_drumkit()  # kept out of room.glb: it is 31 MB and ships separately
@@ -601,6 +592,11 @@ def main():
     spare_glasses = build_glasses(nightstand, loc=(-0.07, -0.12, 0.562), rot_z=170, name="Glasses_On_Nightstand",
                                   eye_x=0.032, temple_end=(0.069, 0.1), **GLASSES_REAL)
     pose_asleep(alex)
+
+    # Drape the duvet over him (this runs the cloth simulation, twice)
+    duvet = build_duvet(bed, alex, pose_asleep, pose_awake)
+    if "--no-export" not in sys.argv:
+        export_duvet(duvet, os.path.join(REPO, "public", "models", "duvet.glb"))
 
     hero = add_camera("Cam_Hero", (7.6, -7.9, 6.4), (0.0, 0.1, 0.6), lens=62)
     pc = add_camera("Cam_PC", (0.95, 0.45, 1.5), (0.0, 1.5, 0.98), lens=42)
@@ -626,14 +622,14 @@ def main():
         # Same scene with Alex woken up, to preview the pose
         pose_awake(alex)
         set_visible(spare_glasses, False)
-        set_visible(bpy.data.objects["Duvet_Upper"], False)
+        set_duvet_awake(duvet, 1.0)
         render(awake_cam, "room_alex_awake.png")
         pose_asleep(alex)
         set_visible(spare_glasses, True)
-        set_visible(bpy.data.objects["Duvet_Upper"], True)
+        set_duvet_awake(duvet, 0.0)
         bpy.context.scene.camera = hero
 
-    print("DONE", out, os.path.getsize(out), "bytes")
+    print("DONE", os.path.join(HERE, "room.blend"))
 
 
 if __name__ == "__main__":
