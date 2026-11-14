@@ -1,39 +1,67 @@
-# Alex Zhao's Portfolio Website
+# alexgosleep — Alex Zhao's Portfolio
 
-Welcome! This is my personal portfolio, built to showcase my journey as an engineer, developer, and musician. Here you'll find my academic and professional projects, my music adventures, and a bit about who I am.
+Personal site for **Zhao Lixiuqi (Alex)**: computer engineer, robotics tinkerer, and drummer.  
+Live at [alexgosleep.com](https://alexgosleep.com).
 
-## Tech Stack
-- Next.js (React, TypeScript)
-- CSS Modules & custom CSS
-- Swiper for image galleries
-- Deployed on Vercel
+![The 3D bedroom](public/portfolio_room.jpg)
 
-## Design & Features
-- **Dual Themes:** Switch between "Academic Projects" and "Music Journey" for two sides of my story.
-- **Interactive Cards:** Projects and bands are displayed as cards with image sliders, tags, and external links.
-- **Accessible & Responsive:** Works great on any device, with keyboard navigation and semantic HTML.
-- **SEO & Performance:** Optimized for fast loading and discoverability.
+## Two ways in
 
-## How to Navigate
-- **Home:** Quick intro and links to everything else.
-- **About:** My background, education, and a summary of key projects (including this website!).
-- **Projects:**
-  - Use the toggle at the top to switch between Academic and Music views.
-  - Academic: See my engineering/software projects. Click the notice button on a card to view demos or code.
-  - Music: Explore my bands and performances. Click a band card for details, or the notice button for external links.
-- **Band Detail:** Each band has its own page with event galleries and stories.
-- **Contacts:** All my contact info, social links, and a like button. You can even copy my email or scan my WeChat QR.
+| Path | What you get |
+|------|----------------|
+| **My Room** (`/diorama`) | Interactive 3D bedroom — click the PC, drums, shelf, phone, or Alex. Noise wakes him up. |
+| **My Portfolio** (`/home` → about / projects / contacts) | Fast plain site: résumé, projects, music, contact info. |
 
-## Special Touches
-- Tags are clickable for quick Google searches.
-- Video links are clearly marked with a play icon.
-- Like button on the Contacts page (because why not?).
+![Drum kit hotspot](public/portfolio_drums.jpg)
 
-## Want to Tweak or Contribute?
-- Projects and bands are managed in `src/pages/projects.tsx` and `src/content/bands.ts`.
-- Styles are in `src/styles/globals.css` and CSS modules in each page/component.
-- Deploys automatically with Vercel when you push to GitHub.
+## What's on the site
+
+- **Landing** — choose the room or the plain portfolio
+- **Diorama** — Blender-built room + drum kit (GLB), React Three Fiber scene, hotspots, sound, wake meter
+- **About** — education (NUS CEG + Machine Intelligence MSc) and robotics experience (Avetics, Hikvision, Continental, TLab IBVS)
+- **Projects** — engineering (Autoboat, AR Laser Tag, RTOS car, this site) and music bands, with image galleries
+- **Contacts** — email, socials, WeChat QR; like button is session-only (resets on reload)
+
+## Tech stack
+
+- **Next.js 15** (Pages Router) + React 19 + TypeScript
+- **React Three Fiber** / Drei / Three.js for the diorama
+- **Blender** pipeline under `blender/` (room bake, drum kit export, previews)
+- **Swiper** for project/band image carousels
+- Deployed on **Vercel**
+
+## Local development
+
+```bash
+npm install
+npm run dev          # turbopack
+# or
+npm run dev:classic
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+```bash
+npm run build && npm start   # production build
+npm run lint
+```
+
+## Project layout
+
+| Path | Role |
+|------|------|
+| `src/pages/` | Routes (`index`, `diorama`, `home`, `about`, `projects`, `contacts`, …) |
+| `src/diorama/` | 3D scene, HUD, hotspots, sounds |
+| `src/content/` | Projects, bands, skills data |
+| `public/models/` | `room.glb`, `drumkit.glb`, `alex.glb` |
+| `blender/` | Scripts and assets that build/export the room |
+
+Content for the projects page lives in `src/content/projects.ts`. Hotspot card copy is in `src/diorama/hotspots.ts`.
+
+## Deploy
+
+Push to `master` on GitHub; Vercel builds and deploys automatically.
 
 ---
 
-Thanks for stopping by! If you have feedback or want to connect, check out the Contacts page.
+Made by Alex Zhao, who should have been asleep hours ago.

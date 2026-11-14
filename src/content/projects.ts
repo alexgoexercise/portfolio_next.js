@@ -15,8 +15,10 @@ const Pro5 = '/Pro5.jpg';
 const rtos1 = '/rtos1.jpg';
 const rtos2 = '/rtos2.jpg';
 const rtos3 = '/rtos3.jpg';
-const Port1 = '/Portfolio1.jpg';
-const Port2 = '/Portfolio2.jpg';
+const PortRoom = '/portfolio_room.jpg';
+const PortDrums = '/portfolio_drums.jpg';
+const PortClose = '/portfolio_room_close.jpg';
+const PortPreview = '/room-preview.jpg';
 const autoboat1 = '/autoboat1.jpg';
 const autoboat2 = '/autoboat2.jpg';
 const autoboat3 = '/autoboat3.jpg';
@@ -73,13 +75,19 @@ export const projects: Project[] = [
   },
   {
     title: "Personal Website",
-    description: "Personal Website built with node.js + react tech stack.",
-    images:[
-      Port1,
-      Port2,
+    description: [
+      "alexgosleep.com — a Next.js portfolio with two front doors: an interactive 3D bedroom diorama, and a fast plain-site path for everyone else.",
+      "The room is modeled in Blender, exported as GLB (room + drum kit), and rendered in the browser with React Three Fiber. Click hotspots to make noise, wake Alex, and jump into About, Projects, Music, or Contacts.",
+      "The rest of the site covers education and robotics experience, engineering and band portfolios with Swiper galleries, and a contacts card with a session-only like button."
     ],
-    tags: ["node.js", "react", "typescript", "vercel"],
-    url: "https://github.com/alexgoexercise/portfolio_node.js",
+    images: [
+      PortRoom,
+      PortDrums,
+      PortClose,
+      PortPreview,
+    ],
+    tags: ["Next.js", "React Three Fiber", "Three.js", "TypeScript", "Blender", "Vercel"],
+    url: "https://github.com/alexgoexercise/portfolio_next.js",
     clickNotice: "Click to view source code"
   }
 ]; 
