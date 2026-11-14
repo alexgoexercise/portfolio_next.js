@@ -11,8 +11,7 @@ export default function Landing() {
       <div className="landing-inner">
         <h1 className="landing-title">alexgosleep</h1>
         <p className="landing-lede">
-          This is Alex Zhao&apos;s site. Alex is asleep. You can let yourself into his room and look around, or read the
-          short version and leave him be.
+          Hi, my name is Zhao Lixiuqi, you can call me Alex. I built this site for fun to test my vibe coding skills. 
         </p>
 
         <div className="choices">
@@ -22,7 +21,7 @@ export default function Landing() {
             </div>
             <div className="choice-body">
               <p className="eyebrow">Option one</p>
-              <h2>Come in quietly</h2>
+              <h2>My Room</h2>
               <p>A 3D bedroom you can poke around in. Everything you touch makes noise. Best on a laptop.</p>
               <span className="choice-cta">Open the room →</span>
             </div>
@@ -37,14 +36,14 @@ export default function Landing() {
             </ul>
             <div className="choice-body">
               <p className="eyebrow">Option two</p>
-              <h2>Just the facts</h2>
+              <h2>My Portfolio</h2>
               <p>The plain site: who I am, what I have built, and how to reach me. Loads fast, works anywhere.</p>
               <span className="choice-cta">Read the site →</span>
             </div>
           </Link>
         </div>
 
-        <p className="landing-foot">Made by Alex Zhao, who should have been in bed hours ago.</p>
+        <p className="landing-foot">Made by Alex Zhao, who should have been asleep hours ago.</p>
       </div>
     </main>
   );

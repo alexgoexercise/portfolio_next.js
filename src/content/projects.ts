@@ -17,8 +17,28 @@ const rtos2 = '/rtos2.jpg';
 const rtos3 = '/rtos3.jpg';
 const Port1 = '/Portfolio1.jpg';
 const Port2 = '/Portfolio2.jpg';
+const autoboat1 = '/autoboat1.jpg';
+const autoboat2 = '/autoboat2.jpg';
+const autoboat3 = '/autoboat3.jpg';
+const autoboat4 = '/autoboat4.jpg';
 
 export const projects: Project[] = [
+  {
+    title: "Autoboat",
+    description: [
+      "Built and field-tested software for an autonomous surface vehicle (USV) during a Solutions Engineer internship at Avetics Global.",
+      "Integrated BlueOS, Cockpit, and ROS2 into the USV stack to improve software architecture and component communication.",
+      "Designed and deployed a resilient real-time video streaming pipeline with GStreamer, and built custom Cockpit widgets for keyboard/RC dual control.",
+      "Supported on-water trials and workshop bring-up of the Targetboat sensor stack, from hull electronics to field deployment."
+    ],
+    images: [
+      autoboat1,
+      autoboat3,
+      autoboat2,
+      autoboat4,
+    ],
+    tags: ["ROS2", "GStreamer", "BlueOS", "USV", "Avetics"],
+  },
   {
     title: "AR Laser Tag++",
     description: [
