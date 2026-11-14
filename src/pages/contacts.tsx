@@ -1,28 +1,25 @@
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function Contacts() {
   const [copied, setCopied] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  // null until the counter answers; it stays null where the counter is unavailable (e.g. on a laptop)
-  const [likes, setLikes] = useState<number | null>(null);
-  const [isLiking, setIsLiking] = useState(false);
+  // Session-only like: remembered until reload, then resets to default
+  const [liked, setLiked] = useState(false);
   const [showWeChat, setShowWeChat] = useState(false);
   const email = "alexzhaolixiuqi@gmail.com";
   const phone = "+65 83514349";
   const XiaohongshuIconPath = '/SimpleIconsXiaohongshu.svg';
 
-  // Load likes on component mount
-  useEffect(() => {
-    fetch('/api/likes')
-      .then(res => (res.ok ? res.json() : null))
-      .then(data => {
-        if (data && typeof data.likes === 'number') setLikes(data.likes);
-      })
-      .catch(() => {
-        // No network or no counter: the button just shows the heart without a number
-      });
-  }, []);
+  // Redis-backed counter (commented out — re-enable with /api/likes + KV_* env vars)
+  // useEffect(() => {
+  //   fetch('/api/likes')
+  //     .then(res => (res.ok ? res.json() : null))
+  //     .then(data => {
+  //       if (data && typeof data.likes === 'number') setLikes(data.likes);
+  //     })
+  //     .catch(() => {});
+  // }, []);
 
   function handleCopyEmail() {
     navigator.clipboard.writeText(email)
@@ -40,27 +37,17 @@ export default function Contacts() {
     setShowPopup(false);
   }
 
-  async function handleLike() {
-    if (isLiking) return; // Prevent multiple clicks
-    
-    setIsLiking(true);
-    try {
-      const response = await fetch('/api/likes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (typeof data.likes === 'number') setLikes(data.likes);
-      }
-    } catch {
-      // Same as above: a failed like is not worth an error screen
-    } finally {
-      setIsLiking(false);
-    }
+  function handleLike() {
+    if (liked) return;
+    setLiked(true);
+
+    // Redis-backed increment (commented out)
+    // fetch('/api/likes', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+    //   .then(res => (res.ok ? res.json() : null))
+    //   .then(data => {
+    //     if (data && typeof data.likes === 'number') setLikes(data.likes);
+    //   })
+    //   .catch(() => {});
   }
 
   return (
@@ -84,10 +71,10 @@ export default function Contacts() {
           <button 
             className="like-button" 
             onClick={handleLike}
-            disabled={isLiking}
-            title="Like my portfolio!"
+            disabled={liked}
+            title={liked ? 'Liked for this session' : 'Like my portfolio!'}
           >
-            <span className="like-heart" aria-hidden="true">♥</span> {likes ?? 'Like'}
+            <span className="like-heart" aria-hidden="true">♥</span> {liked ? 'Liked' : 'Like'}
           </button>
         </div>
 
