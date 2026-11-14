@@ -1,13 +1,23 @@
 export const skills = [
+  // Programming
   { name: 'C++', level: 100 },
-  { name: 'Embedded System Development', level: 100 },
-  { name: 'Java', level: 80 },
-  { name: 'Python', level: 70 },
-  { name: 'C Language', level: 65 },
-  { name: 'JavaScript', level: 55 },
-  { name: 'TypeScript', level: 55 },
-  { name: 'FPGA programming', level: 40 },
-  { name: 'React', level: 40 },
-  { name: 'Arduino', level: 70 },
-  { name: 'matlab', level: 60 }
-]; 
+  { name: 'C', level: 90 },
+  { name: 'Python', level: 85 },
+  { name: 'Java', level: 70 },
+  // Robotics & Autonomy
+  { name: 'ROS / ROS2', level: 90 },
+  { name: 'MAVSDK', level: 80 },
+  { name: 'Visual Servoing', level: 80 },
+  { name: 'ViSP', level: 75 },
+  { name: 'Vicon Motion Capture', level: 70 },
+  // Perception & AI
+  { name: 'Computer Vision', level: 85 },
+  { name: 'LiDAR Point-Cloud Processing', level: 80 },
+  { name: 'Machine Learning', level: 70 },
+  // Systems & Tools
+  { name: 'Embedded Systems', level: 95 },
+  { name: 'Linux', level: 85 },
+  { name: 'Docker', level: 80 },
+  { name: 'GStreamer', level: 75 },
+  { name: 'Full-stack Development', level: 60 },
+];

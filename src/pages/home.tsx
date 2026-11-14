@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { skills } from '../content/skills';
 
 const SECTIONS = [
-  { href: '/about', title: 'About', text: 'Education at NUS, a robotics internship at Continental, and what I work with.' },
+  { href: '/about', title: 'About', text: 'Education at NUS, robotics roles at Avetics, Hikvision and Continental, and what I work with.' },
   { href: '/projects', title: 'Projects', text: 'AR laser tag hardware, an RTOS race car, and the bands I drum for.' },
   { href: '/contacts', title: 'Contacts', text: 'Email, LinkedIn and everywhere else I can be found.' },
 ];
@@ -17,8 +17,9 @@ export default function Home() {
       <h1 className="home-title">Alex Zhao</h1>
       <p className="home-alias">Zhao Lixiuqi 赵李修齐</p>
       <p className="home-lede">
-        I build embedded systems and robots, write software, and play the drums. I studied computer engineering at the
-        National University of Singapore and am now doing a Master&apos;s there in machine intelligence.
+        I build embedded systems and robots — from USV software and visual servoing to LiDAR perception — write
+        software, and play the drums. I studied computer engineering at the National University of Singapore and am
+        now doing a Master&apos;s there in machine intelligence.
       </p>
 
       <ol className="index-list">
