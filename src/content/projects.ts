@@ -23,6 +23,11 @@ const autoboat1 = '/autoboat1.jpg';
 const autoboat2 = '/autoboat2.jpg';
 const autoboat3 = '/autoboat3.jpg';
 const autoboat4 = '/autoboat4.jpg';
+const catPoster = '/cat-aims-poster.jpg';
+const catIntro = '/cat-aims-intro.jpg';
+const catAim = '/cat-aims-aim.jpg';
+const catFire = '/cat-aims-fire.jpg';
+const catPhone = '/cat-aims-phone.jpg';
 
 export const projects: Project[] = [
   {
@@ -72,6 +77,24 @@ export const projects: Project[] = [
     tags: ["RTOS", "Embedded C", "ARM Architecture"],
     url: "https://youtu.be/wuBXb3VTfQs?si=vmmgp4It8mhxug4X",
     clickNotice: "Click to watch the demo video"
+  },
+  {
+    title: "Cat Aims At You",
+    description: [
+      "A 3D cartoon cat that tracks your face through the front camera and keeps its gun pointed at you — live at alexgoexercise.github.io/cat-aims-at-you.",
+      "MediaPipe Face Landmarker drives head-coupled perspective (the screen acts like a window into a small room), while the cat mirrors winks, yawns, smiles, brow raises, and more.",
+      "Blink both eyes to fire; poke the head, nose, ears, belly, tail, gun, or feet for different reactions. Runs entirely in the browser with Three.js — video never leaves the device."
+    ],
+    images: [
+      catPoster,
+      catIntro,
+      catAim,
+      catFire,
+      catPhone,
+    ],
+    tags: ["Three.js", "MediaPipe", "Face Tracking", "WebGL", "JavaScript"],
+    url: "https://alexgoexercise.github.io/cat-aims-at-you/",
+    clickNotice: "Click to open the live demo (camera works best on laptop)"
   },
   {
     title: "Personal Website",
