@@ -30,7 +30,7 @@ export const bandsData: Record<string, Band> = {
     name: "NUS CAC Voices",
     description: 'CCA under the NUS cultural acitivity club (now under the Centre for the Arts) specialises in mandopop performance.',
     image: "/band-images/Voices/cover.jpg",
-    period: "2021 - present",
+    period: "2021 - 2025",
     role: "drummer, bassist, Exco member (vice president & publicity director, 2022-2023)",
     tags: ["Mandopop", "Pop", "Rock"],
     externalUrl: "https://www.instagram.com/nusvoices",
