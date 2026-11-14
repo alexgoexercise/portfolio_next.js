@@ -29,7 +29,7 @@ export const hotspots: Hotspot[] = [
   {
     id: 'projects',
     label: 'The PC',
-    blurb: 'Robots, embedded systems and the things I built on this machine.',
+    blurb: 'Robots, embedded systems and the things I built on this machine (with Claude).',
     href: '/projects',
     cta: 'See projects',
     source: 'room',
@@ -40,7 +40,7 @@ export const hotspots: Hotspot[] = [
   {
     id: 'music',
     label: 'The drum kit',
-    blurb: 'Bands, gigs and what I play when I am not at the desk.',
+    blurb: 'Alex did not practise any rudiments today.',
     href: '/projects?music=1',
     cta: 'See music',
     source: 'drumkit',
@@ -51,7 +51,7 @@ export const hotspots: Hotspot[] = [
   {
     id: 'about',
     label: 'The shelf',
-    blurb: 'Where I studied, where I have worked and what I know.',
+    blurb: 'If you want to know where I studied, where I have worked and what I know.',
     href: '/about',
     cta: 'About me',
     source: 'room',
@@ -73,7 +73,7 @@ export const hotspots: Hotspot[] = [
   {
     id: 'alex',
     label: 'Alex',
-    blurb: 'Asleep. Poking him is not going to help.',
+    blurb: 'Don\'t poke me, Don\'t poke me.',
     source: 'room',
     parts: ['Bed'],
     sound: 'poke',

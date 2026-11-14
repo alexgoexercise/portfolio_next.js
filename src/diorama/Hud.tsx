@@ -54,8 +54,8 @@ export default function Hud({ noise, awake, muted, hovered, selected, onToggleMu
         </div>
         <p className={styles.hint}>
           {awake
-            ? 'Too loud. He is up now, and he is looking at you.'
-            : 'Alex is asleep. Click around the room, but every sound brings him closer to waking.'}
+            ? 'Too loud. Alex is up now, and he is looking at you in confusion.'
+            : 'Alex is asleep. You can click around the room, but every sound brings him closer to waking.'}
         </p>
         <button type="button" className={styles.mute} onClick={onToggleMute}>
           Sound: {muted ? 'off' : 'on'}
@@ -65,9 +65,9 @@ export default function Hud({ noise, awake, muted, hovered, selected, onToggleMu
       {awake && (
         <section className={`${styles.panel} ${styles.banner}`} role="status">
           <p className={styles.bannerTitle}>You woke Alex.</p>
-          <p className={styles.bannerText}>He was having a really good dream.</p>
+          <p className={styles.bannerText}>Alex was having a really good dream.</p>
           <button type="button" className={styles.sleepButton} onClick={onLetSleep}>
-            Sorry. Go back to sleep
+            Sorry. Please go back to sleep
           </button>
         </section>
       )}

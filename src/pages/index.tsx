@@ -22,7 +22,7 @@ export default function Landing() {
             <div className="choice-body">
               <p className="eyebrow">Option one</p>
               <h2>My Room</h2>
-              <p>A 3D bedroom you can poke around in. Everything you touch makes noise. Best on a laptop.</p>
+              <p>A 3D bedroom you can poke around in. Try not to wake Alex up. </p>
               <span className="choice-cta">Open the room →</span>
             </div>
           </Link>
@@ -37,7 +37,7 @@ export default function Landing() {
             <div className="choice-body">
               <p className="eyebrow">Option two</p>
               <h2>My Portfolio</h2>
-              <p>The plain site: who I am, what I have built, and how to reach me. Loads fast, works anywhere.</p>
+              <p>The plain site including important information about me. </p>
               <span className="choice-cta">Read the site →</span>
             </div>
           </Link>
