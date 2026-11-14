@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 export default function Contacts() {
   const [copied, setCopied] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  const [likes, setLikes] = useState(0);
+  // null until the counter answers; it stays null where the counter is unavailable (e.g. on a laptop)
+  const [likes, setLikes] = useState<number | null>(null);
   const [isLiking, setIsLiking] = useState(false);
   const [showWeChat, setShowWeChat] = useState(false);
   const email = "alexzhaolixiuqi@gmail.com";
@@ -14,9 +15,13 @@ export default function Contacts() {
   // Load likes on component mount
   useEffect(() => {
     fetch('/api/likes')
-      .then(res => res.json())
-      .then(data => setLikes(data.likes))
-      .catch(err => console.error('Error loading likes:', err));
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => {
+        if (data && typeof data.likes === 'number') setLikes(data.likes);
+      })
+      .catch(() => {
+        // No network or no counter: the button just shows the heart without a number
+      });
   }, []);
 
   function handleCopyEmail() {
@@ -49,17 +54,17 @@ export default function Contacts() {
       
       if (response.ok) {
         const data = await response.json();
-        setLikes(data.likes);
+        if (typeof data.likes === 'number') setLikes(data.likes);
       }
-    } catch (error) {
-      console.error('Error updating likes:', error);
+    } catch {
+      // Same as above: a failed like is not worth an error screen
     } finally {
       setIsLiking(false);
     }
   }
 
   return (
-    <div className="contacts-page-bg">
+    <div className="page contacts-page-bg">
       <div className="contact-card">
         <Image
           src="/photo1.jpg"
@@ -82,7 +87,7 @@ export default function Contacts() {
             disabled={isLiking}
             title="Like my portfolio!"
           >
-            ❤️ {likes}
+            <span className="like-heart" aria-hidden="true">♥</span> {likes ?? 'Like'}
           </button>
         </div>
 
@@ -90,7 +95,7 @@ export default function Contacts() {
           <div className="contact-row">
             <span className="contact-label">Email:</span>
             <span className="contact-value">{email}</span>
-            <button className="copy-btn" onClick={handleCopyEmail} title="Copy Email">📋</button>
+            <button className="copy-btn" onClick={handleCopyEmail} title="Copy email address">Copy</button>
           </div>
           <div className="contact-row">
             <span className="contact-label">Phone:</span>
@@ -158,8 +163,7 @@ export default function Contacts() {
                 style={{
                   maxWidth: '90vw',
                   height: 'auto',
-                  borderRadius: '12px',
-                  boxShadow: '0 2px 12px rgba(30,136,229,0.10)',
+                  borderRadius: '3px',
                   display: 'block'
                 }}
               />

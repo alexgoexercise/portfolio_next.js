@@ -19,18 +19,16 @@ export default function BandPage() {
   const band = id && bandsData[id as keyof typeof bandsData];
 
   if (!band) {
-    return <div>Loading...</div>;
+    return <div className="page">Loading…</div>;
   }
 
-  band.performances.forEach(performance => console.log('Performance images:', performance.images));
-
   return (
-    <div className="drumming-theme">
+    <div className="page drumming-theme">
       <div className={styles.bandDetailPage}>
         {/* Back Button */}
         <Link href="/projects?music=1" className="back-button">
           <span className="back-arrow">←</span>
-          <span className="back-text">Back to Bands</span>
+          <span className="back-text">All bands</span>
         </Link>
 
         {/* Band Description Section */}

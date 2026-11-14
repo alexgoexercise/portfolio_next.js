@@ -18,7 +18,7 @@ export default function About() {
   }
 
   return (
-    <div className="resume">
+    <div className="page resume">
       <header>
         <div className="header-left">
           <h1>ALEX</h1>
@@ -32,7 +32,7 @@ export default function About() {
             onClick={handleImageClick}
             width={120} 
             height={180} 
-            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit', cursor: 'pointer'}} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer', display: 'block' }} 
             title="click me!"
             />
           </div>
@@ -142,7 +142,7 @@ export default function About() {
       <section className="skills">
         <h3>SKILLS</h3>
         <div className="skills-list">
-          {skills.sort((a, b) => b.level - a.level).map(skill => (
+          {[...skills].sort((a, b) => b.level - a.level).map(skill => (
             <button
               key={skill.name}
               onClick={() => handleSkillClick(skill.name)}

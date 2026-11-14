@@ -22,21 +22,14 @@ export default function Projects() {
   }, [router.query.music]);
 
   return (
-    <div className={isDrummingMode ? 'drumming-theme' : 'academic-theme'}>
-      <div className="switch-container">
-        <div 
-          className="switch"
-          onClick={() => setIsDrummingMode((prev) => !prev)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              setIsDrummingMode((prev) => !prev);
-            }
-          }}
-        >
-          <span>{isDrummingMode ? 'Music Journey' : 'Academic Projects'}</span>
-        </div>
+    <div className={`page ${isDrummingMode ? 'drumming-theme' : 'academic-theme'}`}>
+      <div className="mode-tabs" role="tablist" aria-label="Which projects to show">
+        <button type="button" role="tab" className="mode-tab" aria-selected={!isDrummingMode} onClick={() => setIsDrummingMode(false)}>
+          Engineering
+        </button>
+        <button type="button" role="tab" className="mode-tab" aria-selected={isDrummingMode} onClick={() => setIsDrummingMode(true)}>
+          Music
+        </button>
       </div>
 
       {isDrummingMode ? <DrummingPortfolio /> : <AcademicPortfolio />}
@@ -69,6 +62,7 @@ function AcademicPortfolio() {
 
   return (
     <div className="project-container">
+      <h1 className="projects-title">Things I have built</h1>
       {projects.map((project) => (
         <div 
           key={project.title} 
@@ -176,7 +170,7 @@ function DrummingPortfolio() {
     <div className="drumming-portfolio">
       <section className="drumming-section">
         <h2 className="drumming-section-title">
-          My Music Journey
+          Bands I have played in
         </h2>
         <div className="drumming-grid">
           {bandsList.map((band) => (

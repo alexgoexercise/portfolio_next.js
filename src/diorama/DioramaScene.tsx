@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import Hud from './Hud';
 import { game, hotspots, type Hotspot } from './hotspots';
 import { sceneConfig } from './sceneConfig';
+import { loadRoomState, saveRoomState } from './session';
 import { playSound } from './sounds';
 
 /** Copies every slider's current value as JSON, ready to paste into sceneConfig.ts. */
@@ -289,18 +290,51 @@ function Scene({ awake, hoveredId, onHover, onPick }: SceneProps) {
 interface DioramaSceneProps {
   /** Shows the slider panel. Off for normal visitors. */
   editable: boolean;
+  /** Hotspot to open with its card showing, when arriving from that section's page. */
+  initialSpot?: string;
 }
 
 /**
  * The game: clicking things makes noise, noise fills the meter, a full meter
  * wakes Alex. The meter drains on its own while the room is quiet.
  */
-export default function DioramaScene({ editable }: DioramaSceneProps) {
+export default function DioramaScene({ editable, initialSpot }: DioramaSceneProps) {
   const [noise, setNoise] = useState(0);
   const [awake, setAwake] = useState(false);
   const [muted, setMuted] = useState(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Pick up where the visitor left off: the meter keeps draining while they
+  // read another page, and Alex stays awake if they woke him.
+  useEffect(() => {
+    const saved = loadRoomState();
+    if (saved?.awake) {
+      setAwake(true);
+      setNoise(1);
+    } else if (saved) {
+      const secondsAway = (Date.now() - saved.savedAt) / 1000;
+      setNoise(Math.max(0, saved.noise - game.calmPerSecond * secondsAway));
+    }
+  }, []);
+
+  // Remember the game whenever the visitor leaves, by link or by closing the tab
+  const latest = useRef({ noise, awake });
+  latest.current = { noise, awake };
+  useEffect(() => {
+    const save = () => saveRoomState(latest.current);
+    save(); // also marks the room as visited
+    window.addEventListener('pagehide', save);
+    return () => {
+      window.removeEventListener('pagehide', save);
+      save();
+    };
+  }, []);
+
+  // Arriving from a section's page opens that object's card
+  useEffect(() => {
+    if (initialSpot && hotspots.some((h) => h.id === initialSpot)) setSelectedId(initialSpot);
+  }, [initialSpot]);
 
   // Quiet drains the meter
   useEffect(() => {

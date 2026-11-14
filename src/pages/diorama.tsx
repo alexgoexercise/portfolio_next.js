@@ -6,7 +6,8 @@ import { useRouter } from 'next/router';
 const DioramaScene = dynamic(() => import('@/diorama/DioramaScene'), { ssr: false });
 
 /**
- * Work-in-progress sandbox for the 3D bedroom. Not linked from the navbar.
+ * The 3D bedroom. Reached from the landing page and from the "room" button on
+ * every other page; ?at=projects (or music, about, contacts) opens that object.
  * The slider panel shows in local development, or anywhere with ?edit=1.
  */
 export default function DioramaPage() {
@@ -16,10 +17,9 @@ export default function DioramaPage() {
   return (
     <>
       <Head>
-        <title>Diorama sandbox</title>
-        <meta name="robots" content="noindex" />
+        <title>The room · alexgosleep</title>
       </Head>
-      <DioramaScene editable={editable} />
+      <DioramaScene editable={editable} initialSpot={typeof query.at === 'string' ? query.at : undefined} />
     </>
   );
 }

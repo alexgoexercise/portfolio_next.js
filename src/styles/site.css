@@ -1,0 +1,1082 @@
+/*
+ * Site-wide look: the bedroom from /diorama, at night.
+ *
+ * Dark wood for surfaces, cream for text, and the lamp's amber for anything
+ * you can act on. The four stripes under the navbar (rust, orange, mustard,
+ * teal) come from the poster on the bedroom wall.
+ *
+ * Layout: tokens, base, shared pieces, then one block per page.
+ */
+
+:root {
+  /* Surfaces, darkest first */
+  --night: #130f0d;
+  --wood-900: #1c1512;
+  --wood-800: #271c16;
+  --wood-700: #3a2a20;
+  --line: rgba(241, 228, 200, 0.14);
+  --line-strong: rgba(241, 228, 200, 0.3);
+
+  /* Text */
+  --cream: #f1e4c8;
+  --cream-dim: #c4b494;
+
+  /* Accents */
+  --amber: #ff9a4d;
+  --rust: #b4472a;
+  --orange: #e0692f;
+  --mustard: #dfa83f;
+  --teal: #3f8f8a;
+  --stripes-across: linear-gradient(
+    to right,
+    var(--rust) 0 25%,
+    var(--orange) 25% 50%,
+    var(--mustard) 50% 75%,
+    var(--teal) 75% 100%
+  );
+
+  --nav-h: 58px;
+  --radius: 4px;
+
+}
+
+/*
+ * The typefaces are loaded in _app.tsx, which puts their names on the .site
+ * wrapper. These three roles are therefore defined there too, not on :root.
+ */
+.site {
+  --font-display: var(--font-young-serif), Georgia, 'Songti SC', serif;
+  --font-body: var(--font-plex-sans), system-ui, 'PingFang SC', sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* ---------------------------------------------------------------- base */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+  background: var(--night);
+}
+
+/*
+ * Sideways scrolling is switched off on <body> only, with nothing on <html>.
+ * That is the one arrangement every browser treats as "the page itself
+ * scrolls": the browser moves the rule up to the window, and <body> does not
+ * become a scroll box of its own.
+ *
+ * The earlier rules here (overflow-x: hidden on both html and body, plus
+ * overscroll-behavior: none) made <body> a scroll box that could not scroll
+ * and would not pass the gesture on, so wheel and touchpad scrolling died.
+ */
+body {
+  overflow-x: hidden;
+  color: var(--cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/*
+ * A lamp somewhere off the top-left corner. It is a fixed layer of its own
+ * rather than a fixed background on <body>, which makes browsers repaint the
+ * whole page on every scroll step and feels sticky on a touchpad.
+ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 70% 45% at 12% -8%, rgba(255, 154, 77, 0.13), transparent 62%);
+}
+
+.site {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100dvh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--amber);
+  color: #20130c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------- shared pieces */
+
+/* Standard page column, clear of the fixed navbar */
+.page {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: calc(var(--nav-h) + 48px) 20px 110px;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mustard);
+}
+
+.panel {
+  background: var(--wood-800);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+/* Small labels: skills, project tags, band tags */
+.skill-tag,
+.drumming-tag {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.3;
+  padding: 5px 10px;
+  background: transparent;
+  color: var(--cream);
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.skill-tag:hover,
+.drumming-tag:hover {
+  color: var(--amber);
+  border-color: var(--amber);
+}
+
+/* Pop-up messages */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(10, 7, 6, 0.72);
+}
+
+.popup-message {
+  position: relative;
+  max-width: 440px;
+  padding: 30px 28px 26px;
+  background: var(--wood-800);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+}
+
+.popup-message h1,
+.popup-message h2,
+.popup-message h4 {
+  font-size: 22px;
+  margin-bottom: 8px;
+  color: var(--amber);
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.popup-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--cream-dim);
+  cursor: pointer;
+}
+
+.popup-close:hover {
+  color: var(--cream);
+}
+
+/* Picture sliders (Swiper) */
+.swiper {
+  --swiper-theme-color: var(--amber);
+  --swiper-navigation-size: 22px;
+  --swiper-pagination-bullet-inactive-color: var(--cream);
+  --swiper-pagination-bullet-inactive-opacity: 0.35;
+}
+
+.slider-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 460px;
+  object-fit: contain;
+  background: #0d0a09;
+  border-radius: 3px;
+}
+
+/* -------------------------------------------------------------- navbar */
+
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 20px;
+  background: rgba(28, 21, 18, 0.94);
+  backdrop-filter: blur(8px);
+}
+
+/* The poster stripes run under the bar */
+.site-nav::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 3px;
+  background: var(--stripes-across);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+/* A setting sun, as on the poster */
+.brand-mark {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: clamp(12px, 3vw, 28px);
+}
+
+.nav-link {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s;
+}
+
+.nav-link:hover {
+  color: var(--cream);
+}
+
+.nav-link.active {
+  color: var(--amber);
+  border-bottom-color: var(--amber);
+}
+
+@media (max-width: 560px) {
+  .site-nav {
+    padding: 0 14px;
+  }
+  .brand-text {
+    display: none;
+  }
+  .nav-link {
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+  }
+}
+
+/* ------------------------------------------- back-to-the-room button */
+
+.room-button {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--wood-800);
+  border: 1px solid var(--amber);
+  border-radius: var(--radius);
+  transition: background 0.15s, color 0.15s;
+}
+
+/* The bedside lamp, still on */
+.room-button-lamp {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 10px 2px rgba(255, 154, 77, 0.7);
+  flex: none;
+}
+
+.room-button:hover {
+  background: var(--amber);
+  color: #20130c;
+}
+
+.room-button:hover .room-button-lamp {
+  background: #20130c;
+  box-shadow: none;
+}
+
+/* ------------------------------------------------- landing page ( / ) */
+
+.landing {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 40px 20px;
+}
+
+.landing-inner {
+  width: 100%;
+  max-width: 980px;
+}
+
+.landing-title {
+  font-size: clamp(46px, 9vw, 92px);
+  letter-spacing: -0.01em;
+  margin: 0 0 10px;
+}
+
+.landing-lede {
+  max-width: 34em;
+  font-size: clamp(16px, 2vw, 19px);
+  color: var(--cream-dim);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 38px;
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--wood-800);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.choice:hover {
+  border-color: var(--amber);
+  transform: translateY(-3px);
+}
+
+.choice-media {
+  aspect-ratio: 16 / 10;
+  background: #0b0f22;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.choice-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The plain site, pictured as its own table of contents */
+.choice-index {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 26px;
+  background: var(--wood-900);
+  font-family: var(--font-mono);
+  font-size: clamp(13px, 1.5vw, 15px);
+  color: var(--cream-dim);
+  list-style: none;
+}
+
+.choice-index li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.choice-index li::after {
+  content: '';
+  flex: 1;
+  order: 1;
+  border-bottom: 1px dotted var(--line-strong);
+}
+
+.choice-index span {
+  order: 2;
+  color: var(--mustard);
+}
+
+.choice-body {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.choice-body h2 {
+  font-size: clamp(24px, 3vw, 30px);
+}
+
+.choice-body p {
+  color: var(--cream-dim);
+}
+
+.choice-cta {
+  margin-top: auto;
+  padding-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.landing-foot {
+  margin-top: 30px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--cream-dim);
+}
+
+@media (max-width: 720px) {
+  .landing {
+    place-items: start center;
+  }
+  .choices {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------- plain home ( /home ) */
+
+.home-title {
+  font-size: clamp(44px, 8vw, 76px);
+  margin: 14px 0 6px;
+}
+
+.home-alias {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--cream-dim);
+}
+
+.home-lede {
+  margin-top: 26px;
+  max-width: 36em;
+  font-size: clamp(17px, 2.2vw, 20px);
+}
+
+.index-list {
+  margin-top: 52px;
+  border-top: 1px solid var(--line-strong);
+  list-style: none;
+}
+
+.index-row {
+  display: grid;
+  grid-template-columns: 3.2em 9.5em 1fr auto;
+  align-items: baseline;
+  gap: 8px 16px;
+  padding: 20px 4px;
+  border-bottom: 1px solid var(--line-strong);
+  transition: background 0.15s, padding 0.15s;
+}
+
+.index-row:hover {
+  background: rgba(255, 154, 77, 0.07);
+  padding-left: 12px;
+}
+
+.index-num {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--mustard);
+}
+
+.index-row h2 {
+  font-size: 28px;
+}
+
+.index-row p {
+  color: var(--cream-dim);
+}
+
+.index-arrow {
+  font-family: var(--font-mono);
+  color: var(--amber);
+}
+
+.skills-preview {
+  margin-top: 56px;
+}
+
+.skill-list,
+.skills-list,
+.tags,
+.drumming-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skills-preview .skill-list {
+  margin-top: 14px;
+}
+
+@media (max-width: 640px) {
+  .index-row {
+    grid-template-columns: 2.6em 1fr auto;
+  }
+  .index-row p {
+    grid-column: 2 / -1;
+  }
+}
+
+/* ------------------------------------------------------ about ( /about ) */
+
+.resume header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.resume header h1 {
+  font-size: clamp(48px, 9vw, 80px);
+  color: var(--amber);
+  letter-spacing: 0.01em;
+}
+
+.resume header h2 {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  margin-top: 10px;
+}
+
+.resume header p {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--cream-dim);
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+/* Framed like the poster on the bedroom wall, and hung slightly crooked */
+.photo-box {
+  width: 120px;
+  height: 172px;
+  flex: none;
+  padding: 6px;
+  background: var(--wood-700);
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  transform: rotate(2.5deg);
+}
+
+.resume section {
+  margin-top: 46px;
+}
+
+.resume section h3 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--mustard);
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.resume .summary p {
+  margin-top: 14px;
+  max-width: 44em;
+}
+
+.resume strong {
+  font-weight: 600;
+}
+
+.edu-block,
+.exp-block,
+.proj-block {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 24px;
+  padding: 18px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.edu-details strong,
+.exp-details strong,
+.proj-details strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 20px;
+}
+
+.edu-details,
+.exp-details,
+.proj-details {
+  color: var(--cream-dim);
+}
+
+.edu-details strong,
+.exp-details strong,
+.proj-details strong {
+  color: var(--cream);
+}
+
+.resume ul {
+  margin: 8px 0 0 18px;
+}
+
+.resume li {
+  margin: 4px 0;
+}
+
+.resume li::marker {
+  color: var(--orange);
+}
+
+.edu-dates,
+.exp-dates,
+.proj-dates {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--amber);
+  white-space: nowrap;
+  padding-top: 5px;
+}
+
+.resume .skills-list {
+  margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .edu-block,
+  .exp-block,
+  .proj-block {
+    grid-template-columns: 1fr;
+  }
+  .edu-dates,
+  .exp-dates,
+  .proj-dates {
+    order: -1;
+    padding-top: 0;
+  }
+  .photo-box {
+    width: 92px;
+    height: 132px;
+  }
+}
+
+/* ------------------------------------------------ contacts ( /contacts ) */
+
+.contact-card {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 34px 28px 28px;
+  text-align: center;
+  background: var(--wood-800);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.contact-photo {
+  border: 4px solid var(--wood-700);
+  outline: 1px solid var(--line-strong);
+}
+
+.contact-name {
+  font-size: 34px;
+  margin-top: 14px;
+}
+
+.contact-role {
+  color: var(--cream-dim);
+}
+
+.like-section {
+  margin: 16px 0 22px;
+}
+
+.like-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.like-button:hover:not(:disabled) {
+  border-color: var(--orange);
+}
+
+.like-heart {
+  color: var(--orange);
+}
+
+.contact-info {
+  text-align: left;
+  border-top: 1px solid var(--line);
+}
+
+.contact-row {
+  display: grid;
+  grid-template-columns: 5em 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.contact-label {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+}
+
+.contact-value {
+  overflow-wrap: anywhere;
+}
+
+.copy-btn {
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  background: var(--amber);
+  color: #20130c;
+}
+
+.contact-socials {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-align: left;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.social-link:hover {
+  color: var(--amber);
+  border-color: var(--amber);
+}
+
+/* The Xiaohongshu mark is a dark drawing, so it is turned cream to match */
+.social-link img {
+  filter: invert(1) sepia(0.3);
+}
+
+.toast-copied {
+  position: fixed;
+  left: 50%;
+  bottom: 74px;
+  transform: translateX(-50%);
+  z-index: 1500;
+  padding: 9px 14px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  background: var(--wood-700);
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+}
+
+@media (max-width: 420px) {
+  .contact-socials {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------ projects ( /projects ) */
+
+.mode-tabs {
+  display: inline-flex;
+  margin-bottom: 30px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.mode-tab {
+  padding: 9px 16px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--cream-dim);
+  border: none;
+  cursor: pointer;
+}
+
+.mode-tab + .mode-tab {
+  border-left: 1px solid var(--line-strong);
+}
+
+.mode-tab:hover {
+  color: var(--cream);
+}
+
+.mode-tab[aria-selected='true'] {
+  background: var(--amber);
+  color: #20130c;
+  font-weight: 500;
+}
+
+.projects-title,
+.drumming-section-title {
+  font-size: clamp(34px, 6vw, 52px);
+  margin-bottom: 26px;
+}
+
+.project-container {
+  display: grid;
+  gap: 26px;
+}
+
+.project-card {
+  padding: 24px;
+  background: var(--wood-800);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  min-width: 0;
+}
+
+.project-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px 20px;
+  margin-bottom: 12px;
+}
+
+.project-header h2 {
+  font-size: 28px;
+}
+
+.click-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--amber);
+  border-bottom: 1px solid currentColor;
+  cursor: pointer;
+}
+
+.click-notice:hover {
+  color: #ffb877;
+}
+
+.project-card p {
+  margin: 10px 0;
+  max-width: 46em;
+}
+
+.slider-wrapper {
+  margin: 20px 0;
+}
+
+/* Music side */
+.drumming-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 20px;
+}
+
+.drumming-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 18px;
+  overflow: hidden;
+  background: var(--wood-800);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.drumming-card:hover {
+  border-color: var(--amber);
+  transform: translateY(-3px);
+}
+
+.drumming-media img {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.drumming-card-title {
+  font-size: 23px;
+  padding: 16px 18px 0;
+}
+
+.drumming-card-period {
+  padding: 4px 18px 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--amber);
+}
+
+.drumming-card-content {
+  padding: 10px 18px 14px;
+  color: var(--cream-dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.drumming-tags {
+  padding: 0 18px;
+  margin-top: auto;
+}
+
+.drumming-click-notice {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  padding: 4px 8px;
+  background: rgba(19, 15, 13, 0.88);
+  border: none;
+  border-radius: 3px;
+}
+
+/* --------------------------------------------- band page ( /band/[id] ) */
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 26px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.back-button:hover {
+  color: #ffb877;
+}
+
+.performance-date,
+.performance-venue {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.performance-date {
+  color: var(--amber);
+  margin-top: 4px;
+}
+
+.performance-venue {
+  color: var(--cream-dim);
+}
+
+.performance-description {
+  margin-top: 10px;
+  color: var(--cream-dim);
+}
