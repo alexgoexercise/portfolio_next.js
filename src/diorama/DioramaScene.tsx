@@ -260,7 +260,12 @@ function Hotspots({ hoveredId, onHover, onPick }: HotspotsProps) {
         box.expandByObject(target);
         target.traverse((node) => {
           const mesh = node as THREE.Mesh;
-          if (mesh.isMesh && !(mesh.material as THREE.Material).transparent) meshes.push(mesh);
+          if (!mesh.isMesh) return;
+          // The PC's see-through glass panels are left out of the highlight. The
+          // drum kit's cymbals are see-through materials too (their holes and
+          // cut-outs are transparent), and they have to light up with the rest.
+          const seeThrough = (mesh.material as THREE.Material).transparent;
+          if (spot.source === 'drumkit' || !seeThrough) meshes.push(mesh);
         });
       }
       const size = box.getSize(new THREE.Vector3());

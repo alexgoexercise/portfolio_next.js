@@ -6,13 +6,15 @@ Run from the repo root, after build_room.py:
 
 The Drumstructor kit is 31 MB with about 490,000 triangles in 311 parts, which
 is far too heavy for a web page. This script:
-  - thins out dense parts (lugs, hoops, screws) that are tiny on screen,
+  - welds each dense part's loose pieces together, then thins it out (lugs,
+    hoops, screws are tiny on screen); without the weld, thinning tears holes,
   - merges look-alike materials and joins everything into one object,
   - shrinks textures to 1024 px,
   - writes a compressed file to public/models/drumkit.glb.
 """
 import os
 
+import bmesh
 import bpy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -70,6 +72,15 @@ for o in meshes:
     before += tris
     ratio = 0.18 if tris > 6000 else 0.3 if tris > 2000 else 0.55 if tris > 600 else 1.0
     if ratio < 1.0:
+        # Weld first. Almost every part of the Drumstructor model is stored as
+        # loose pieces that only touch (the seat's top, say, is not joined to
+        # its sides), and thinning pulls loose pieces apart: the throne seat
+        # came out with a hole through its middle. Joined up, it thins cleanly.
+        bm = bmesh.new()
+        bm.from_mesh(o.data)
+        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
+        bm.to_mesh(o.data)
+        bm.free()
         mod = o.modifiers.new("Thin", "DECIMATE")
         mod.ratio = ratio
 
