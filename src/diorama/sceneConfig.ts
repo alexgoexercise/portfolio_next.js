@@ -10,6 +10,13 @@
 
 export type Vec3 = [number, number, number];
 
+/** The default viewpoint: the same as the "Cam_Hero" camera in room.blend. */
+const overview = {
+  fov: 28,
+  position: [7.6, 6.4, 7.9] as Vec3,
+  target: [0, 0.6, -0.1] as Vec3,
+};
+
 export const sceneConfig = {
   /** Night sky behind the room. Matches the Blender renders. */
   background: '#0b0f22',
@@ -96,9 +103,45 @@ export const sceneConfig = {
   },
 
   camera: {
-    fov: 28,
-    /** Same viewpoint as the "Cam_Hero" camera in room.blend. */
-    position: [7.6, 6.4, 7.9] as Vec3,
-    target: [0, 0.6, -0.1] as Vec3,
+    fov: overview.fov,
+    position: overview.position,
+    target: overview.target,
+
+    /**
+     * How far the visitor can move the camera. "Target" is the point the
+     * camera circles around and looks at; sliding it is how you move through
+     * the room. Distances are in metres.
+     */
+    limits: {
+      minDistance: 2,
+      maxDistance: 22,
+      /** Tilt, as an angle from straight down: 0.25 is nearly top-down, 1.5 nearly level. */
+      minPolar: 0.25,
+      maxPolar: 1.5,
+      /** The box the target can be moved within, a little smaller than the room (4.4 m by 3.8 m). */
+      target: { min: [-1.8, 0.2, -1.5] as Vec3, max: [1.8, 1.2, 1.5] as Vec3 },
+      /** Keyboard movement speed in metres per second (Shift is faster). */
+      keyboardSpeed: 1.8,
+      /**
+       * The two solid walls. From outside either one the camera is kept high
+       * enough to see over its top into the room (see CameraRig.tsx). The room
+       * is open on its other two sides, so there is no limit there.
+       */
+      walls: { left: -2.2, back: -1.9, top: 2.4, clearance: 0.15, fadeIn: 0.8 },
+      /** Seconds a move to a preset view takes. */
+      glideSeconds: 1.4,
+    },
+
+    /** Preset viewpoints. The buttons in the room, and the drum kit's card, glide the camera to one. */
+    views: {
+      overview,
+      /**
+       * From behind the throne, over the drummer's shoulder, looking at the
+       * kit. A wider lens than the overview, so the whole kit fits from close up.
+       */
+      drummer: { fov: 52, position: [0.2, 1.75, -1.0] as Vec3, target: [1.1, 0.55, 0.7] as Vec3 },
+    },
   },
 };
+
+export type ViewName = keyof typeof sceneConfig.camera.views;

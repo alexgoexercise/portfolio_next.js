@@ -17,7 +17,7 @@ Live at [alexgosleep.com](https://alexgosleep.com).
 ## What's on the site
 
 - **Landing** — choose the room or the plain portfolio
-- **Diorama** — Blender-built room + drum kit (GLB), React Three Fiber scene, hotspots, sound, wake meter; the lights are off while Alex sleeps and fade on when he wakes
+- **Diorama** — Blender-built room + drum kit (GLB), React Three Fiber scene, hotspots, sound, wake meter; the lights are off while Alex sleeps and fade on when he wakes; free camera (turn all the way round, zoom, slide with right-drag / Shift-drag / W A S D) plus an overview and a drummer's view
 - **About** — education (NUS CEG + Machine Intelligence MSc) and robotics experience (Avetics, Hikvision, Continental, TLab IBVS)
 - **Projects** — engineering (Autoboat, AR Laser Tag, RTOS car, this site) and music bands, with image galleries
 - **Contacts** — email, socials, WeChat QR; like button is session-only (resets on reload)

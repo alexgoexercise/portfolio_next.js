@@ -3,7 +3,6 @@ import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
 import {
   Environment,
   Lightformer,
-  OrbitControls,
   PerspectiveCamera,
   useAnimations,
   useGLTF,
@@ -11,10 +10,11 @@ import {
 } from '@react-three/drei';
 import { Leva, button, levaStore, useControls } from 'leva';
 import * as THREE from 'three';
+import CameraRig, { type ViewRequest } from './CameraRig';
 import Hud from './Hud';
 import { game, hotspots, type Hotspot } from './hotspots';
 import { approach, ease, litUniform, mixWithNight, nightGainUniform, registerNightMap } from './lighting';
-import { sceneConfig } from './sceneConfig';
+import { sceneConfig, type ViewName } from './sceneConfig';
 import { loadRoomState, saveRoomState } from './session';
 import { playSound } from './sounds';
 
@@ -394,9 +394,11 @@ function Lamps({ awake }: { awake: boolean }) {
 
 interface SceneProps extends HotspotsProps {
   awake: boolean;
+  /** Asks the camera to glide to a preset view. */
+  viewRequest: ViewRequest | null;
 }
 
-function Scene({ awake, hoveredId, onHover, onPick }: SceneProps) {
+function Scene({ awake, viewRequest, hoveredId, onHover, onPick }: SceneProps) {
   const { fov, background } = useControls('View', {
     fov: { value: sceneConfig.camera.fov, min: 10, max: 60, step: 1 },
     background: sceneConfig.background,
@@ -407,17 +409,7 @@ function Scene({ awake, hoveredId, onHover, onPick }: SceneProps) {
     <>
       <color attach="background" args={[background]} />
       <PerspectiveCamera makeDefault fov={fov} position={sceneConfig.camera.position} />
-      <OrbitControls
-        makeDefault
-        target={sceneConfig.camera.target}
-        enablePan={false}
-        minDistance={4}
-        maxDistance={22}
-        minPolarAngle={0.3}
-        maxPolarAngle={1.32}
-        minAzimuthAngle={-0.15}
-        maxAzimuthAngle={Math.PI / 2 + 0.15}
-      />
+      <CameraRig request={viewRequest} />
       <Lamps awake={awake} />
       <Suspense fallback={null}>
         <Room awake={awake} />
@@ -511,6 +503,12 @@ export default function DioramaScene({ editable, initialSpot }: DioramaSceneProp
     setSelectedId(null);
   }, []);
 
+  // The nonce changes on every request, so choosing the same view again still glides back to it
+  const [viewRequest, setViewRequest] = useState<ViewRequest | null>(null);
+  const goToView = useCallback((name: ViewName) => {
+    setViewRequest((previous) => ({ name, nonce: (previous?.nonce ?? 0) + 1 }));
+  }, []);
+
   const byId = (id: string | null) => hotspots.find((h) => h.id === id) ?? null;
 
   return (
@@ -518,7 +516,7 @@ export default function DioramaScene({ editable, initialSpot }: DioramaSceneProp
       <Leva hidden={!editable} collapsed titleBar={{ position: { x: 0, y: 70 } }} />
       {/* "flat" turns off tone mapping: the bake already has the final colours */}
       <Canvas flat dpr={[1, 2]} onPointerMissed={() => setSelectedId(null)}>
-        <Scene awake={awake} hoveredId={hoveredId} onHover={setHoveredId} onPick={pick} />
+        <Scene awake={awake} viewRequest={viewRequest} hoveredId={hoveredId} onHover={setHoveredId} onPick={pick} />
       </Canvas>
       <Hud
         noise={noise}
@@ -529,6 +527,7 @@ export default function DioramaScene({ editable, initialSpot }: DioramaSceneProp
         onToggleMute={() => setMuted((m) => !m)}
         onCloseCard={() => setSelectedId(null)}
         onLetSleep={letSleep}
+        onView={goToView}
       />
     </div>
   );

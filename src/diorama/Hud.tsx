@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useProgress } from '@react-three/drei';
 import type { Hotspot } from './hotspots';
+import type { ViewName } from './sceneConfig';
 import styles from './Hud.module.css';
 
 interface HudProps {
@@ -13,6 +14,8 @@ interface HudProps {
   onToggleMute: () => void;
   onCloseCard: () => void;
   onLetSleep: () => void;
+  /** Glide the camera to a preset view. */
+  onView: (name: ViewName) => void;
 }
 
 function statusText(noise: number, awake: boolean) {
@@ -23,7 +26,17 @@ function statusText(noise: number, awake: boolean) {
 }
 
 /** Everything drawn on top of the 3D room. */
-export default function Hud({ noise, awake, muted, hovered, selected, onToggleMute, onCloseCard, onLetSleep }: HudProps) {
+export default function Hud({
+  noise,
+  awake,
+  muted,
+  hovered,
+  selected,
+  onToggleMute,
+  onCloseCard,
+  onLetSleep,
+  onView,
+}: HudProps) {
   const { active, progress } = useProgress();
   const percent = Math.round(Math.min(1, noise) * 100);
 
@@ -62,6 +75,16 @@ export default function Hud({ noise, awake, muted, hovered, selected, onToggleMu
         </button>
       </section>
 
+      <section className={`${styles.panel} ${styles.views}`} aria-label="Camera">
+        <button type="button" className={styles.viewButton} onClick={() => onView('overview')}>
+          Overview
+        </button>
+        <button type="button" className={styles.viewButton} onClick={() => onView('drummer')}>
+          Drummer&apos;s view
+        </button>
+        <p className={styles.viewHint}>Drag to turn · Shift-drag or W A S D to move</p>
+      </section>
+
       {awake && (
         <section className={`${styles.panel} ${styles.banner}`} role="status">
           <p className={styles.bannerTitle}>You woke Alex.</p>
@@ -79,11 +102,25 @@ export default function Hud({ noise, awake, muted, hovered, selected, onToggleMu
           </button>
           <h2 className={styles.cardTitle}>{selected.label}</h2>
           <p className={styles.cardText}>{selected.blurb}</p>
-          {selected.href && (
-            <Link href={selected.href} className={styles.cardLink}>
-              {selected.cta ?? 'Open'} →
-            </Link>
-          )}
+          <div className={styles.cardActions}>
+            {selected.href && (
+              <Link href={selected.href} className={styles.cardLink}>
+                {selected.cta ?? 'Open'} →
+              </Link>
+            )}
+            {selected.view && (
+              <button
+                type="button"
+                className={styles.cardSecondary}
+                onClick={() => {
+                  onView(selected.view!.name);
+                  onCloseCard();
+                }}
+              >
+                {selected.view.label}
+              </button>
+            )}
+          </div>
         </section>
       ) : (
         hovered && <div className={`${styles.panel} ${styles.hoverLabel}`}>{hovered.label}</div>

@@ -141,6 +141,63 @@
   background: #ffb877;
 }
 
+.cardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cardSecondary {
+  padding: 7px 12px;
+  background: transparent;
+  color: var(--cream);
+  border: 1px solid var(--cream);
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+
+.cardSecondary:hover {
+  background: rgba(241, 228, 200, 0.14);
+}
+
+/* Camera view buttons, bottom right */
+.views {
+  position: absolute;
+  right: 16px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 8px;
+  max-width: calc(100vw - 32px);
+}
+
+.viewButton {
+  padding: 6px 10px;
+  background: transparent;
+  color: var(--cream);
+  border: 1px solid var(--line, rgba(241, 228, 200, 0.3));
+  border-radius: 3px;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.viewButton:hover {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.viewHint {
+  margin: 2px 2px 0;
+  max-width: 210px;
+  font-size: 10.5px;
+  line-height: 1.4;
+  opacity: 0.6;
+}
+
 .close {
   position: absolute;
   top: 8px;
@@ -225,6 +282,16 @@
   }
   .cardText {
     margin: 4px 0 10px;
+  }
+  /* The view buttons move to the top right, out of the way of the card; the move hint is for mouse users */
+  .views {
+    top: calc(var(--nav-h) + 12px);
+    right: 10px;
+    bottom: auto;
+    padding: 6px;
+  }
+  .viewHint {
+    display: none;
   }
   /* Keep the meter clear of the banner and the card on narrow screens */
   .banner {

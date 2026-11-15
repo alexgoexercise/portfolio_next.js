@@ -1,3 +1,4 @@
+import type { ViewName } from './sceneConfig';
 import type { SoundName } from './sounds';
 
 /**
@@ -17,6 +18,8 @@ export interface Hotspot {
   href?: string;
   /** Text on the card's link. */
   cta?: string;
+  /** A preset camera view the card can glide to, and the text on its button. */
+  view?: { name: ViewName; label: string };
   /** Where the parts live: the baked room, or the drum kit file (the whole kit). */
   source: 'room' | 'drumkit';
   parts: string[];
@@ -43,6 +46,7 @@ export const hotspots: Hotspot[] = [
     blurb: 'Alex did not practise any rudiments today.',
     href: '/projects?music=1',
     cta: 'Stalk Alex\'s music journey',
+    view: { name: 'drummer', label: 'Sit behind the kit' },
     source: 'drumkit',
     parts: [],
     sound: 'drum',
