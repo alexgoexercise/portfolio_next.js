@@ -17,7 +17,7 @@ Live at [alexgosleep.com](https://alexgosleep.com).
 ## What's on the site
 
 - **Landing** — choose the room or the plain portfolio
-- **Diorama** — Blender-built room + drum kit (GLB), React Three Fiber scene, hotspots, sound, wake meter
+- **Diorama** — Blender-built room + drum kit (GLB), React Three Fiber scene, hotspots, sound, wake meter; the lights are off while Alex sleeps and fade on when he wakes
 - **About** — education (NUS CEG + Machine Intelligence MSc) and robotics experience (Avetics, Hikvision, Continental, TLab IBVS)
 - **Projects** — engineering (Autoboat, AR Laser Tag, RTOS car, this site) and music bands, with image galleries
 - **Contacts** — email, socials, WeChat QR; like button is session-only (resets on reload)
@@ -53,7 +53,7 @@ npm run lint
 | `src/pages/` | Routes (`index`, `diorama`, `home`, `about`, `projects`, `contacts`, …) |
 | `src/diorama/` | 3D scene, HUD, hotspots, sounds |
 | `src/content/` | Projects, bands, skills data |
-| `public/models/` | `room.glb`, `drumkit.glb`, `alex.glb` |
+| `public/models/` | `room.glb` + `room_night_*.webp` (the same room baked with the lights off), `drumkit.glb`, `alex.glb`, `duvet.glb` |
 | `blender/` | Scripts and assets that build/export the room |
 
 Content for the projects page lives in `src/content/projects.ts`. Hotspot card copy is in `src/diorama/hotspots.ts`.

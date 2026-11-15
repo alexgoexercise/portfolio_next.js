@@ -11,9 +11,11 @@ Run from the repo root, after build_room.py:
                                                   or  -- --hq  for the sharpest result)
 
 Outputs:
-    public/models/room.glb       baked room, textures embedded
-    blender/room_baked.blend     the baked scene, to inspect in Blender
-    blender/renders/bake_*.png   the baked texture sheets
+    public/models/room.glb                  baked room with its lights on, textures embedded
+    public/models/room_night_*.webp         the same two texture sheets with the lights off
+                                            (skip these with  -- --no-night)
+    blender/room_baked.blend                the baked scene, to inspect in Blender
+    blender/renders/bake_*.png              the baked texture sheets
 
 What it does:
   1. Removes Alex and the duvet. Both move on the page, so a shadow baked under
@@ -37,6 +39,10 @@ import bpy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
+sys.path.insert(0, HERE)
+
+from lib import srgb  # noqa: E402
+
 QUICK = "--quick" in sys.argv
 HQ = "--hq" in sys.argv  # sharper sheets; takes roughly an hour
 SIZE = 1024 if QUICK else (4096 if HQ else 2048)
@@ -112,8 +118,55 @@ def unwrap(objs):
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
-def bake(objs, name):
-    """Bake colour plus lighting for these objects into one image; returns the saved file."""
+# --------------------------------------------------------------------------
+# Lights off
+#
+# The page shows the room in two moods: lights off while Alex sleeps, lights on
+# once he wakes. Both are baked into texture sheets with the same layout, and
+# the page fades from one to the other. These settings are the "off" mood:
+# only moonlight through the window and a faint cool fill, enough to make out
+# the furniture.
+# --------------------------------------------------------------------------
+NIGHT_KEEP = {"Moon": 1.0, "Fill": 2.5}  # how strong each light is; every other light goes out
+NIGHT_WORLD = 2.0  # strength of the night sky's glow, which lights the open sides of the room
+LAMP_OFF_COLOUR = "#d9ccb0"  # a switched-off lamp shade is cream, not glowing orange
+
+
+def _principled(material):
+    if material is None or material.node_tree is None:
+        return None
+    return next((n for n in material.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None)
+
+
+def lights_off(scene):
+    """Switch off every lamp, bulb, screen and indicator light in the scene."""
+    for o in scene.objects:
+        if o.type == "LIGHT":
+            o.data.energy *= NIGHT_KEEP.get(o.name.split(".")[0], 0.0)
+    switched = []
+    for m in bpy.data.materials:
+        node = _principled(m)
+        if node is None or "Emission Strength" not in node.inputs or node.inputs["Emission Strength"].default_value <= 0:
+            continue
+        node.inputs["Emission Strength"].default_value = 0.0
+        base = node.inputs["Base Color"]
+        if m.name == "lamp_glow":
+            base.default_value = srgb(LAMP_OFF_COLOUR)
+        else:  # a dark screen, an unlit bulb: dim their paint too
+            base.default_value = (*(c * 0.35 for c in base.default_value[:3]), 1.0)
+        switched.append(m.name)
+    world = scene.world
+    bg = next((n for n in world.node_tree.nodes if n.type == "BACKGROUND"), None) if world and world.node_tree else None
+    if bg:
+        bg.inputs[1].default_value *= NIGHT_WORLD
+    print("LIGHTS OFF: switched off", sorted(switched))
+
+
+def bake(objs, name, web_path=None):
+    """
+    Bake colour plus lighting for these objects into one image; returns the saved PNG.
+    With web_path, also saves a small compressed copy (.webp) for the site to load.
+    """
     scene = bpy.context.scene
     image = bpy.data.images.new(f"bake_{name}", SIZE, SIZE, alpha=False, float_buffer=True)
     for o in objs:
@@ -134,6 +187,11 @@ def bake(objs, name):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     scene.render.image_settings.file_format = "PNG"
     image.save_render(path, scene=scene)
+    if web_path:
+        scene.render.image_settings.file_format = "WEBP"
+        scene.render.image_settings.quality = 90
+        image.save_render(web_path, scene=scene)
+        scene.render.image_settings.file_format = "PNG"
     return path
 
 
@@ -186,8 +244,16 @@ def main():
     for name, objs in (("shell", shell), ("props", props)):
         unwrap(objs)
     # Bake both before swapping any material, so each bake sees the real scene
-    paths = {name: bake(objs, name) for name, objs in (("shell", shell), ("props", props))}
-    for name, objs in (("shell", shell), ("props", props)):
+    sheets = (("shell", shell), ("props", props))
+    paths = {name: bake(objs, name) for name, objs in sheets}
+    # Same sheets again with everything switched off. The page loads these as
+    # room_night_shell.webp / room_night_props.webp (see src/diorama/sceneConfig.ts).
+    if "--no-night" not in sys.argv:
+        lights_off(scene)
+        models = os.path.join(REPO, "public", "models")
+        for name, objs in sheets:
+            bake(objs, f"{name}_night", web_path=os.path.join(models, f"room_night_{name}.webp"))
+    for name, objs in sheets:
         use_baked(objs, name, paths[name])
 
     # Everything that is not part of the room file goes

@@ -1,10 +1,19 @@
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
-import { Environment, Lightformer, OrbitControls, PerspectiveCamera, useAnimations, useGLTF } from '@react-three/drei';
+import {
+  Environment,
+  Lightformer,
+  OrbitControls,
+  PerspectiveCamera,
+  useAnimations,
+  useGLTF,
+  useTexture,
+} from '@react-three/drei';
 import { Leva, button, levaStore, useControls } from 'leva';
 import * as THREE from 'three';
 import Hud from './Hud';
 import { game, hotspots, type Hotspot } from './hotspots';
+import { approach, ease, litUniform, mixWithNight, nightGainUniform, registerNightMap } from './lighting';
 import { sceneConfig } from './sceneConfig';
 import { loadRoomState, saveRoomState } from './session';
 import { playSound } from './sounds';
@@ -43,7 +52,10 @@ function prepareRoom(scene: THREE.Object3D) {
     }
     const map = source.map ?? source.emissiveMap;
     if (map) map.anisotropy = 8;
-    mesh.material = new THREE.MeshBasicMaterial({ map });
+    const material = new THREE.MeshBasicMaterial({ map });
+    // The glTF loader names each baked material after its sheet ("baked_shell", "baked_props")
+    mixWithNight(material, source.name);
+    mesh.material = material;
   });
   scene.userData.prepared = true;
   return scene;
@@ -51,7 +63,27 @@ function prepareRoom(scene: THREE.Object3D) {
 
 function Room({ awake }: { awake: boolean }) {
   const { scene } = useGLTF(sceneConfig.roomUrl);
-  const room = useMemo(() => prepareRoom(scene), [scene]);
+  // Loading these first means the room is never drawn before its dark pictures exist
+  const night = useTexture(sceneConfig.roomNightUrls);
+  const room = useMemo(() => {
+    for (const [sheet, texture] of Object.entries(night)) registerNightMap(sheet, texture);
+    return prepareRoom(scene);
+  }, [scene, night]);
+
+  // The PC's glass panels are a faint blue tint: against a dark room that
+  // would read as a glow, so it fades with the lights
+  const glass = useMemo(() => {
+    const found: { material: THREE.MeshBasicMaterial; base: THREE.Color }[] = [];
+    room.traverse((node) => {
+      const material = (node as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined;
+      if (material?.transparent) found.push({ material, base: material.color.clone() });
+    });
+    return found;
+  }, [room]);
+  useFrame(() => {
+    const k = THREE.MathUtils.lerp(sceneConfig.lighting.nightGlass, 1, ease(litUniform.value));
+    for (const { material, base } of glass) material.color.copy(base).multiplyScalar(k);
+  });
 
   // His spare glasses leave the nightstand when he wakes: he is wearing them
   useEffect(() => {
@@ -241,8 +273,10 @@ function Hotspots({ hoveredId, onHover, onPick }: HotspotsProps) {
     });
   }, [roomScene, kit]);
 
-  // Brighten whatever is hovered. Baked parts multiply their picture by a
-  // colour above white; the lit drum kit gets a faint warm glow instead.
+  // Highlight whatever is hovered. Baked parts multiply their picture by a
+  // colour above white and add a warm glow (see lighting.ts); the lit drum
+  // kit gets a faint warm glow of its own instead.
+  const glowTargets = useRef(new Map<{ value: number }, number>());
   useEffect(() => {
     for (const { spot, meshes } of zones) {
       const on = spot.id === hoveredId;
@@ -252,6 +286,8 @@ function Hotspots({ hoveredId, onHover, onPick }: HotspotsProps) {
           material.emissive.setRGB(on ? 0.16 : 0, on ? 0.1 : 0, on ? 0.04 : 0);
         } else if (material instanceof THREE.MeshBasicMaterial) {
           material.color.setScalar(on ? 1.5 : 1);
+          const glow = material.userData.glow as { value: number } | undefined;
+          if (glow) glowTargets.current.set(glow, on ? 1 : 0);
         }
       }
     }
@@ -260,6 +296,15 @@ function Hotspots({ hoveredId, onHover, onPick }: HotspotsProps) {
       document.body.style.cursor = '';
     };
   }, [zones, hoveredId]);
+
+  // Fade the glow in and out, and make it stronger in the dark where it is needed most
+  useFrame((_, delta) => {
+    const { night, day } = sceneConfig.lighting.hoverGlow;
+    const strength = THREE.MathUtils.lerp(night, day, ease(litUniform.value));
+    for (const [glow, on] of glowTargets.current) {
+      glow.value = approach(glow.value, on * strength, delta * 0.8);
+    }
+  });
 
   return (
     <>
@@ -288,16 +333,49 @@ function Hotspots({ hoveredId, onHover, onPick }: HotspotsProps) {
   );
 }
 
-/** Stand-ins for the room's lamps, plus soft reflections for chrome and cymbals. */
-function Lamps() {
+/**
+ * Stand-ins for the room's lamps, plus soft reflections for chrome and cymbals.
+ *
+ * This also runs the room's lights switch: while Alex sleeps the lamps are
+ * off and only a little moonlight is left; when he wakes they fade back on.
+ * The baked room reads the same number (litUniform) to fade between its two
+ * pictures, so everything dims and brightens together.
+ */
+function Lamps({ awake }: { awake: boolean }) {
   const { kitLamp, bedsideLamp, monitors, moon, fill } = sceneConfig.lights;
+  const { fadeSeconds, night } = sceneConfig.lighting;
+  const kit = useRef<THREE.PointLight>(null);
+  const bedside = useRef<THREE.PointLight>(null);
+  const screens = useRef<THREE.PointLight>(null);
+  const moonlight = useRef<THREE.DirectionalLight>(null);
+  const ambient = useRef<THREE.AmbientLight>(null);
+
+  // Start in the right state, so a visitor who woke Alex earlier does not see the lights fade up again
+  useLayoutEffect(() => {
+    litUniform.value = awake ? 1 : 0;
+    nightGainUniform.value = sceneConfig.lighting.nightGain;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useFrame(({ scene }, delta) => {
+    litUniform.value = approach(litUniform.value, awake ? 1 : 0, delta / fadeSeconds);
+    const k = ease(litUniform.value);
+    const level = (nightShare: number) => THREE.MathUtils.lerp(nightShare, 1, k);
+    if (kit.current) kit.current.intensity = kitLamp.intensity * level(night.kitLamp);
+    if (bedside.current) bedside.current.intensity = bedsideLamp.intensity * level(night.bedsideLamp);
+    if (screens.current) screens.current.intensity = monitors.intensity * level(night.monitors);
+    if (moonlight.current) moonlight.current.intensity = moon.intensity * level(night.moon);
+    if (ambient.current) ambient.current.intensity = fill.intensity * level(night.fill);
+    scene.environmentIntensity = level(night.environment);
+  });
+
   return (
     <>
-      <ambientLight color={fill.color} intensity={fill.intensity} />
-      <pointLight position={kitLamp.position} color={kitLamp.color} intensity={kitLamp.intensity} />
-      <pointLight position={bedsideLamp.position} color={bedsideLamp.color} intensity={bedsideLamp.intensity} />
-      <pointLight position={monitors.position} color={monitors.color} intensity={monitors.intensity} />
-      <directionalLight position={moon.position} color={moon.color} intensity={moon.intensity} />
+      <ambientLight ref={ambient} color={fill.color} intensity={fill.intensity} />
+      <pointLight ref={kit} position={kitLamp.position} color={kitLamp.color} intensity={kitLamp.intensity} />
+      <pointLight ref={bedside} position={bedsideLamp.position} color={bedsideLamp.color} intensity={bedsideLamp.intensity} />
+      <pointLight ref={screens} position={monitors.position} color={monitors.color} intensity={monitors.intensity} />
+      <directionalLight ref={moonlight} position={moon.position} color={moon.color} intensity={moon.intensity} />
       {/* Glowing panels that only show up as reflections: a warm ceiling, the lamp side, the window side */}
       <Environment resolution={128} frames={1}>
         <color attach="background" args={['#0a0a12']} />
@@ -335,7 +413,7 @@ function Scene({ awake, hoveredId, onHover, onPick }: SceneProps) {
         minAzimuthAngle={-0.15}
         maxAzimuthAngle={Math.PI / 2 + 0.15}
       />
-      <Lamps />
+      <Lamps awake={awake} />
       <Suspense fallback={null}>
         <Room awake={awake} />
         <DrumKit />
@@ -345,6 +423,15 @@ function Scene({ awake, hoveredId, onHover, onPick }: SceneProps) {
       </Suspense>
     </>
   );
+}
+
+/** How the game stands when the visitor arrives: fresh, or as they left it. */
+function startingState() {
+  const saved = loadRoomState();
+  if (!saved) return { noise: 0, awake: false };
+  if (saved.awake) return { noise: 1, awake: true };
+  const secondsAway = (Date.now() - saved.savedAt) / 1000;
+  return { noise: Math.max(0, saved.noise - game.calmPerSecond * secondsAway), awake: false };
 }
 
 interface DioramaSceneProps {
@@ -359,24 +446,15 @@ interface DioramaSceneProps {
  * wakes Alex. The meter drains on its own while the room is quiet.
  */
 export default function DioramaScene({ editable, initialSpot }: DioramaSceneProps) {
-  const [noise, setNoise] = useState(0);
-  const [awake, setAwake] = useState(false);
+  // Pick up where the visitor left off: the meter keeps draining while they
+  // read another page, and Alex stays awake (lights on) if they woke him.
+  // Read before the first frame so the room never flashes the wrong mood.
+  const [start] = useState(startingState);
+  const [noise, setNoise] = useState(start.noise);
+  const [awake, setAwake] = useState(start.awake);
   const [muted, setMuted] = useState(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  // Pick up where the visitor left off: the meter keeps draining while they
-  // read another page, and Alex stays awake if they woke him.
-  useEffect(() => {
-    const saved = loadRoomState();
-    if (saved?.awake) {
-      setAwake(true);
-      setNoise(1);
-    } else if (saved) {
-      const secondsAway = (Date.now() - saved.savedAt) / 1000;
-      setNoise(Math.max(0, saved.noise - game.calmPerSecond * secondsAway));
-    }
-  }, []);
 
   // Remember the game whenever the visitor leaves, by link or by closing the tab
   const latest = useRef({ noise, awake });
@@ -452,6 +530,7 @@ export default function DioramaScene({ editable, initialSpot }: DioramaSceneProp
 }
 
 useGLTF.preload(sceneConfig.roomUrl);
+useTexture.preload(Object.values(sceneConfig.roomNightUrls));
 useGLTF.preload(sceneConfig.drumKitUrl, sceneConfig.dracoPath);
 useGLTF.preload(sceneConfig.alexUrl, sceneConfig.dracoPath);
 useGLTF.preload(sceneConfig.duvetUrl, sceneConfig.dracoPath);

@@ -17,6 +17,15 @@ export const sceneConfig = {
   /** Baked room exported by blender/bake_room.py. */
   roomUrl: '/models/room.glb',
 
+  /**
+   * The same two texture sheets as room.glb, but baked with the lights off.
+   * Keyed by the name of the baked material they replace. Made by bake_room.py.
+   */
+  roomNightUrls: {
+    baked_shell: '/models/room_night_shell.webp',
+    baked_props: '/models/room_night_props.webp',
+  },
+
   /** Slimmed drum kit exported by blender/export_kit.py, already in position. */
   drumKitUrl: '/models/drumkit.glb',
 
@@ -61,6 +70,29 @@ export const sceneConfig = {
     monitors: { position: [1.0, 1.1, -1.2] as Vec3, color: '#9fc4ff', intensity: 2 },
     moon: { position: [-4, 3, 0.5] as Vec3, color: '#9db8ff', intensity: 0.6 },
     fill: { color: '#2a2f55', intensity: 0.5 },
+  },
+
+  /**
+   * Lights on while Alex is awake, lights off while he sleeps.
+   *
+   * The room's two moods are baked textures (see roomNightUrls); the drum kit,
+   * Alex and the duvet are lit live, so their lights are faded to match.
+   */
+  lighting: {
+    /** Seconds the lights take to come on or go off. */
+    fadeSeconds: 1.1,
+    /** Brightness of the lights-off textures. 1 is as baked; raise it to lift the dark room. */
+    nightGain: 0.8,
+    /**
+     * How much of each live light is left with the lights off, as a share of
+     * its normal intensity. The lamps and the monitor glow go out completely;
+     * moonlight and a little cool fill stay, so the room is dim but not black.
+     */
+    night: { kitLamp: 0, bedsideLamp: 0, monitors: 0, moon: 1, fill: 1.6, environment: 0.25 },
+    /** How much of the PC's glass panels' tint stays in the dark (they would glow against black). */
+    nightGlass: 0.15,
+    /** Warm glow added to a hovered piece of furniture: strong in the dark, gentle with the lights on. */
+    hoverGlow: { night: 0.055, day: 0.02 },
   },
 
   camera: {

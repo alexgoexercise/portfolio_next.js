@@ -471,12 +471,56 @@ def build_drumkit():
     bpy.ops.import_scene.gltf(filepath=path)
     roots = [o for o in set(bpy.data.objects) - before if o.parent is None]
     radius = 1.16
-    g = group("DrumKit", (X1 - radius - 0.1, Y0 + radius + 0.1, 0.014), rot_z=32)
+    g = group("DrumKit", (X1 - radius - 0.1, Y0 + radius + 0.1, 0.0), rot_z=32)
     for root in roots:
         root.parent = g
         root.scale = (0.1, 0.1, 0.1)
-        root.location = (0.255, -0.16, 0.08)  # centre the kit and sit its feet on the rug
+        root.location = (0.255, -0.16, 0.0)  # centre the kit; its height is set below
+    rest_kit_on_rug(g, roots)
     return g
+
+
+# The rug's rings rise from 0.012 m (outer) to 0.018 m (centre) above the floor
+RUG_TOP = 0.015
+
+# Parts of the kit that touch the ground: stand feet, rubber feet, bass-drum spurs
+FOOT_NAMES = ("foot rubber", "gummi", "lathe")
+
+
+def _is_under(obj, ancestor):
+    while obj is not None:
+        if obj == ancestor:
+            return True
+        obj = obj.parent
+    return False
+
+
+def rest_kit_on_rug(kit, roots):
+    """
+    Lower the kit until its feet touch the rug.
+
+    The Drumstructor model does not stand on one flat level: its stands'
+    feet bottom out anywhere from 7 to 10 cm apart, and none is at zero. So
+    the height is measured from the model instead of guessed. The kit is
+    lowered until nearly all of its feet reach the rug (the 80th percentile,
+    so one stand that happens to sit high does not set the height). The few
+    lower feet end up pressed a little into the rug and floor, out of sight.
+    """
+    bpy.context.view_layer.update()
+    lowest = []
+    for o in bpy.context.scene.objects:
+        if o.type == "MESH" and _is_under(o, kit) and any(k in o.name.lower() for k in FOOT_NAMES):
+            lowest.append(min((o.matrix_world @ v.co).z for v in o.data.vertices))
+    if not lowest:
+        print("Drum kit: found no feet to rest on the rug; leaving its height as imported")
+        return
+    lowest.sort()
+    contact = lowest[round(0.8 * (len(lowest) - 1))]
+    shift = RUG_TOP - contact
+    for root in roots:
+        root.location.z += shift
+    print(f"KIT {len(lowest)} feet now stand between {lowest[0] + shift:+.3f} and {lowest[-1] + shift:+.3f} m "
+          f"(rug top {RUG_TOP:.3f}, floor 0)")
 
 
 # ----------------------------------------------------------------------------
