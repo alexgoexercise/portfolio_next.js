@@ -18,8 +18,6 @@ export interface Hotspot {
   href?: string;
   /** Text on the card's link. */
   cta?: string;
-  /** The same content as a plain page, for when `href` leads somewhere inside the room. */
-  plainHref?: string;
   /** A preset camera view the card can glide to, and the text on its button. */
   view?: { name: ViewName; label: string };
   /** Where the parts live: the baked room, or the drum kit file (the whole kit). */
@@ -36,7 +34,6 @@ export const hotspots: Hotspot[] = [
     label: 'The PC',
     blurb: 'Robots, embedded systems and the things I built on this machine (with Claude).',
     href: '/diorama/projects',
-    plainHref: '/projects',
     cta: 'Stalk what projects Alex has been working on',
     source: 'room',
     parts: ['GamingPC', 'Monitor_Left', 'Monitor_Right', 'Keyboard'],
@@ -48,7 +45,7 @@ export const hotspots: Hotspot[] = [
     label: 'The drum kit',
     blurb: 'Alex did not practise any rudiments today.',
     href: '/projects?music=1',
-    cta: 'Stalk Alex\'s music journey',
+    cta: "Stalk Alex's music journey",
     view: { name: 'drummer', label: 'Sit behind the kit' },
     source: 'drumkit',
     parts: [],
@@ -59,7 +56,7 @@ export const hotspots: Hotspot[] = [
     id: 'about',
     label: 'The shelf',
     blurb: 'If you want to know where I studied, where I have worked and what I know.',
-    href: '/about',
+    href: '/diorama/about',
     cta: 'Stalk Alex\s Resume',
     source: 'room',
     parts: ['Shelf'],
@@ -70,7 +67,7 @@ export const hotspots: Hotspot[] = [
     id: 'contacts',
     label: 'The phone',
     blurb: 'Email, LinkedIn and everywhere else you can reach me.',
-    href: '/contacts',
+    href: '/diorama/contacts',
     cta: 'Get in touch with Alex and follow him on Instagram',
     source: 'room',
     parts: ['Phone'],
@@ -80,7 +77,7 @@ export const hotspots: Hotspot[] = [
   {
     id: 'alex',
     label: 'Alex',
-    blurb: 'Don\'t poke me, Don\'t poke me.',
+    blurb: "Don't poke me, Don't poke me.",
     source: 'room',
     parts: ['Bed'],
     sound: 'poke',

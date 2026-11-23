@@ -19,7 +19,10 @@ export interface RoomProject {
  * src/content/projects.ts. Adding a project there adds it here too; it gets a
  * plain placeholder model until one is added in ProjectProps.tsx.
  */
-export const roomProjects: RoomProject[] = projects.map((project) => ({ slug: projectSlug(project.title), project }));
+export const roomProjects: RoomProject[] = projects.map((project) => ({
+  slug: projectSlug(project.title),
+  project,
+}));
 
 /** The slug to show: the one in the address if it exists, otherwise the first project. */
 export function chosenSlug(fromAddress: string | string[] | undefined) {

@@ -23,9 +23,12 @@ export default function ProjectsPanel() {
 
   const choose = useCallback(
     (next: string) => {
-      void router.replace({ pathname: '/diorama/projects', query: { project: next } }, undefined, { shallow: true, scroll: false });
+      void router.replace({ pathname: '/diorama/projects', query: { project: next } }, undefined, {
+        shallow: true,
+        scroll: false,
+      });
     },
-    [router]
+    [router],
   );
 
   // Left and right arrows move between projects; Escape goes back to the room
@@ -35,7 +38,8 @@ export default function ProjectsPanel() {
       if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === 'ArrowRight') choose(roomProjects[(index + 1) % roomProjects.length].slug);
-      else if (e.key === 'ArrowLeft') choose(roomProjects[(index - 1 + roomProjects.length) % roomProjects.length].slug);
+      else if (e.key === 'ArrowLeft')
+        choose(roomProjects[(index - 1 + roomProjects.length) % roomProjects.length].slug);
       else if (e.key === 'Escape') void router.push('/diorama');
     };
     window.addEventListener('keydown', onKey);
@@ -48,9 +52,6 @@ export default function ProjectsPanel() {
         <div className={styles.bar}>
           <Link href="/diorama" className={styles.back}>
             ← The room
-          </Link>
-          <Link href="/projects" className={styles.plain}>
-            Plain page
           </Link>
         </div>
 

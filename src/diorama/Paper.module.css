@@ -1,0 +1,138 @@
+/* The HTML half of the floating folder. Placement and size are set every frame from the 3D scene (see PaperSheet.tsx),
+   through the custom properties on .rig: --wr/--hr (whole folder), --wp/--hp (paper), --m, --tab, --lip, --d, --clip. */
+
+.container {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.camera {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.rig {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--wr, 0) * 1px);
+  height: calc(var(--hr, 0) * 1px);
+  opacity: 0;
+  pointer-events: none;
+  /* Ink on paper: the panel classes read these colours */
+  --cream: #2b1d12;
+  --cream-dim: #6a5846;
+  --amber: #a8431a;
+  --mustard: #8a5a12;
+  --line: rgba(43, 29, 18, 0.2);
+  --line-strong: rgba(43, 29, 18, 0.4);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: calc(var(--fs, 13.5) * 1px);
+  line-height: 1.45;
+}
+
+/* The sheet: fixed size, never scrolls. It slides down into the folder and is clipped by the front of it. */
+.sheet {
+  position: absolute;
+  box-sizing: border-box;
+  left: calc(var(--m) * 1px);
+  top: calc((var(--tab) + 14) * 1px);
+  width: calc(var(--wp) * 1px);
+  height: calc(var(--hp) * 1px);
+  padding: 20px 24px calc(var(--lip) * 1px + 6px);
+  overflow: hidden;
+  transform: translateY(calc(var(--d) * 1px));
+  clip-path: inset(0 0 calc(var(--clip) * 1px) 0);
+  pointer-events: none;
+}
+
+.tabs {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  right: 8px;
+  height: calc(var(--tab) * 1px);
+  display: flex;
+  gap: 4px;
+}
+
+.tabButton {
+  flex: 1;
+  min-width: 0;
+  padding: 0 2px;
+  background: none;
+  border: none;
+  color: #4a3416;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.tabButton[aria-selected='true'] {
+  color: #20130c;
+  font-weight: 600;
+}
+
+.tabButton:hover {
+  color: #20130c;
+}
+
+/* Controls printed on the front of the folder */
+.front {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--lip) * 1px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 16px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4a3416;
+}
+
+.frontLink,
+.frontButton {
+  padding: 4px 6px;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.frontLink:hover,
+.frontButton:hover:not(:disabled) {
+  color: #20130c;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.frontButton:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

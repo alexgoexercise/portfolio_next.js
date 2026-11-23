@@ -33,6 +33,23 @@ const overview: ViewPreset = {
 };
 
 export const sceneConfig = {
+  /**
+   * The floating sheet of paper on the About page. It slides out of a book on
+   * the shelf, rests in front of the camera, and slides back in when you leave.
+   */
+  paper: {
+    /** The book it comes out of, in the room. */
+    book: [0.62, 1.8, -1.75] as Vec3,
+    /** Pixels per metre in the CSS layer; any value works as long as it is used throughout. */
+    pxPerMetre: 1000,
+    /** Seconds to wait (for the camera to arrive) before sliding out, and how long the slide takes. */
+    delay: 0.9,
+    seconds: 0.85,
+    /** Size on screen, in pixels. */
+    width: 470,
+    maxHeight: 600,
+  },
+
   /** Night sky behind the room. Matches the Blender renders. */
   background: '#0b0f22',
 
@@ -87,9 +104,21 @@ export const sceneConfig = {
    * same glow as the baked room around them. The room itself ignores them.
    */
   lights: {
-    kitLamp: { position: [1.2, 2.35, 0.9] as Vec3, color: '#ffc890', intensity: 14 },
-    bedsideLamp: { position: [-0.88, 0.75, -1.73] as Vec3, color: '#ff9a4d', intensity: 5 },
-    monitors: { position: [1.0, 1.1, -1.2] as Vec3, color: '#9fc4ff', intensity: 2 },
+    kitLamp: {
+      position: [1.2, 2.35, 0.9] as Vec3,
+      color: '#ffc890',
+      intensity: 14,
+    },
+    bedsideLamp: {
+      position: [-0.88, 0.75, -1.73] as Vec3,
+      color: '#ff9a4d',
+      intensity: 5,
+    },
+    monitors: {
+      position: [1.0, 1.1, -1.2] as Vec3,
+      color: '#9fc4ff',
+      intensity: 2,
+    },
     moon: { position: [-4, 3, 0.5] as Vec3, color: '#9db8ff', intensity: 0.6 },
     fill: { color: '#2a2f55', intensity: 0.5 },
   },
@@ -110,7 +139,14 @@ export const sceneConfig = {
      * its normal intensity. The lamps and the monitor glow go out completely;
      * moonlight and a little cool fill stay, so the room is dim but not black.
      */
-    night: { kitLamp: 0, bedsideLamp: 0, monitors: 0, moon: 1, fill: 1.6, environment: 0.25 },
+    night: {
+      kitLamp: 0,
+      bedsideLamp: 0,
+      monitors: 0,
+      moon: 1,
+      fill: 1.6,
+      environment: 0.25,
+    },
     /** How much of the PC's glass panels' tint stays in the dark (they would glow against black). */
     nightGlass: 0.15,
     /** Warm glow added to a hovered piece of furniture: strong in the dark, gentle with the lights on. */
@@ -135,7 +171,11 @@ export const sceneConfig = {
     /** Size of the other models. */
     othersScale: 0.85,
     /** A warm light over the models, switched on while the page is open. */
-    light: { position: [1.0, 2.0, -0.2] as Vec3, color: '#ffe2b8', intensity: 9 },
+    light: {
+      position: [1.0, 2.0, -0.2] as Vec3,
+      color: '#ffe2b8',
+      intensity: 9,
+    },
   },
 
   camera: {
@@ -175,17 +215,49 @@ export const sceneConfig = {
        * From behind the throne, over the drummer's shoulder, looking at the
        * kit. A wider lens than the overview, so the whole kit fits from close up.
        */
-      drummer: { fov: 52, position: [0.2, 1.75, -1.0] as Vec3, target: [1.1, 0.55, 0.7] as Vec3 },
+      drummer: {
+        fov: 52,
+        position: [0.2, 1.75, -1.0] as Vec3,
+        target: [1.1, 0.55, 0.7] as Vec3,
+      },
       /**
        * Facing the desk from the middle of the room, for the projects page.
        * Both the camera and its target sit a little to the right of the desk's
        * centre, which slides the models to the left of the screen and leaves
        * the right side free for the project panel.
        */
-      desk: { fov: 40, position: [1.15, 2.35, 1.45] as Vec3, target: [1.6, 1.0, -1.0] as Vec3,
+      desk: {
+        fov: 40,
+        position: [1.15, 2.35, 1.45] as Vec3,
+        target: [1.6, 1.0, -1.0] as Vec3,
         fitWidth: true,
         // Phones: the panel covers the lower half, so the models are lifted into the upper half
-        tall: { position: [1.05, 2.5, 0.9] as Vec3, target: [1.05, 0.35, -1.15] as Vec3 },
+        tall: {
+          position: [1.05, 2.5, 0.9] as Vec3,
+          target: [1.05, 0.35, -1.15] as Vec3,
+        },
+      },
+      /** The shelf above the desk, for the About page: centred, with the folder floating in front of it. */
+      shelf: {
+        fov: 38,
+        position: [1.08, 1.85, 1.5] as Vec3,
+        target: [1.08, 1.5, -1.8] as Vec3,
+        fitWidth: true,
+        tall: {
+          position: [1.0, 2.0, 0.6] as Vec3,
+          target: [1.08, 1.0, -1.8] as Vec3,
+        },
+      },
+      /** The phone on the nightstand, for the Contacts page. */
+      phone: {
+        fov: 38,
+        position: [-0.35, 1.45, -0.35] as Vec3,
+        target: [-0.25, 0.55, -1.6] as Vec3,
+        fitWidth: true,
+        tall: {
+          position: [-0.55, 1.5, -0.3] as Vec3,
+          target: [-0.6, 0.1, -1.6] as Vec3,
+        },
       },
     },
   },

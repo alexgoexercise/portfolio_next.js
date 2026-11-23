@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useState } from 'react';
 import { useProgress } from '@react-three/drei';
 import type { Hotspot } from './hotspots';
 import type { ViewName } from './sceneConfig';
@@ -41,6 +42,7 @@ export default function Hud({
   minimal = false,
 }: HudProps) {
   const { active, progress } = useProgress();
+  const [viewsOpen, setViewsOpen] = useState(false);
   const percent = Math.round(Math.min(1, noise) * 100);
 
   if (active) {
@@ -81,13 +83,27 @@ export default function Hud({
       </section>
 
       <section className={`${styles.panel} ${styles.views}`} aria-label="Camera">
-        <button type="button" className={styles.viewButton} onClick={() => onView('overview')}>
-          Overview
+        <button
+          type="button"
+          className={styles.viewsToggle}
+          aria-expanded={viewsOpen}
+          aria-controls="camera-views"
+          onClick={() => setViewsOpen((open) => !open)}
+        >
+          <span>Camera</span>
+          <span aria-hidden="true">{viewsOpen ? '−' : '+'}</span>
         </button>
-        <button type="button" className={styles.viewButton} onClick={() => onView('drummer')}>
-          Drummer&apos;s view
-        </button>
-        <p className={styles.viewHint}>Drag to turn · Shift-drag or W A S D to move</p>
+        {viewsOpen && (
+          <div id="camera-views" className={styles.viewsList}>
+            <button type="button" className={styles.viewButton} onClick={() => onView('overview')}>
+              Overview
+            </button>
+            <button type="button" className={styles.viewButton} onClick={() => onView('drummer')}>
+              Drummer&apos;s view
+            </button>
+            <p className={styles.viewHint}>Drag to turn · Shift-drag or W A S D to move</p>
+          </div>
+        )}
       </section>
 
       {awake && (
@@ -111,11 +127,6 @@ export default function Hud({
             {selected.href && (
               <Link href={selected.href} className={styles.cardLink}>
                 {selected.cta ?? 'Open'} →
-              </Link>
-            )}
-            {selected.plainHref && (
-              <Link href={selected.plainHref} className={styles.cardSecondary}>
-                Plain page
               </Link>
             )}
             {selected.view && (

@@ -175,6 +175,32 @@
   max-width: calc(100vw - 32px);
 }
 
+.viewsToggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 4px 6px;
+  background: none;
+  border: none;
+  color: var(--cream);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.viewsToggle:hover {
+  color: var(--amber);
+}
+
+.viewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
 .viewButton {
   padding: 6px 10px;
   background: transparent;

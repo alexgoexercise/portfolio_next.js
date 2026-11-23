@@ -1,13 +1,6 @@
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
-import {
-  Environment,
-  Lightformer,
-  PerspectiveCamera,
-  useAnimations,
-  useGLTF,
-  useTexture,
-} from '@react-three/drei';
+import { Environment, Lightformer, PerspectiveCamera, useAnimations, useGLTF, useTexture } from '@react-three/drei';
 import { Leva, button, levaStore, useControls } from 'leva';
 import * as THREE from 'three';
 import CameraRig, { type ViewRequest } from './CameraRig';
@@ -15,6 +8,7 @@ import Hud from './Hud';
 import ProjectShowcase from './ProjectShowcase';
 import { game, hotspots, type Hotspot } from './hotspots';
 import { approach, ease, litUniform, mixWithNight, nightGainUniform, registerNightMap } from './lighting';
+import PaperSheet from './PaperSheet';
 import { sceneConfig, type ViewName } from './sceneConfig';
 import { loadRoomState, saveRoomState } from './session';
 import { playSound } from './sounds';
@@ -273,9 +267,15 @@ function Hotspots({ enabled, hoveredId, onHover, onPick }: HotspotsProps & { ena
       size.set(
         Math.max(size.x, game.minHotspotSize),
         Math.max(size.y, game.minHotspotSize),
-        Math.max(size.z, game.minHotspotSize)
+        Math.max(size.z, game.minHotspotSize),
       );
-      return { spot, centre: box.getCenter(new THREE.Vector3()), size, meshes, empty: box.isEmpty() };
+      return {
+        spot,
+        centre: box.getCenter(new THREE.Vector3()),
+        size,
+        meshes,
+        empty: box.isEmpty(),
+      };
     });
   }, [roomScene, kit]);
 
@@ -382,22 +382,56 @@ function Lamps({ awake }: { awake: boolean }) {
     <>
       <ambientLight ref={ambient} color={fill.color} intensity={fill.intensity} />
       <pointLight ref={kit} position={kitLamp.position} color={kitLamp.color} intensity={kitLamp.intensity} />
-      <pointLight ref={bedside} position={bedsideLamp.position} color={bedsideLamp.color} intensity={bedsideLamp.intensity} />
+      <pointLight
+        ref={bedside}
+        position={bedsideLamp.position}
+        color={bedsideLamp.color}
+        intensity={bedsideLamp.intensity}
+      />
       <pointLight ref={screens} position={monitors.position} color={monitors.color} intensity={monitors.intensity} />
       <directionalLight ref={moonlight} position={moon.position} color={moon.color} intensity={moon.intensity} />
       {/* Glowing panels that only show up as reflections: a warm ceiling, the lamp side, the window side */}
       <Environment resolution={128} frames={1}>
         <color attach="background" args={['#0a0a12']} />
-        <Lightformer form="rect" intensity={1.6} color="#ffc890" position={[0, 4, 0]} rotation-x={Math.PI / 2} scale={[5, 5, 1]} />
-        <Lightformer form="rect" intensity={1.2} color="#ff9a4d" position={[-4, 1, -3]} rotation-y={Math.PI / 3} scale={[3, 2, 1]} />
-        <Lightformer form="rect" intensity={0.6} color="#9db8ff" position={[4, 2, 4]} rotation-y={-Math.PI * 0.75} scale={[4, 3, 1]} />
+        <Lightformer
+          form="rect"
+          intensity={1.6}
+          color="#ffc890"
+          position={[0, 4, 0]}
+          rotation-x={Math.PI / 2}
+          scale={[5, 5, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={1.2}
+          color="#ff9a4d"
+          position={[-4, 1, -3]}
+          rotation-y={Math.PI / 3}
+          scale={[3, 2, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={0.6}
+          color="#9db8ff"
+          position={[4, 2, 4]}
+          rotation-y={-Math.PI * 0.75}
+          scale={[4, 3, 1]}
+        />
       </Environment>
     </>
   );
 }
 
 /** Which page the room is showing: the bedroom itself, or the projects page. */
-export type RoomMode = 'hub' | 'projects';
+/** The bedroom, or one of the pages that dives into an object in it. */
+export type RoomMode = 'hub' | 'projects' | 'about' | 'contacts';
+
+/** The camera view each page sits at. */
+const MODE_VIEWS: Record<Exclude<RoomMode, 'hub'>, ViewName> = {
+  projects: 'desk',
+  about: 'shelf',
+  contacts: 'phone',
+};
 
 interface SceneProps extends HotspotsProps {
   awake: boolean;
@@ -420,7 +454,7 @@ function Scene({ awake, viewRequest, mode, projectSlug, onPickProject, hoveredId
     <>
       <color attach="background" args={[background]} />
       <PerspectiveCamera makeDefault fov={fov} position={sceneConfig.camera.position} />
-      <CameraRig request={viewRequest} locked={mode === 'projects'} />
+      <CameraRig request={viewRequest} locked={mode !== 'hub'} />
       <Lamps awake={awake} />
       <Suspense fallback={null}>
         <Room awake={awake} />
@@ -429,6 +463,7 @@ function Scene({ awake, viewRequest, mode, projectSlug, onPickProject, hoveredId
         <Duvet awake={awake} />
         <Hotspots enabled={mode === 'hub'} hoveredId={hoveredId} onHover={onHover} onPick={onPick} />
       </Suspense>
+      <PaperSheet open={mode === 'about'} />
       <ProjectShowcase active={mode === 'projects'} selected={projectSlug} onPick={onPickProject} />
     </>
   );
@@ -440,7 +475,10 @@ function startingState() {
   if (!saved) return { noise: 0, awake: false };
   if (saved.awake) return { noise: 1, awake: true };
   const secondsAway = (Date.now() - saved.savedAt) / 1000;
-  return { noise: Math.max(0, saved.noise - game.calmPerSecond * secondsAway), awake: false };
+  return {
+    noise: Math.max(0, saved.noise - game.calmPerSecond * secondsAway),
+    awake: false,
+  };
 }
 
 interface DioramaSceneProps {
@@ -511,7 +549,7 @@ export default function DioramaScene({ editable, initialSpot, mode, projectSlug,
       if (!muted) playSound(spot.sound);
       if (!awake) setNoise((n) => Math.min(1, n + spot.noise));
     },
-    [awake, muted]
+    [awake, muted],
   );
 
   const letSleep = useCallback(() => {
@@ -535,17 +573,26 @@ export default function DioramaScene({ editable, initialSpot, mode, projectSlug,
     shownMode.current = mode;
     setHoveredId(null);
     if (previous === null) {
-      if (mode === 'projects') setViewRequest({ name: 'desk', nonce: 1, instant: true });
+      if (mode !== 'hub') setViewRequest({ name: MODE_VIEWS[mode], nonce: 1, instant: true });
       return;
     }
-    if (mode === 'projects') setSelectedId(null);
-    setViewRequest((last) => ({ name: mode === 'projects' ? 'desk' : 'overview', nonce: (last?.nonce ?? 0) + 1 }));
+    if (mode !== 'hub') setSelectedId(null);
+    setViewRequest((last) => ({
+      name: mode === 'hub' ? 'overview' : MODE_VIEWS[mode],
+      nonce: (last?.nonce ?? 0) + 1,
+    }));
   }, [mode]);
 
   const byId = (id: string | null) => hotspots.find((h) => h.id === id) ?? null;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: sceneConfig.background }}>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: sceneConfig.background,
+      }}
+    >
       <Leva hidden={!editable} collapsed titleBar={{ position: { x: 0, y: 70 } }} />
       {/* "flat" turns off tone mapping: the bake already has the final colours */}
       <Canvas flat dpr={[1, 2]} onPointerMissed={() => setSelectedId(null)}>
@@ -561,7 +608,7 @@ export default function DioramaScene({ editable, initialSpot, mode, projectSlug,
         />
       </Canvas>
       <Hud
-        minimal={mode === 'projects'}
+        minimal={mode !== 'hub'}
         noise={noise}
         awake={awake}
         muted={muted}

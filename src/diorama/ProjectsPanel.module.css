@@ -43,14 +43,7 @@
   color: var(--amber);
 }
 
-.plain {
-  color: var(--cream-dim);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.back:hover,
-.plain:hover {
+.back:hover {
   color: var(--cream);
 }
 
@@ -203,4 +196,106 @@
   .hint {
     display: none;
   }
+}
+
+/* Shared by the About and Contacts panels */
+.entry {
+  margin: 0 0 16px;
+}
+
+.entryTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.entryMeta {
+  margin: 2px 0 6px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--mustard);
+}
+
+.list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.list li {
+  margin-bottom: 6px;
+}
+
+.rows {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.label {
+  min-width: 56px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mustard);
+}
+
+.value {
+  word-break: break-all;
+}
+
+.small {
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  background: transparent;
+  color: var(--cream);
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.small:hover {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.links {
+  display: grid;
+  gap: 8px;
+}
+
+.link {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  color: var(--cream);
+}
+
+.link:hover {
+  border-color: var(--amber);
+}
+
+.linkNote {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--cream-dim);
+  text-align: right;
+}
+
+.qr {
+  display: block;
+  margin: 14px 0 0;
+  border-radius: 3px;
 }

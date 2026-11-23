@@ -45,7 +45,9 @@ function ShowcaseItem({ slug, index, count, active, chosen, hovered, onPick, onH
 
     const targetX = chosen ? center[0] + lift.offset[0] : center[0] + k * spacing * squeeze;
     const targetY =
-      (chosen ? center[1] + lift.offset[1] : center[1]) + Math.sin(t * 0.9 + index) * 0.012 + (1 - rise.current) * riseFrom;
+      (chosen ? center[1] + lift.offset[1] : center[1]) +
+      Math.sin(t * 0.9 + index) * 0.012 +
+      (1 - rise.current) * riseFrom;
     const targetZ = chosen ? center[2] + lift.offset[2] : center[2] - 0.05 * Math.abs(k);
     const size = (chosen ? lift.scale : hovered ? othersScale * 1.1 : othersScale) * rise.current;
 
@@ -67,7 +69,8 @@ function ShowcaseItem({ slug, index, count, active, chosen, hovered, onPick, onH
       g.rotation.y = THREE.MathUtils.euclideanModulo(g.rotation.y + Math.PI, Math.PI * 2) - Math.PI;
       g.rotation.y = damp(g.rotation.y, (spin ? 0.5 : 0) + Math.sin(t * 0.5 + index) * 0.3, 3, dt);
     }
-    if (ring.current) ring.current.emissiveIntensity = damp(ring.current.emissiveIntensity, chosen ? 1.6 : hovered ? 0.8 : 0.25, 6, dt);
+    if (ring.current)
+      ring.current.emissiveIntensity = damp(ring.current.emissiveIntensity, chosen ? 1.6 : hovered ? 0.8 : 0.25, 6, dt);
   });
 
   return (
