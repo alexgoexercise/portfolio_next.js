@@ -32,7 +32,8 @@ export default function RoomButton() {
   }, [pathname]);
 
   const spot = spotFor(pathname, query.music === '1');
-  const href = spot ? `/diorama?at=${spot}` : '/diorama';
+  // From the plain projects page, go straight to the projects page in the room
+  const href = spot === 'projects' ? '/diorama/projects' : spot ? `/diorama?at=${spot}` : '/diorama';
 
   return (
     <Link href={href} className="room-button">

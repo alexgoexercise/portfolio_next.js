@@ -148,6 +148,8 @@
 }
 
 .cardSecondary {
+  display: inline-block;
+  text-decoration: none;
   padding: 7px 12px;
   background: transparent;
   color: var(--cream);

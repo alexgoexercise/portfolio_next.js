@@ -16,6 +16,8 @@ interface HudProps {
   onLetSleep: () => void;
   /** Glide the camera to a preset view. */
   onView: (name: ViewName) => void;
+  /** Show nothing but the loading message: the projects page brings its own panel. */
+  minimal?: boolean;
 }
 
 function statusText(noise: number, awake: boolean) {
@@ -36,6 +38,7 @@ export default function Hud({
   onCloseCard,
   onLetSleep,
   onView,
+  minimal = false,
 }: HudProps) {
   const { active, progress } = useProgress();
   const percent = Math.round(Math.min(1, noise) * 100);
@@ -47,6 +50,8 @@ export default function Hud({
       </div>
     );
   }
+
+  if (minimal) return <div className={styles.hud} />;
 
   return (
     <div className={styles.hud}>
@@ -106,6 +111,11 @@ export default function Hud({
             {selected.href && (
               <Link href={selected.href} className={styles.cardLink}>
                 {selected.cta ?? 'Open'} →
+              </Link>
+            )}
+            {selected.plainHref && (
+              <Link href={selected.plainHref} className={styles.cardSecondary}>
+                Plain page
               </Link>
             )}
             {selected.view && (

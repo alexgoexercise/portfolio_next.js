@@ -10,8 +10,23 @@
 
 export type Vec3 = [number, number, number];
 
+/** A place the camera can glide to. */
+export interface ViewPreset {
+  /** Vertical field of view in degrees. */
+  fov: number;
+  position: Vec3;
+  target: Vec3;
+  /**
+   * Keep the same width in frame on narrow screens, by widening the lens as
+   * the screen gets taller. Without it a tall phone screen crops the sides.
+   */
+  fitWidth?: boolean;
+  /** A different camera for tall screens (phones), where the text sits below the room instead of beside it. */
+  tall?: { position: Vec3; target: Vec3 };
+}
+
 /** The default viewpoint: the same as the "Cam_Hero" camera in room.blend. */
-const overview = {
+const overview: ViewPreset = {
   fov: 28,
   position: [7.6, 6.4, 7.9] as Vec3,
   target: [0, 0.6, -0.1] as Vec3,
@@ -102,6 +117,27 @@ export const sceneConfig = {
     hoverGlow: { night: 0.055, day: 0.02 },
   },
 
+  /**
+   * The projects page: each project is a small model that rises from the
+   * desk and floats in a row in front of the monitors (see ProjectShowcase.tsx).
+   * Positions are in metres. The desk's top is at y = 0.76 and the monitors are
+   * at about x = 0.75 to 1.3, z = -1.67.
+   */
+  showcase: {
+    /** Middle of the row. */
+    center: [1.03, 1.12, -1.15] as Vec3,
+    /** Gap between neighbouring models. */
+    spacing: 0.34,
+    /** How far below its place a model starts, before it rises. */
+    riseFrom: -0.4,
+    /** The chosen project comes forward, grows and turns. */
+    selected: { offset: [0, 0.03, 0.55] as Vec3, scale: 1.8 },
+    /** Size of the other models. */
+    othersScale: 0.85,
+    /** A warm light over the models, switched on while the page is open. */
+    light: { position: [1.0, 2.0, -0.2] as Vec3, color: '#ffe2b8', intensity: 9 },
+  },
+
   camera: {
     fov: overview.fov,
     position: overview.position,
@@ -140,6 +176,17 @@ export const sceneConfig = {
        * kit. A wider lens than the overview, so the whole kit fits from close up.
        */
       drummer: { fov: 52, position: [0.2, 1.75, -1.0] as Vec3, target: [1.1, 0.55, 0.7] as Vec3 },
+      /**
+       * Facing the desk from the middle of the room, for the projects page.
+       * Both the camera and its target sit a little to the right of the desk's
+       * centre, which slides the models to the left of the screen and leaves
+       * the right side free for the project panel.
+       */
+      desk: { fov: 40, position: [1.15, 2.35, 1.45] as Vec3, target: [1.6, 1.0, -1.0] as Vec3,
+        fitWidth: true,
+        // Phones: the panel covers the lower half, so the models are lifted into the upper half
+        tall: { position: [1.05, 2.5, 0.9] as Vec3, target: [1.05, 0.35, -1.15] as Vec3 },
+      },
     },
   },
 };

@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, type ElementRef } from 'react';
-import { OrbitControls } from '@react-three/drei';
-import { useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
-import { sceneConfig, type ViewName } from './sceneConfig';
+import { useCallback, useEffect, useRef, type ElementRef } from "react";
+import { OrbitControls } from "@react-three/drei";
+import { useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
+import { sceneConfig, type ViewName, type ViewPreset } from "./sceneConfig";
 
 /**
  * The camera: what the visitor can do with it, and what keeps them from
@@ -23,6 +23,28 @@ type Controls = ElementRef<typeof OrbitControls>;
 export interface ViewRequest {
   name: ViewName;
   nonce: number;
+  /** Jump straight there instead of gliding, for a page opened directly on a view. */
+  instant?: boolean;
+}
+
+/** The lens to use for a view on a screen of this shape (width divided by height). */
+function lensFor(view: ViewPreset, aspect: number) {
+  const REFERENCE = 1.6; // a typical laptop screen
+  if (!view.fitWidth || aspect >= REFERENCE) return view.fov;
+  // Keep the sideways angle the preset has on a laptop, and let the vertical one grow
+  const halfWidth = Math.atan(
+    Math.tan(THREE.MathUtils.degToRad(view.fov) / 2) * REFERENCE,
+  );
+  return Math.min(
+    80,
+    THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(halfWidth) / aspect)),
+  );
+}
+
+/** Where a view puts the camera on a screen of this shape. */
+function placeFor(view: ViewPreset, aspect: number) {
+  const tall = view.tall && aspect < 1 ? view.tall : view;
+  return { position: tall.position, target: tall.target };
 }
 
 const { limits, views } = sceneConfig.camera;
@@ -33,12 +55,12 @@ const COS_MIN_POLAR = Math.cos(limits.minPolar);
 const MAX_REACH = limits.maxDistance * COS_MIN_POLAR * 0.95;
 
 const MOVE_KEYS = {
-  forward: ['KeyW', 'ArrowUp'],
-  back: ['KeyS', 'ArrowDown'],
-  left: ['KeyA', 'ArrowLeft'],
-  right: ['KeyD', 'ArrowRight'],
-  up: ['KeyE', 'PageUp'],
-  down: ['KeyQ', 'PageDown'],
+  forward: ["KeyW", "ArrowUp"],
+  back: ["KeyS", "ArrowDown"],
+  left: ["KeyA", "ArrowLeft"],
+  right: ["KeyD", "ArrowRight"],
+  up: ["KeyE", "PageUp"],
+  down: ["KeyQ", "PageDown"],
 };
 const ALL_MOVE_KEYS = new Set(Object.values(MOVE_KEYS).flat());
 
@@ -48,6 +70,8 @@ const offset = new THREE.Vector3();
 const forward = new THREE.Vector3();
 const right = new THREE.Vector3();
 const spherical = new THREE.Spherical();
+const goalPosition = new THREE.Vector3();
+const goalTarget = new THREE.Vector3();
 
 /**
  * How high the camera has to be, so that a wall between it and the target
@@ -68,7 +92,10 @@ function heightToSeeOverWalls(camera: THREE.Vector3, target: THREE.Vector3) {
     const along = outside / (outside + inside); // how far along the line the wall is crossed
     const needed = (clearTop - target.y * along) / (1 - along);
     // Eased in over the first stretch outside the wall, so crossing it does not make the camera jump
-    need = Math.max(need, needed * THREE.MathUtils.smoothstep(outside, 0, fadeIn));
+    need = Math.max(
+      need,
+      needed * THREE.MathUtils.smoothstep(outside, 0, fadeIn),
+    );
   };
 
   check(camera.x, target.x, left); // left wall: the room is at larger x
@@ -89,11 +116,15 @@ function constrain(camera: THREE.Camera, controls: Controls) {
 
   // Behind a wall, tilt the camera up (or back it away) until it can see over
   for (let i = 0; i < 4; i++) {
-    const need = Math.min(heightToSeeOverWalls(camera.position, target), target.y + MAX_REACH);
+    const need = Math.min(
+      heightToSeeOverWalls(camera.position, target),
+      target.y + MAX_REACH,
+    );
     if (camera.position.y >= need - 0.002) break;
     spherical.setFromVector3(offset.copy(camera.position).sub(target));
     const rise = need - target.y;
-    if (rise / spherical.radius > COS_MIN_POLAR) spherical.radius = rise / COS_MIN_POLAR;
+    if (rise / spherical.radius > COS_MIN_POLAR)
+      spherical.radius = rise / COS_MIN_POLAR;
     spherical.phi = Math.acos(Math.min(rise / spherical.radius, COS_MIN_POLAR));
     spherical.makeSafe();
     camera.position.copy(target).add(offset.setFromSpherical(spherical));
@@ -102,62 +133,113 @@ function constrain(camera: THREE.Camera, controls: Controls) {
 
 function isTyping(event: KeyboardEvent) {
   const el = event.target as HTMLElement | null;
-  return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
+  return (
+    !!el &&
+    (el.tagName === "INPUT" ||
+      el.tagName === "TEXTAREA" ||
+      el.tagName === "SELECT" ||
+      el.isContentEditable)
+  );
 }
 
 interface Glide {
   fromPosition: THREE.Vector3;
   fromTarget: THREE.Vector3;
   fromFov: number;
-  toPosition: THREE.Vector3;
-  toTarget: THREE.Vector3;
-  toFov: number;
+  view: ViewPreset;
   elapsed: number;
 }
 
-export default function CameraRig({ request }: { request: ViewRequest | null }) {
+export default function CameraRig({
+  request,
+  locked = false,
+}: {
+  request: ViewRequest | null;
+  locked?: boolean;
+}) {
   const controls = useRef<Controls>(null);
+  // While locked (the projects page) the visitor cannot move the camera
+  const lockedRef = useRef(locked);
   const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
   const canvas = useThree((state) => state.gl.domElement);
+  const size = useThree((state) => state.size);
   const held = useRef(new Set<string>());
   const glide = useRef<Glide | null>(null);
+  // The last preset asked for; while locked the camera is held exactly there, whatever the visitor did before
+  const pose = useRef<ViewPreset | null>(null);
 
   const stopGlide = useCallback(() => {
     if (!glide.current) return;
     glide.current = null;
-    if (controls.current) controls.current.enabled = true;
+    if (controls.current) controls.current.enabled = !lockedRef.current;
   }, []);
 
-  // A request for a preset view starts a glide to it
+  // Locking the camera switches the visitor's controls off; unlocking hands them back
+  useEffect(() => {
+    lockedRef.current = locked;
+    if (controls.current && !glide.current) controls.current.enabled = !locked;
+  }, [locked]);
+
+  // A request for a preset view starts a glide to it, or jumps there at once
   useEffect(() => {
     if (!request || !controls.current) return;
-    const view = views[request.name];
+    const view: ViewPreset = views[request.name];
+    const aspect = size.width / size.height;
+    const from = {
+      position: camera.position.clone(),
+      target: controls.current.target.clone(),
+      fov: camera.fov,
+    };
+    // The controls glide to a stop after a drag (damping), and keep that leftover turn while switched off,
+    // then apply it when handed back. Use it up now, before the move, so it cannot twist the camera later.
+    const damped = controls.current.enableDamping;
+    controls.current.enableDamping = false;
+    controls.current.update();
+    controls.current.enableDamping = damped;
+    const place = placeFor(view, aspect);
+    pose.current = view;
+    if (request.instant) {
+      camera.position.set(...place.position);
+      controls.current.target.set(...place.target);
+      camera.lookAt(controls.current.target);
+      camera.fov = lensFor(view, aspect);
+      camera.updateProjectionMatrix();
+      return;
+    }
     glide.current = {
-      fromPosition: camera.position.clone(),
-      fromTarget: controls.current.target.clone(),
-      fromFov: camera.fov,
-      toPosition: new THREE.Vector3(...view.position),
-      toTarget: new THREE.Vector3(...view.target),
-      toFov: view.fov,
+      fromPosition: from.position,
+      fromTarget: from.target,
+      fromFov: from.fov,
+      view,
       elapsed: 0,
     };
     controls.current.enabled = false; // the glide steers; touching the room hands control back
-  }, [request, camera]);
+  }, [request, camera]); // eslint-disable-line react-hooks/exhaustive-deps -- the screen size is only read when a view is asked for
 
   // Grabbing or scrolling the room while it glides hands control back at once
   useEffect(() => {
-    canvas.addEventListener('pointerdown', stopGlide, true);
-    canvas.addEventListener('wheel', stopGlide, true);
+    // (not while locked: there the camera is not the visitor's to take over)
+    const takeOver = () => {
+      if (!lockedRef.current) stopGlide();
+    };
+    canvas.addEventListener("pointerdown", takeOver, true);
+    canvas.addEventListener("wheel", takeOver, true);
     return () => {
-      canvas.removeEventListener('pointerdown', stopGlide, true);
-      canvas.removeEventListener('wheel', stopGlide, true);
+      canvas.removeEventListener("pointerdown", takeOver, true);
+      canvas.removeEventListener("wheel", takeOver, true);
     };
   }, [canvas, stopGlide]);
 
   // Keyboard movement
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (!ALL_MOVE_KEYS.has(e.code) && e.code !== 'ShiftLeft' && e.code !== 'ShiftRight') return;
+      if (lockedRef.current) return;
+      if (
+        !ALL_MOVE_KEYS.has(e.code) &&
+        e.code !== "ShiftLeft" &&
+        e.code !== "ShiftRight"
+      )
+        return;
       if (isTyping(e) || e.metaKey || e.ctrlKey || e.altKey) return;
       held.current.add(e.code);
       if (ALL_MOVE_KEYS.has(e.code)) {
@@ -167,34 +249,49 @@ export default function CameraRig({ request }: { request: ViewRequest | null }) 
     };
     const up = (e: KeyboardEvent) => held.current.delete(e.code);
     const clear = () => held.current.clear();
-    window.addEventListener('keydown', down);
-    window.addEventListener('keyup', up);
-    window.addEventListener('blur', clear);
+    window.addEventListener("keydown", down);
+    window.addEventListener("keyup", up);
+    window.addEventListener("blur", clear);
     return () => {
-      window.removeEventListener('keydown', down);
-      window.removeEventListener('keyup', up);
-      window.removeEventListener('blur', clear);
+      window.removeEventListener("keydown", down);
+      window.removeEventListener("keyup", up);
+      window.removeEventListener("blur", clear);
     };
   }, [stopGlide]);
 
-  useFrame((_, frame) => {
+  useFrame((state, frame) => {
     const c = controls.current;
     if (!c) return;
-    const dt = Math.min(frame, 0.05);
+    // Real elapsed time, so a slow computer glides for the same 1.4 s (long stalls, such as a shader compile, count for little)
+    const dt = Math.min(frame, 0.25);
+    // The lens depends on the shape of the screen, which can differ from when the view was asked for (the canvas starts out a default size)
+    const aspect = state.size.width / state.size.height;
 
     const g = glide.current;
     if (g) {
       g.elapsed += dt;
       const t = Math.min(1, g.elapsed / limits.glideSeconds);
       const eased = t * t * (3 - 2 * t);
-      camera.position.lerpVectors(g.fromPosition, g.toPosition, eased);
-      c.target.lerpVectors(g.fromTarget, g.toTarget, eased);
-      camera.fov = THREE.MathUtils.lerp(g.fromFov, g.toFov, eased);
+      const to = placeFor(g.view, aspect);
+      camera.position.lerpVectors(
+        g.fromPosition,
+        goalPosition.set(...to.position),
+        eased,
+      );
+      c.target.lerpVectors(g.fromTarget, goalTarget.set(...to.target), eased);
+      // The controls only turn the camera while they are enabled, so while gliding it is aimed here
+      camera.lookAt(c.target);
+      camera.fov = THREE.MathUtils.lerp(
+        g.fromFov,
+        lensFor(g.view, aspect),
+        eased,
+      );
       camera.updateProjectionMatrix();
       if (t >= 1) stopGlide();
     } else if (held.current.size) {
       const has = (keys: string[]) => keys.some((k) => held.current.has(k));
-      const ahead = Number(has(MOVE_KEYS.forward)) - Number(has(MOVE_KEYS.back));
+      const ahead =
+        Number(has(MOVE_KEYS.forward)) - Number(has(MOVE_KEYS.back));
       const side = Number(has(MOVE_KEYS.right)) - Number(has(MOVE_KEYS.left));
       const lift = Number(has(MOVE_KEYS.up)) - Number(has(MOVE_KEYS.down));
       if (ahead || side || lift) {
@@ -203,13 +300,34 @@ export default function CameraRig({ request }: { request: ViewRequest | null }) 
         if (forward.lengthSq() < 1e-6) forward.set(0, 0, -1);
         forward.normalize();
         right.set(-forward.z, 0, forward.x);
-        const fast = held.current.has('ShiftLeft') || held.current.has('ShiftRight') ? 2 : 1;
+        const fast =
+          held.current.has("ShiftLeft") || held.current.has("ShiftRight")
+            ? 2
+            : 1;
         const step = limits.keyboardSpeed * fast * dt;
-        delta.set(0, 0, 0).addScaledVector(forward, ahead * step).addScaledVector(right, side * step);
+        delta
+          .set(0, 0, 0)
+          .addScaledVector(forward, ahead * step)
+          .addScaledVector(right, side * step);
         delta.y = lift * step * 0.6;
         c.target.add(delta);
         camera.position.add(delta);
       }
+    }
+
+    if (lockedRef.current && !g && pose.current) {
+      // Locked (projects page): sit at the preset's exact angle so every model is in frame
+      const view = pose.current;
+      const place = placeFor(view, aspect);
+      const fov = lensFor(view, aspect);
+      camera.position.set(...place.position);
+      c.target.set(...place.target);
+      camera.lookAt(c.target);
+      if (camera.fov !== fov) {
+        camera.fov = fov;
+        camera.updateProjectionMatrix();
+      }
+      return;
     }
 
     constrain(camera, c);

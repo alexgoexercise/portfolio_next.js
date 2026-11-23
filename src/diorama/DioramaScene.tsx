@@ -12,6 +12,7 @@ import { Leva, button, levaStore, useControls } from 'leva';
 import * as THREE from 'three';
 import CameraRig, { type ViewRequest } from './CameraRig';
 import Hud from './Hud';
+import ProjectShowcase from './ProjectShowcase';
 import { game, hotspots, type Hotspot } from './hotspots';
 import { approach, ease, litUniform, mixWithNight, nightGainUniform, registerNightMap } from './lighting';
 import { sceneConfig, type ViewName } from './sceneConfig';
@@ -241,7 +242,7 @@ interface HotspotsProps {
  * parts: testing the pointer against a handful of boxes is far cheaper than
  * against every triangle of the drum kit. Hovering brightens the real parts.
  */
-function Hotspots({ hoveredId, onHover, onPick }: HotspotsProps) {
+function Hotspots({ enabled, hoveredId, onHover, onPick }: HotspotsProps & { enabled: boolean }) {
   const { scene: roomScene } = useGLTF(sceneConfig.roomUrl);
   const { scene: kit } = useGLTF(sceneConfig.drumKitUrl, sceneConfig.dracoPath);
 
@@ -310,6 +311,9 @@ function Hotspots({ hoveredId, onHover, onPick }: HotspotsProps) {
       glow.value = approach(glow.value, on * strength, delta * 0.8);
     }
   });
+
+  // On the projects page the room's hotspots are switched off: the models are what can be clicked there
+  if (!enabled) return null;
 
   return (
     <>
@@ -392,13 +396,20 @@ function Lamps({ awake }: { awake: boolean }) {
   );
 }
 
+/** Which page the room is showing: the bedroom itself, or the projects page. */
+export type RoomMode = 'hub' | 'projects';
+
 interface SceneProps extends HotspotsProps {
   awake: boolean;
   /** Asks the camera to glide to a preset view. */
   viewRequest: ViewRequest | null;
+  mode: RoomMode;
+  /** The project whose model is at the front, on the projects page. */
+  projectSlug: string;
+  onPickProject: (slug: string) => void;
 }
 
-function Scene({ awake, viewRequest, hoveredId, onHover, onPick }: SceneProps) {
+function Scene({ awake, viewRequest, mode, projectSlug, onPickProject, hoveredId, onHover, onPick }: SceneProps) {
   const { fov, background } = useControls('View', {
     fov: { value: sceneConfig.camera.fov, min: 10, max: 60, step: 1 },
     background: sceneConfig.background,
@@ -409,15 +420,16 @@ function Scene({ awake, viewRequest, hoveredId, onHover, onPick }: SceneProps) {
     <>
       <color attach="background" args={[background]} />
       <PerspectiveCamera makeDefault fov={fov} position={sceneConfig.camera.position} />
-      <CameraRig request={viewRequest} />
+      <CameraRig request={viewRequest} locked={mode === 'projects'} />
       <Lamps awake={awake} />
       <Suspense fallback={null}>
         <Room awake={awake} />
         <DrumKit />
         <Alex awake={awake} />
         <Duvet awake={awake} />
-        <Hotspots hoveredId={hoveredId} onHover={onHover} onPick={onPick} />
+        <Hotspots enabled={mode === 'hub'} hoveredId={hoveredId} onHover={onHover} onPick={onPick} />
       </Suspense>
+      <ProjectShowcase active={mode === 'projects'} selected={projectSlug} onPick={onPickProject} />
     </>
   );
 }
@@ -436,13 +448,18 @@ interface DioramaSceneProps {
   editable: boolean;
   /** Hotspot to open with its card showing, when arriving from that section's page. */
   initialSpot?: string;
+  /** The bedroom, or the projects page (the camera at the desk, with the project models out). */
+  mode: RoomMode;
+  /** On the projects page, the project whose model is at the front. */
+  projectSlug: string;
+  onPickProject: (slug: string) => void;
 }
 
 /**
  * The game: clicking things makes noise, noise fills the meter, a full meter
  * wakes Alex. The meter drains on its own while the room is quiet.
  */
-export default function DioramaScene({ editable, initialSpot }: DioramaSceneProps) {
+export default function DioramaScene({ editable, initialSpot, mode, projectSlug, onPickProject }: DioramaSceneProps) {
   // Pick up where the visitor left off: the meter keeps draining while they
   // read another page, and Alex stays awake (lights on) if they woke him.
   // Read before the first frame so the room never flashes the wrong mood.
@@ -509,6 +526,22 @@ export default function DioramaScene({ editable, initialSpot }: DioramaSceneProp
     setViewRequest((previous) => ({ name, nonce: (previous?.nonce ?? 0) + 1 }));
   }, []);
 
+  // The page decides the view. Opening the projects page glides to the desk, and leaving it glides
+  // back; a page opened directly on the desk starts there instead of gliding.
+  const shownMode = useRef<RoomMode | null>(null);
+  useEffect(() => {
+    const previous = shownMode.current;
+    if (previous === mode) return;
+    shownMode.current = mode;
+    setHoveredId(null);
+    if (previous === null) {
+      if (mode === 'projects') setViewRequest({ name: 'desk', nonce: 1, instant: true });
+      return;
+    }
+    if (mode === 'projects') setSelectedId(null);
+    setViewRequest((last) => ({ name: mode === 'projects' ? 'desk' : 'overview', nonce: (last?.nonce ?? 0) + 1 }));
+  }, [mode]);
+
   const byId = (id: string | null) => hotspots.find((h) => h.id === id) ?? null;
 
   return (
@@ -516,9 +549,19 @@ export default function DioramaScene({ editable, initialSpot }: DioramaSceneProp
       <Leva hidden={!editable} collapsed titleBar={{ position: { x: 0, y: 70 } }} />
       {/* "flat" turns off tone mapping: the bake already has the final colours */}
       <Canvas flat dpr={[1, 2]} onPointerMissed={() => setSelectedId(null)}>
-        <Scene awake={awake} viewRequest={viewRequest} hoveredId={hoveredId} onHover={setHoveredId} onPick={pick} />
+        <Scene
+          awake={awake}
+          viewRequest={viewRequest}
+          mode={mode}
+          projectSlug={projectSlug}
+          onPickProject={onPickProject}
+          hoveredId={hoveredId}
+          onHover={setHoveredId}
+          onPick={pick}
+        />
       </Canvas>
       <Hud
+        minimal={mode === 'projects'}
         noise={noise}
         awake={awake}
         muted={muted}

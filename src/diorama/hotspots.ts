@@ -18,6 +18,8 @@ export interface Hotspot {
   href?: string;
   /** Text on the card's link. */
   cta?: string;
+  /** The same content as a plain page, for when `href` leads somewhere inside the room. */
+  plainHref?: string;
   /** A preset camera view the card can glide to, and the text on its button. */
   view?: { name: ViewName; label: string };
   /** Where the parts live: the baked room, or the drum kit file (the whole kit). */
@@ -33,7 +35,8 @@ export const hotspots: Hotspot[] = [
     id: 'projects',
     label: 'The PC',
     blurb: 'Robots, embedded systems and the things I built on this machine (with Claude).',
-    href: '/projects',
+    href: '/diorama/projects',
+    plainHref: '/projects',
     cta: 'Stalk what projects Alex has been working on',
     source: 'room',
     parts: ['GamingPC', 'Monitor_Left', 'Monitor_Right', 'Keyboard'],
