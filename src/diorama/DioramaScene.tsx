@@ -9,6 +9,7 @@ import ProjectShowcase from './ProjectShowcase';
 import { game, hotspots, type Hotspot } from './hotspots';
 import { approach, ease, litUniform, mixWithNight, nightGainUniform, registerNightMap } from './lighting';
 import PaperSheet from './PaperSheet';
+import PhoneSheet from './PhoneSheet';
 import { sceneConfig, type ViewName } from './sceneConfig';
 import { loadRoomState, saveRoomState } from './session';
 import { playSound } from './sounds';
@@ -464,6 +465,7 @@ function Scene({ awake, viewRequest, mode, projectSlug, onPickProject, hoveredId
         <Hotspots enabled={mode === 'hub'} hoveredId={hoveredId} onHover={onHover} onPick={onPick} />
       </Suspense>
       <PaperSheet open={mode === 'about'} />
+      <PhoneSheet open={mode === 'contacts'} />
       <ProjectShowcase active={mode === 'projects'} selected={projectSlug} onPick={onPickProject} />
     </>
   );

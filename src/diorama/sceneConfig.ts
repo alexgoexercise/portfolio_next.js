@@ -40,6 +40,8 @@ export const sceneConfig = {
   paper: {
     /** The book it comes out of, in the room. */
     book: [0.62, 1.8, -1.75] as Vec3,
+    /** The phone on the nightstand, where the floating phone starts and ends. */
+    phone: { position: [-0.65, 0.56, -1.58] as Vec3 },
     /** Pixels per metre in the CSS layer; any value works as long as it is used throughout. */
     pxPerMetre: 1000,
     /** Seconds to wait (for the camera to arrive) before sliding out, and how long the slide takes. */

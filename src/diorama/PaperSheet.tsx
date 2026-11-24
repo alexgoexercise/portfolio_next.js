@@ -1,22 +1,13 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { cameraCss, objectCss } from './cssMatrix';
 import { paperDom } from './paperDom';
 import { sceneConfig } from './sceneConfig';
 
 const { book, pxPerMetre: K, delay, seconds, width: PAPER_W, maxHeight: PAPER_MAX_H } = sceneConfig.paper;
 
 const ease = (t: number) => t * t * (3 - 2 * t);
-
-/** CSS 3D matrix strings, the same maths three.js's CSS3DRenderer uses. */
-function cameraCss(m: THREE.Matrix4) {
-  const e = m.elements;
-  return `matrix3d(${e[0]},${-e[1]},${e[2]},${e[3]},${e[4]},${-e[5]},${e[6]},${e[7]},${e[8]},${-e[9]},${e[10]},${e[11]},${e[12] * K},${-e[13] * K},${e[14] * K},${e[15]})`;
-}
-function objectCss(m: THREE.Matrix4) {
-  const e = m.elements;
-  return `translate(-50%,-50%) matrix3d(${e[0]},${e[1]},${e[2]},${e[3]},${-e[4]},${-e[5]},${-e[6]},${-e[7]},${e[8]},${e[9]},${e[10]},${e[11]},${e[12] * K},${e[13] * K},${e[14] * K},${e[15]})`;
-}
 
 // Layout of the folder, in CSS pixels (1 px is 1/K metres in the scene)
 const MARGIN = 14; // folder edge to paper edge, left and right
