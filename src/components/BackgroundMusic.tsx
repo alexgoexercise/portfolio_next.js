@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
+import { useT } from '@/i18n';
 
 const SRC = '/music/ambient-nu-pogodi.mp3';
 /** The file is already mixed quiet and washed in reverb; this is the ceiling for the element. */
@@ -7,13 +8,15 @@ const LEVEL = 1;
 const FADE_MS = 1600;
 
 /**
- * A distant, hazy song that plays under the whole site, except on the music page,
- * where each band has its own song. It fades in and out as you move around, starts on
+ * A distant, hazy song that plays under the 3D room only (not the landing page, the plain site, or the
+ * music page, where each band has its own song). It fades in and out as you move around, starts on
  * the first tap or key press when the browser blocks autoplay, and can be muted.
  */
 export default function BackgroundMusic() {
   const { pathname } = useRouter();
-  const quiet = pathname === '/diorama/music';
+  const t = useT();
+  // Only the 3D room has it; the landing page, the plain site and the music page (its own songs) stay silent
+  const quiet = !pathname.startsWith('/diorama') || pathname === '/diorama/music';
   const audio = useRef<HTMLAudioElement | null>(null);
   const fade = useRef<number | null>(null);
   const want = useRef(false);
@@ -27,8 +30,9 @@ export default function BackgroundMusic() {
     const from = el.volume;
     const start = performance.now();
     const tick = (now: number) => {
-      const k = Math.min(1, (now - start) / FADE_MS);
-      el.volume = from + (target - from) * k;
+      // rAF timestamps can be a hair earlier than performance.now(), so clamp both ends
+      const k = Math.max(0, Math.min(1, (now - start) / FADE_MS));
+      el.volume = Math.max(0, Math.min(1, from + (target - from) * k));
       if (k < 1) fade.current = requestAnimationFrame(tick);
       else if (target === 0) el.pause();
     };
@@ -80,8 +84,8 @@ export default function BackgroundMusic() {
     <button
       type="button"
       className="bg-music"
-      aria-label={muted ? 'Turn the background music on' : 'Turn the background music off'}
-      title={muted ? 'Music on' : 'Music off'}
+      aria-label={muted ? t('Turn the background music on', '打开背景音乐') : t('Turn the background music off', '关闭背景音乐')}
+      title={muted ? t('Music on', '打开音乐') : t('Music off', '关闭音乐')}
       onClick={() => {
         const next = !mutedRef.current;
         mutedRef.current = next;
@@ -91,8 +95,8 @@ export default function BackgroundMusic() {
         } catch {}
       }}
     >
-      <span>Music</span>
-      <span aria-hidden="true">{muted ? 'off' : 'on'}</span>
+      <span>{t('Music', '音乐')}</span>
+      <span aria-hidden="true">{muted ? t('off', '关') : t('on', '开')}</span>
     </button>
   );
 }

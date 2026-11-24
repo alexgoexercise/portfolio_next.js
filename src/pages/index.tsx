@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react';
+import { useT } from '@/i18n';
+import LangSwitch from '@/components/LangSwitch';
 
 /** A slowly twinkling night sky, drawn on a canvas so it costs almost nothing. */
 function Stars() {
@@ -62,6 +64,7 @@ function Stars() {
  */
 export default function Landing() {
   const router = useRouter();
+  const t = useT();
   const root = useRef<HTMLElement>(null);
   const [leaving, setLeaving] = useState<'room' | 'plain' | null>(null);
 
@@ -92,33 +95,36 @@ export default function Landing() {
   return (
     <main className="landing" ref={root} onPointerMove={onMove} data-leaving={leaving ?? undefined}>
       <Stars />
+      <LangSwitch className="landing-lang" />
       <div className="landing-sun" aria-hidden="true" />
       <div className="landing-inner">
         <div className="landing-copy">
-          <p className="landing-eyebrow">Zhao Lixiuqi · 赵李修齐 · Singapore</p>
+          <p className="landing-eyebrow">{t('Zhao Lixiuqi · 赵李修齐 · Singapore', '赵李修齐 · Zhao Lixiuqi · 新加坡')}</p>
           <h1 className="landing-title">alexgo<br />sleep</h1>
           <div className="landing-stripes" aria-hidden="true" />
           <p className="landing-lede">
-            Hi, I&apos;m Alex: computer engineer, robot builder and drummer. This is where I keep my work. Choose how you
-            want to meet it.
+            {t(
+              "Hi, I'm Alex: computer engineer, robot builder and drummer. This is where I keep my work. Choose how you want to meet it.",
+              '嗨，我是 Alex：计算机工程师、机器人爱好者，也是个鼓手。我的作品都放在这儿了，挑一种你喜欢的方式来认识我吧。',
+            )}
           </p>
           <div className="landing-doors">
             <Link href="/diorama" className="door door-room" onClick={go('room')}>
               <span className="door-lamp" aria-hidden="true" />
-              Enter the room
+              {t('Enter the room', '进入房间')}
             </Link>
             <Link href="/home" className="door door-plain" onClick={go('plain')}>
-              Read the plain site →
+              {t('Read the plain site →', '看简洁版网站 →')}
             </Link>
           </div>
-          <p className="landing-hint">The room is a 3D bedroom. Try not to wake Alex up.</p>
+          <p className="landing-hint">{t('The room is a 3D bedroom. Try not to wake Alex up.', '房间是个 3D 卧室，小心别把 Alex 吵醒。')}</p>
         </div>
 
-        <Link href="/diorama" className="landing-room" onClick={go('room')} aria-label="Enter the room">
+        <Link href="/diorama" className="landing-room" onClick={go('room')} aria-label={t('Enter the room', '进入房间')}>
           <div className="landing-room-tilt">
             <Image
               src="/room-preview.jpg"
-              alt="A small bedroom at night with a drum kit, a desk and a sleeping Alex"
+              alt={t('A small bedroom at night with a drum kit, a desk and a sleeping Alex', '夜晚的小卧室，里面有一套架子鼓、一张书桌，和一个正在睡觉的 Alex')}
               width={1400}
               height={1050}
               priority
@@ -131,7 +137,7 @@ export default function Landing() {
           </div>
         </Link>
       </div>
-      <p className="landing-foot">Made by Alex, who should have been asleep hours ago.</p>
+      <p className="landing-foot">{t('Made by Alex, who should have been asleep hours ago.', 'Alex 做的——他几个小时前就该睡了。')}</p>
     </main>
   );
 }

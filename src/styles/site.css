@@ -1259,3 +1259,30 @@ h3 {
     bottom: 12px;
   }
 }
+
+/* EN | 中文 sits beside Room | Plain */
+.nav-tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+button.mode-option {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.landing-lang {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 20;
+}
+
+@media (max-width: 720px) {
+  .nav-tools {
+    gap: 5px;
+  }
+}

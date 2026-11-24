@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
+import { useLang, useT } from '@/i18n';
+import { localProject } from '@/i18n/content';
 import { chosenSlug, roomProjects } from './projectsView';
 import styles from './ProjectsPanel.module.css';
 
@@ -14,7 +16,9 @@ export default function ProjectsPanel() {
   const router = useRouter();
   const slug = chosenSlug(router.query.project);
   const index = roomProjects.findIndex((p) => p.slug === slug);
-  const { project } = roomProjects[index];
+  const { lang } = useLang();
+  const t = useT();
+  const project = localProject(roomProjects[index].project, lang);
   const paragraphs = Array.isArray(project.description) ? project.description : [project.description];
 
   // Which of the project's pictures is showing; back to the first when the project changes
@@ -48,19 +52,19 @@ export default function ProjectsPanel() {
 
   return (
     <div className={styles.layer}>
-      <aside className={styles.panel} aria-label="Projects">
+      <aside className={styles.panel} aria-label={t('Projects', '项目')}>
         <div className={styles.bar}>
           <Link href="/diorama" className={styles.back}>
-            ← The room
+            {t('← The room', '← 返回房间')}
           </Link>
         </div>
 
         <p className={styles.count}>
-          Project {index + 1} of {roomProjects.length}
+          {t(`Project ${index + 1} of ${roomProjects.length}`, `第 ${index + 1} 个项目，共 ${roomProjects.length} 个`)}
         </p>
         <h1 className={styles.title}>{project.title}</h1>
 
-        <div className={styles.tabs} role="tablist" aria-label="Choose a project">
+        <div className={styles.tabs} role="tablist" aria-label={t('Choose a project', '选择项目')}>
           {roomProjects.map((p) => (
             <button
               key={p.slug}
@@ -91,7 +95,7 @@ export default function ProjectsPanel() {
 
         {project.url && (
           <a href={project.url} target="_blank" rel="noopener noreferrer" className={styles.open}>
-            {project.clickNotice ?? 'Open'} ↗
+            {project.clickNotice ?? t('Open', '打开')} ↗
           </a>
         )}
 
@@ -101,7 +105,7 @@ export default function ProjectsPanel() {
               <Image
                 key={`${slug}-${picture}`}
                 src={project.images[picture]}
-                alt={`${project.title}, picture ${picture + 1} of ${project.images.length}`}
+                alt={t(`${project.title}, picture ${picture + 1} of ${project.images.length}`, `${project.title}，第 ${picture + 1} 张图，共 ${project.images.length} 张`)}
                 fill
                 sizes="(max-width: 760px) 100vw, 430px"
                 className={styles.shotImage}
@@ -114,7 +118,7 @@ export default function ProjectsPanel() {
                     key={src}
                     type="button"
                     className={styles.thumb}
-                    aria-label={`Show picture ${i + 1}`}
+                    aria-label={t(`Show picture ${i + 1}`, `查看第 ${i + 1} 张图`)}
                     aria-current={i === picture}
                     onClick={() => setShown({ slug, picture: i })}
                   >
@@ -126,7 +130,7 @@ export default function ProjectsPanel() {
           </div>
         )}
 
-        <p className={styles.hint}>← → to switch project · Esc for the room</p>
+        <p className={styles.hint}>{t('← → to switch project · Esc for the room', '← → 切换项目 · Esc 返回房间')}</p>
       </aside>
     </div>
   );

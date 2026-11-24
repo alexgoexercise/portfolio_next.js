@@ -3,11 +3,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import { email, phone, socials } from '../content/contact';
+import { useLang, useT } from '@/i18n';
+import { localSocialNote } from '@/i18n/content';
 import styles from './Phone.module.css';
 
 /** The phone's screen: the ways to reach Alex, laid out like a phone's home screen. */
 export default function ContactsPanel() {
   const router = useRouter();
+  const { lang } = useLang();
+  const t = useT();
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const content = useRef<HTMLDivElement>(null);
@@ -89,26 +93,26 @@ export default function ContactsPanel() {
         {showQr ? (
           <div className={styles.qrView}>
             <button type="button" className={styles.backButton} onClick={() => setShowQr(false)}>
-              ‹ Back
+              {t('‹ Back', '‹ 返回')}
             </button>
             <h1 className={styles.title}>微信 WeChat</h1>
-            <Image src="/wechatQRcode.jpg" alt="WeChat QR code" width={240} height={240} className={styles.qr} />
-            <p className={styles.appNote}>Scan to add me</p>
+            <Image src="/wechatQRcode.jpg" alt={t('WeChat QR code', '微信二维码')} width={240} height={240} className={styles.qr} />
+            <p className={styles.appNote}>{t('Scan to add me', '扫码加我')}</p>
           </div>
         ) : (
           <>
-            <p className={styles.kicker}>1 new notification</p>
-            <h1 className={styles.title}>Let&apos;s connect!</h1>
+            <p className={styles.kicker}>{t('1 new notification', '1 条新通知')}</p>
+            <h1 className={styles.title}>{t("Let's connect!", '来聊聊吧！')}</h1>
 
             <div className={styles.card}>
-              <span className={styles.label}>Email</span>
+              <span className={styles.label}>{t('Email', '邮箱')}</span>
               <span className={styles.value}>{email}</span>
               <button type="button" className={styles.small} onClick={copyEmail}>
-                {copied ? 'Copied' : 'Copy'}
+                {copied ? t('Copied', '已复制') : t('Copy', '复制')}
               </button>
             </div>
             <div className={styles.card}>
-              <span className={styles.label}>Phone</span>
+              <span className={styles.label}>{t('Phone', '电话')}</span>
               <span className={styles.value}>{phone}</span>
             </div>
 
@@ -122,21 +126,21 @@ export default function ContactsPanel() {
                 style={{ textDecoration: 'none' }}
               >
                 <span className={styles.appName}>{link.name} ↗</span>
-                <span className={styles.appNote}>{link.note}</span>
+                <span className={styles.appNote}>{localSocialNote(link.name, link.note, lang)}</span>
               </a>
             ))}
             <button type="button" className={styles.app} onClick={() => setShowQr(true)}>
               <span className={styles.appName}>微信 WeChat</span>
-              <span className={styles.appNote}>Scan to add me</span>
+              <span className={styles.appNote}>{t('Scan to add me', '扫码加我')}</span>
             </button>
           </>
         )}
       </div>
 
       <div className={styles.home}>
-        <Link href="/diorama" className={styles.homeLabel} aria-label="Back to the room">
+        <Link href="/diorama" className={styles.homeLabel} aria-label={t('Back to the room', '回到房间')}>
           <span className={styles.homeBar} />
-          <span style={{ display: 'block', marginTop: 6 }}>← The room</span>
+          <span style={{ display: 'block', marginTop: 6 }}>{t('← The room', '← 返回房间')}</span>
         </Link>
       </div>
     </div>

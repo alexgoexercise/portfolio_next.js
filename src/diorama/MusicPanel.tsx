@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useLang, useT } from '@/i18n';
+import { localBand, localShort } from '@/i18n/content';
 import { chosenBand, journeyBands } from './musicView';
 import { musicPlayer } from './musicPlayer';
 import base from './ProjectsPanel.module.css';
@@ -17,12 +19,17 @@ export default function MusicPanel() {
   const router = useRouter();
   const id = chosenBand(router.query.band);
   const index = journeyBands.findIndex((b) => b.id === id);
-  const { band, short, track } = journeyBands[index];
+  const { lang } = useLang();
+  const t = useT();
+  const { band: original, short: shortEn, track } = journeyBands[index];
+  const band = localBand(original, lang);
+  const short = localShort(id, shortEn, lang);
   const [open, setOpen] = useState(false);
   const [spinning, setSpinning] = useState(false);
   const [time, setTime] = useState({ at: 0, length: 0 });
   const audio = useRef<HTMLAudioElement | null>(null);
   const stepRef = useRef<(by: number) => void>(() => {});
+  const swipe = useRef(0);
 
   // One audio element for the page: it follows the band, and the record spins only while it plays
   useEffect(() => {
@@ -100,19 +107,55 @@ export default function MusicPanel() {
 
   return (
     <div className={base.layer}>
-      <aside className={`${base.panel} ${styles.panel}`} aria-label="Music journey" data-open={open}>
+      <aside className={`${base.panel} ${styles.panel}`} aria-label={t('Music journey', '音乐之旅')} data-open={open}>
         <div className={base.bar}>
           <Link href="/diorama" className={base.back}>
-            ← The room
+            {t('← The room', '← 返回房间')}
           </Link>
           <span>
             {index + 1} / {journeyBands.length}
           </span>
         </div>
 
-        <div className={open ? styles.mini : styles.player}>
+        <div
+          className={styles.carousel}
+          role="tablist"
+          aria-label={t('Choose a band', '选择乐队')}
+          onTouchStart={(e) => {
+            swipe.current = e.touches[0].clientX;
+          }}
+          onTouchEnd={(e) => {
+            const dx = e.changedTouches[0].clientX - swipe.current;
+            if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
+          }}
+        >
+          {journeyBands.map((b, i) => {
+            // Shortest way round the loop, so the chosen cover is always in the middle and both sides mirror each other
+            const n = journeyBands.length;
+            let d = (i - index + n) % n;
+            if (d > n / 2) d -= n;
+            return (
+              <button
+                key={b.id}
+                type="button"
+                role="tab"
+                aria-selected={d === 0}
+                aria-label={b.short}
+                tabIndex={d === 0 ? 0 : -1}
+                className={styles.slide}
+                data-d={Math.abs(d) > 2 ? 'far' : d}
+                style={{ '--d': d } as CSSProperties}
+                onClick={() => choose(b.id)}
+              >
+                <Image src={b.band.image} alt="" fill sizes="260px" style={{ objectFit: 'cover' }} />
+              </button>
+            );
+          })}
+        </div>
+
+        <div className={styles.player}>
           <div className={styles.head}>
-            <h1 className={open ? styles.miniTitle : styles.title}>{band.name}</h1>
+            <h1 className={styles.title}>{band.name}</h1>
             <p className={styles.period}>
               {band.period} · {band.tags.join(' · ')}
             </p>
@@ -128,7 +171,7 @@ export default function MusicPanel() {
             min={0}
             max={Math.max(1, Math.floor(time.length))}
             value={Math.floor(time.at)}
-            aria-label="Seek"
+            aria-label={t('Seek', '拖动进度')}
             onChange={(e) => {
               if (audio.current) audio.current.currentTime = Number(e.target.value);
             }}
@@ -139,41 +182,24 @@ export default function MusicPanel() {
           </div>
           </div>
           <div className={styles.controls}>
-            <button type="button" onClick={() => step(-1)} aria-label="Previous band">
+            <button type="button" onClick={() => step(-1)} aria-label={t('Previous band', '上一个乐队')}>
               ⏮
             </button>
             <button
               type="button"
               className={styles.play}
               onClick={toggle}
-              aria-label={spinning ? 'Pause' : 'Play'}
+              aria-label={spinning ? t('Pause', '暂停') : t('Play', '播放')}
             >
               {spinning ? '⏸' : '▶'}
             </button>
-            <button type="button" onClick={() => step(1)} aria-label="Next band">
+            <button type="button" onClick={() => step(1)} aria-label={t('Next band', '下一个乐队')}>
               ⏭
             </button>
           </div>
           <button type="button" className={styles.expand} onClick={() => setOpen((o) => !o)}>
-            {open ? 'Close the story ⌃' : 'Open the full story ⌄'}
+            {open ? t('Close the story ⌃', '收起故事 ⌃') : t('Open the full story ⌄', '展开完整故事 ⌄')}
           </button>
-        </div>
-
-        <div className={styles.shelf} role="tablist" aria-label="Choose a band">
-          {journeyBands.map((b) => (
-            <button
-              key={b.id}
-              type="button"
-              role="tab"
-              aria-selected={b.id === id}
-              aria-label={b.short}
-              className={styles.cover}
-              onClick={() => choose(b.id)}
-            >
-              <Image src={b.band.image} alt="" fill sizes="64px" style={{ objectFit: 'cover' }} />
-              <span>{b.short}</span>
-            </button>
-          ))}
         </div>
 
         {open && (
@@ -187,11 +213,11 @@ export default function MusicPanel() {
 
             {band.externalUrl && (
               <a href={band.externalUrl} target="_blank" rel="noopener noreferrer" className={base.open}>
-                {band.clickNotice ?? 'Open'} ↗
+                {band.clickNotice ?? t('Open', '打开')} ↗
               </a>
             )}
 
-            <h2 className={styles.heading}>Shows with {short}</h2>
+            <h2 className={styles.heading}>{t(`Shows with ${short}`, `${short}的演出`)}</h2>
             <ol className={styles.shows}>
               {band.performances.map((show) => (
                 <li key={`${show.date}-${show.title}`} className={styles.show}>
@@ -202,7 +228,7 @@ export default function MusicPanel() {
                   <p className={styles.showText}>{show.description}</p>
                   {show.video && (
                     <a href={show.video} target="_blank" rel="noopener noreferrer" className={styles.watch}>
-                      ▶ Watch the video
+                      {t('▶ Watch the video', '▶ 观看视频')}
                     </a>
                   )}
                   {show.images.length > 0 && (
@@ -220,7 +246,7 @@ export default function MusicPanel() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.picture}
-                            aria-label={`Watch ${show.title}`}
+                            aria-label={t(`Watch ${show.title}`, `观看 ${show.title}`)}
                           >
                             {image}
                             <span className={styles.playTag} aria-hidden="true">
@@ -241,7 +267,7 @@ export default function MusicPanel() {
           </div>
         )}
 
-        <p className={base.hint}>← → band · space play/pause · ↓ story · Esc back</p>
+        <p className={base.hint}>{t('← → band · space play/pause · ↓ story · Esc back', '← → 切换乐队 · 空格 播放/暂停 · ↓ 故事 · Esc 返回')}</p>
       </aside>
     </div>
   );

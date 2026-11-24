@@ -46,6 +46,16 @@ export const experience: ResumeEntry[] = [
     ],
   },
   {
+    title: 'Ceus Capital',
+    subtitle: 'Software Engineer Intern',
+    dates: 'Aug 2025 - Nov 2025',
+    points: [
+      'Build and deploy a marketing site and an admin portal with Next.js, React, Tailwind CSS, Vercel, Postgres and Prisma.',
+      'Analyze target demographics and iterate site copy and UX to improve engagement and conversion.',
+      'Research and implement SEO best practices (semantic HTML, structured data, sitemaps, meta tags, performance tuning).',
+    ],
+  },
+  {
     title: 'Continental Automotive SG Pte Ltd',
     subtitle: 'Software Engineer Intern',
     dates: 'Jul 2023 - Dec 2023',

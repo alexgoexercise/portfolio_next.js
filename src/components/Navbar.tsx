@@ -1,19 +1,21 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useT } from '@/i18n';
+import LangSwitch from './LangSwitch';
 
 const PLAIN = [
-  { href: '/home', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/contacts', label: 'Contacts' },
+  { href: '/home', label: 'Home', zh: '首页' },
+  { href: '/about', label: 'About', zh: '关于' },
+  { href: '/projects', label: 'Projects', zh: '项目' },
+  { href: '/contacts', label: 'Contacts', zh: '联系' },
 ];
 
 const ROOM = [
-  { href: '/diorama', label: 'Room' },
-  { href: '/diorama/about', label: 'About' },
-  { href: '/diorama/projects', label: 'Projects' },
-  { href: '/diorama/music', label: 'Music' },
-  { href: '/diorama/contacts', label: 'Contacts' },
+  { href: '/diorama', label: 'Room', zh: '房间' },
+  { href: '/diorama/about', label: 'About', zh: '关于' },
+  { href: '/diorama/projects', label: 'Projects', zh: '项目' },
+  { href: '/diorama/music', label: 'Music', zh: '音乐' },
+  { href: '/diorama/contacts', label: 'Contacts', zh: '联系' },
 ];
 
 /** The same place in the other version of the site, so switching keeps you where you were. */
@@ -40,6 +42,7 @@ export function otherSide(pathname: string, music: boolean) {
  */
 export default function Navbar() {
   const { pathname, query } = useRouter();
+  const t = useT();
   const inRoom = pathname.startsWith('/diorama');
   const links = inRoom ? ROOM : PLAIN;
   // Band pages belong to Projects
@@ -48,29 +51,32 @@ export default function Navbar() {
 
   return (
     <nav className="site-nav" aria-label="Main" data-mode={inRoom ? 'room' : 'plain'}>
-      <Link href="/" className="brand" aria-label="alexgosleep: back to the start" title="Back to the start">
+      <Link href="/" className="brand" aria-label={t('alexgosleep: back to the start', 'alexgosleep：回到起点')} title={t('Back to the start', '回到起点')}>
         <span className="brand-mark" aria-hidden="true" />
         <span className="brand-text">alexgosleep</span>
       </Link>
       <div className="nav-links">
-        {links.map(({ href, label }) => (
+        {links.map(({ href, label, zh }) => (
           <Link
             key={href}
             href={href}
             className={current === href ? 'nav-link active' : 'nav-link'}
             aria-current={current === href ? 'page' : undefined}
           >
-            {label}
+            {t(label, zh)}
           </Link>
         ))}
       </div>
-      <div className="mode-switch" role="group" aria-label="Version of the site">
+      <div className="nav-tools">
+      <LangSwitch />
+      <div className="mode-switch" role="group" aria-label={t('Version of the site', '网站版本')}>
         <Link href={inRoom ? pathname : other} className="mode-option" aria-current={inRoom ? 'true' : undefined}>
-          Room
+          {t('Room', '房间')}
         </Link>
         <Link href={inRoom ? other : pathname} className="mode-option" aria-current={inRoom ? undefined : 'true'}>
-          Plain
+          {t('Plain', '简洁')}
         </Link>
+      </div>
       </div>
     </nav>
   );

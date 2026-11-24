@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import { bandsData } from '@/content/bands';
+import { useLang, useT } from '@/i18n';
+import { localBand } from '@/i18n/content';
 import styles from './Band.module.css';
 import React from 'react';
 
@@ -15,12 +17,15 @@ import 'swiper/css/pagination';
 export default function BandPage() {
   const router = useRouter();
   const { id } = router.query;
-  
-  const band = id && bandsData[id as keyof typeof bandsData];
+  const { lang } = useLang();
+  const t = useT();
 
-  if (!band) {
-    return <div className="page">Loading…</div>;
+  const original = id && bandsData[id as keyof typeof bandsData];
+
+  if (!original) {
+    return <div className="page">{t('Loading…', '加载中…')}</div>;
   }
+  const band = localBand(original, lang);
 
   return (
     <div className="page drumming-theme">
@@ -28,7 +33,7 @@ export default function BandPage() {
         {/* Back Button */}
         <Link href="/projects?music=1" className="back-button">
           <span className="back-arrow">←</span>
-          <span className="back-text">All bands</span>
+          <span className="back-text">{t('All bands', '所有乐队')}</span>
         </Link>
 
         {/* Band Description Section */}
@@ -57,7 +62,7 @@ export default function BandPage() {
               <button
                 key={i}
                 className={styles.bandTag}
-                title={`Search for ${tag} on Google`}
+                title={t(`Search for ${tag} on Google`, `在 Google 上搜索 ${tag}`)}
                 onClick={() => {
                   window.open(`https://www.google.com/search?q=${encodeURIComponent(tag)}`, '_blank');
                 }}
@@ -70,7 +75,7 @@ export default function BandPage() {
 
         {/* Events Section */}
         <section className={styles.bandPerformancesSection}>
-          <h2>Events</h2>
+          <h2>{t('Events', '演出')}</h2>
           <div className={styles.performancesGrid}>
             {band.performances.map((performance, index) => {
               // Check if this performance has any images with video URLs （once there is one image with embedded url, the rest of the images will also be having a play button on it)
@@ -136,7 +141,7 @@ export default function BandPage() {
                     </div>
                   ) : (
                     <div className={styles.sliderWrapper + ' no-image-fallback'}>
-                      <span className={styles.noImageText}>No image available</span>
+                      <span className={styles.noImageText}>{t('No image available', '暂无图片')}</span>
                     </div>
                   )}
                   <div className={styles.performanceContent}>
@@ -149,7 +154,7 @@ export default function BandPage() {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M8 5v14l11-7z" fill="currentColor"/>
                         </svg>
-                        <span>Watch the video</span>
+                        <span>{t('Watch the video', '观看视频')}</span>
                       </a>
                     )}
                     {hasVideos && (
@@ -157,7 +162,7 @@ export default function BandPage() {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M8 5v14l11-7z" fill="currentColor"/>
                         </svg>
-                        <span>Click images to watch videos</span>
+                        <span>{t('Click images to watch videos', '点击图片观看视频')}</span>
                       </div>
                     )}
                   </div>

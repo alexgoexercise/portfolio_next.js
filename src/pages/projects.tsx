@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { bandsList, Band } from '@/content/bands';
 import { projects, Project } from '@/content/projects';
+import { useLang, useT } from '@/i18n';
+import { localBand, localProject } from '@/i18n/content';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -13,6 +15,7 @@ import 'swiper/css/pagination';
 
 export default function Projects() {
   const router = useRouter();
+  const t = useT();
   const [isDrummingMode, setIsDrummingMode] = useState(false);
 
   useEffect(() => {
@@ -25,10 +28,10 @@ export default function Projects() {
     <div className={`page ${isDrummingMode ? 'drumming-theme' : 'academic-theme'}`}>
       <div className="mode-tabs" role="tablist" aria-label="Which projects to show">
         <button type="button" role="tab" className="mode-tab" aria-selected={!isDrummingMode} onClick={() => setIsDrummingMode(false)}>
-          Engineering
+          {t('Engineering', '工程')}
         </button>
         <button type="button" role="tab" className="mode-tab" aria-selected={isDrummingMode} onClick={() => setIsDrummingMode(true)}>
-          Music
+          {t('Music', '音乐')}
         </button>
       </div>
 
@@ -38,6 +41,8 @@ export default function Projects() {
 }
 
 function AcademicPortfolio() {
+  const { lang } = useLang();
+  const t = useT();
   const handleTagClick = (tag: string) => {
     const searchQuery = encodeURIComponent(tag);
     window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
@@ -62,8 +67,10 @@ function AcademicPortfolio() {
 
   return (
     <div className="project-container">
-      <h1 className="projects-title">Things I have built</h1>
-      {projects.map((project) => (
+      <h1 className="projects-title">{t('Things I have built', '我做过的东西')}</h1>
+      {projects.map((original) => {
+        const project = localProject(original, lang);
+        return (
         <div 
           key={project.title} 
           className="project-card"
@@ -123,19 +130,22 @@ function AcademicPortfolio() {
                   e.stopPropagation();
                   handleTagClick(tag);
                 }}
-                title={`Search for ${tag} on Google`}
+                title={t(`Search for ${tag} on Google`, `在 Google 上搜索 ${tag}`)}
               >
                 {tag}
               </button>
             ))}
           </div>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
 function DrummingPortfolio() {
+  const { lang } = useLang();
+  const t = useT();
   const handleBandClick = (band: Band, e: React.MouseEvent) => {
     e.preventDefault();
     // Always navigate to the band detail page when clicking the card
@@ -170,10 +180,12 @@ function DrummingPortfolio() {
     <div className="drumming-portfolio">
       <section className="drumming-section">
         <h2 className="drumming-section-title">
-          Bands I have played in
+          {t('Bands I have played in', '我待过的乐队')}
         </h2>
         <div className="drumming-grid">
-          {bandsList.map((band) => (
+          {bandsList.map((original) => {
+            const band = localBand(original, lang);
+            return (
             <div 
               key={band.id} 
               className="drumming-card band-card"
@@ -214,7 +226,7 @@ function DrummingPortfolio() {
                   <button
                     key={i}
                     className="drumming-tag"
-                    title={`Search for ${tag} on Google`}
+                    title={t(`Search for ${tag} on Google`, `在 Google 上搜索 ${tag}`)}
                     onClick={e => {
                       e.stopPropagation();
                       window.open(`https://www.google.com/search?q=${encodeURIComponent(tag)}`, '_blank');
@@ -225,7 +237,8 @@ function DrummingPortfolio() {
                 ))}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>
