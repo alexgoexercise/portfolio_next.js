@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { email, phone, socials } from '../content/contact';
 import styles from './Phone.module.css';
 
@@ -10,6 +10,52 @@ export default function ContactsPanel() {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
+  const content = useRef<HTMLDivElement>(null);
+
+  // Phones' browsers do not scroll an overflow box that sits inside a 3D-transformed layer (the phone is
+  // one), so drag-scrolling is done by hand, with a little momentum.
+  useEffect(() => {
+    const el = content.current;
+    if (!el) return;
+    let lastY = 0;
+    let lastT = 0;
+    let velocity = 0;
+    let raf = 0;
+    const start = (e: TouchEvent) => {
+      cancelAnimationFrame(raf);
+      lastY = e.touches[0].clientY;
+      lastT = e.timeStamp;
+      velocity = 0;
+    };
+    const move = (e: TouchEvent) => {
+      const y = e.touches[0].clientY;
+      const dt = Math.max(1, e.timeStamp - lastT);
+      el.scrollTop += lastY - y;
+      velocity = (lastY - y) / dt;
+      lastY = y;
+      lastT = e.timeStamp;
+      if (el.scrollHeight > el.clientHeight) e.preventDefault();
+    };
+    const end = () => {
+      let v = velocity * 16;
+      const glide = () => {
+        v *= 0.95;
+        if (Math.abs(v) < 0.4) return;
+        el.scrollTop += v;
+        raf = requestAnimationFrame(glide);
+      };
+      raf = requestAnimationFrame(glide);
+    };
+    el.addEventListener('touchstart', start, { passive: true });
+    el.addEventListener('touchmove', move, { passive: false });
+    el.addEventListener('touchend', end, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener('touchstart', start);
+      el.removeEventListener('touchmove', move);
+      el.removeEventListener('touchend', end);
+    };
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -39,7 +85,7 @@ export default function ContactsPanel() {
         <span>5G</span>
       </div>
 
-      <div className={styles.content}>
+      <div className={styles.content} ref={content}>
         {showQr ? (
           <div className={styles.qrView}>
             <button type="button" className={styles.backButton} onClick={() => setShowQr(false)}>
