@@ -166,7 +166,9 @@
 .views {
   position: absolute;
   right: 16px;
-  bottom: 20px;
+  /* Sits above the site's Music switch, which takes the bottom right corner */
+  bottom: 74px;
+  min-width: 112px;
   display: flex;
   flex-direction: column;
   align-items: stretch;

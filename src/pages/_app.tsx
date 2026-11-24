@@ -7,6 +7,7 @@ import type { ReactElement, ReactNode } from 'react';
 import Script from 'next/script';
 import { IBM_Plex_Mono, IBM_Plex_Sans, Young_Serif } from 'next/font/google';
 import Navbar from '../components/Navbar';
+import BackgroundMusic from '../components/BackgroundMusic';
 
 // Typefaces: a warm old-style serif for headings, Plex for reading, Plex Mono
 // for labels and dates. Next.js downloads these at build time and serves them
@@ -49,6 +50,7 @@ export default function App({ Component, pageProps, router }: AppWithLayoutProps
       </Head>
       {/* Brand icons on the Contacts page */}
       <Script src="https://kit.fontawesome.com/ec69074f3c.js" crossOrigin="anonymous" strategy="afterInteractive" />
+      <BackgroundMusic />
       {!isLanding && <Navbar />}
       {getLayout(<Component {...pageProps} />)}
     </div>
