@@ -7,6 +7,7 @@ import ContactsPanel from './ContactsPanel';
 import { phoneDom } from './paperDom';
 import phoneStyles from './Phone.module.css';
 import PaperStage from './PaperStage';
+import RoomLoader from './RoomLoader';
 import { chosenBand } from './musicView';
 import { chosenSlug } from './projectsView';
 
@@ -95,6 +96,7 @@ export default function RoomLayout({ children }: { children: ReactNode }) {
           <ContactsPanel />
         </PaperStage>
       )}
+      {mounted && <RoomLoader />}
       {children}
     </>
   );

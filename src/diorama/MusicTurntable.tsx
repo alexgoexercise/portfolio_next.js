@@ -17,7 +17,8 @@ const ARM_PIVOT = new THREE.Vector3(0.38, 0.11, -0.22);
 const ARM_ON = 0.03;
 const ARM_OFF = -0.32;
 
-const covers = journeyBands.map((b) => b.band.image);
+// Small copies for the disc label: the full covers are far larger than a label needs
+const covers = journeyBands.map((b) => `/band-images/disc/${b.id}.jpg`);
 
 function groovesTexture() {
   const c = document.createElement('canvas');

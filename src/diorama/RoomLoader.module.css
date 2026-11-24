@@ -1,0 +1,61 @@
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: radial-gradient(120% 90% at 50% 40%, #1f1630 0%, #0d0a18 55%, #07050c 100%);
+  color: var(--cream);
+  transition: opacity 0.6s ease;
+}
+
+.curtain[data-done='true'] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.line {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 4vw, 32px);
+}
+
+.track {
+  width: min(320px, 70vw);
+  height: 4px;
+  overflow: hidden;
+  background: rgba(241, 228, 200, 0.14);
+  border-radius: 4px;
+}
+
+.fill {
+  height: 100%;
+  background: var(--stripes-across);
+  border-radius: 4px;
+  transition: width 0.35s ease-out;
+}
+
+.percent {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--cream-dim);
+}
+
+.thin {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  height: 3px;
+}
+
+.thinFill {
+  height: 100%;
+  background: var(--amber);
+  box-shadow: 0 0 10px var(--amber);
+  transition: width 0.3s ease-out;
+}

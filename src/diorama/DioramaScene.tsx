@@ -472,6 +472,11 @@ function Scene({
   });
   useControls('Save', { 'Copy all settings': button(copyAllSettings) });
 
+  const [musicSeen, setMusicSeen] = useState(mode === 'music');
+  useEffect(() => {
+    if (mode === 'music') setMusicSeen(true);
+  }, [mode]);
+
   return (
     <>
       <color attach="background" args={[background]} />
@@ -493,7 +498,12 @@ function Scene({
           onPick={onPick}
         />
       </Suspense>
-      <MusicTurntable open={mode === 'music'} bandId={bandId} />
+      {/* Its own Suspense and mounted on first visit, so its textures never hold the room back */}
+      {musicSeen && (
+        <Suspense fallback={null}>
+          <MusicTurntable open={mode === 'music'} bandId={bandId} />
+        </Suspense>
+      )}
       <PaperSheet open={mode === 'about'} />
       <PhoneSheet open={mode === 'contacts'} />
       <ProjectShowcase active={mode === 'projects'} selected={projectSlug} onPick={onPickProject} />

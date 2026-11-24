@@ -292,7 +292,7 @@ export const bandsData: Record<string, Band> = {
     id: "6",
     name: "NUS Jazzband",
     description: "NUS CCA under the Centre for the Arts",
-    image: "/band-images/NJB/cover.png",
+    image: "/band-images/NJB/cover.jpg",
     period: "2022 - 2024",
     role: "drummer",
     tags: ["Jazz", "Jazz Standards", "Big Band"],
