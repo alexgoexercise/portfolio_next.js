@@ -4,15 +4,17 @@ import { Environment, Lightformer, PerspectiveCamera, useAnimations, useGLTF, us
 import { Leva, button, levaStore, useControls } from 'leva';
 import * as THREE from 'three';
 import CameraRig, { type ViewRequest } from './CameraRig';
+import DrumKit from './DrumKit';
 import Hud from './Hud';
 import ProjectShowcase from './ProjectShowcase';
 import { game, hotspots, type Hotspot } from './hotspots';
 import { approach, ease, litUniform, mixWithNight, nightGainUniform, registerNightMap } from './lighting';
+import MusicTurntable from './MusicTurntable';
 import PaperSheet from './PaperSheet';
 import PhoneSheet from './PhoneSheet';
 import { sceneConfig, type ViewName } from './sceneConfig';
 import { loadRoomState, saveRoomState } from './session';
-import { playSound } from './sounds';
+import { playDrumPiece, playSound, preloadDrums, preloadEffects, type DrumPiece } from './sounds';
 
 /** Copies every slider's current value as JSON, ready to paste into sceneConfig.ts. */
 function copyAllSettings() {
@@ -220,12 +222,6 @@ function Duvet({ awake }: { awake: boolean }) {
   return <primitive object={scene} />;
 }
 
-/** The drum kit keeps real, shiny materials, so it is lit live by <Lamps /> below. */
-function DrumKit() {
-  const { scene } = useGLTF(sceneConfig.drumKitUrl, sceneConfig.dracoPath);
-  return <primitive object={scene} />;
-}
-
 interface HotspotsProps {
   hoveredId: string | null;
   onHover: (id: string | null) => void;
@@ -237,7 +233,13 @@ interface HotspotsProps {
  * parts: testing the pointer against a handful of boxes is far cheaper than
  * against every triangle of the drum kit. Hovering brightens the real parts.
  */
-function Hotspots({ enabled, hoveredId, onHover, onPick }: HotspotsProps & { enabled: boolean }) {
+function Hotspots({
+  enabled,
+  drumming,
+  hoveredId,
+  onHover,
+  onPick,
+}: HotspotsProps & { enabled: boolean; drumming: boolean }) {
   const { scene: roomScene } = useGLTF(sceneConfig.roomUrl);
   const { scene: kit } = useGLTF(sceneConfig.drumKitUrl, sceneConfig.dracoPath);
 
@@ -319,7 +321,8 @@ function Hotspots({ enabled, hoveredId, onHover, onPick }: HotspotsProps & { ena
   return (
     <>
       {zones
-        .filter((zone) => !zone.empty)
+        // Behind the kit its pieces are hit one by one, so the box around the whole kit steps aside
+        .filter((zone) => !zone.empty && !(drumming && zone.spot.id === 'music'))
         .map(({ spot, centre, size }) => (
           <mesh
             key={spot.id}
@@ -425,13 +428,14 @@ function Lamps({ awake }: { awake: boolean }) {
 
 /** Which page the room is showing: the bedroom itself, or the projects page. */
 /** The bedroom, or one of the pages that dives into an object in it. */
-export type RoomMode = 'hub' | 'projects' | 'about' | 'contacts';
+export type RoomMode = 'hub' | 'projects' | 'about' | 'contacts' | 'music';
 
 /** The camera view each page sits at. */
 const MODE_VIEWS: Record<Exclude<RoomMode, 'hub'>, ViewName> = {
   projects: 'desk',
   about: 'shelf',
   contacts: 'phone',
+  music: 'music',
 };
 
 interface SceneProps extends HotspotsProps {
@@ -442,9 +446,26 @@ interface SceneProps extends HotspotsProps {
   /** The project whose model is at the front, on the projects page. */
   projectSlug: string;
   onPickProject: (slug: string) => void;
+  /** On the music page, the band shown, and what to call when a drum standing for another band is hit. */
+  bandId: string;
+  /** The camera is behind the kit, so its drums and cymbals can be hit. */
+  drumming: boolean;
+  onHitDrum: (piece: DrumPiece) => void;
 }
 
-function Scene({ awake, viewRequest, mode, projectSlug, onPickProject, hoveredId, onHover, onPick }: SceneProps) {
+function Scene({
+  awake,
+  viewRequest,
+  mode,
+  projectSlug,
+  onPickProject,
+  bandId,
+  drumming,
+  onHitDrum,
+  hoveredId,
+  onHover,
+  onPick,
+}: SceneProps) {
   const { fov, background } = useControls('View', {
     fov: { value: sceneConfig.camera.fov, min: 10, max: 60, step: 1 },
     background: sceneConfig.background,
@@ -459,11 +480,20 @@ function Scene({ awake, viewRequest, mode, projectSlug, onPickProject, hoveredId
       <Lamps awake={awake} />
       <Suspense fallback={null}>
         <Room awake={awake} />
-        <DrumKit />
+        <group visible={mode !== 'music'}>
+          <DrumKit drumming={drumming && mode === 'hub'} onHit={onHitDrum} />
+        </group>
         <Alex awake={awake} />
         <Duvet awake={awake} />
-        <Hotspots enabled={mode === 'hub'} hoveredId={hoveredId} onHover={onHover} onPick={onPick} />
+        <Hotspots
+          enabled={mode === 'hub'}
+          drumming={drumming && mode === 'hub'}
+          hoveredId={hoveredId}
+          onHover={onHover}
+          onPick={onPick}
+        />
       </Suspense>
+      <MusicTurntable open={mode === 'music'} bandId={bandId} />
       <PaperSheet open={mode === 'about'} />
       <PhoneSheet open={mode === 'contacts'} />
       <ProjectShowcase active={mode === 'projects'} selected={projectSlug} onPick={onPickProject} />
@@ -493,17 +523,26 @@ interface DioramaSceneProps {
   /** On the projects page, the project whose model is at the front. */
   projectSlug: string;
   onPickProject: (slug: string) => void;
+  bandId: string;
 }
 
 /**
  * The game: clicking things makes noise, noise fills the meter, a full meter
  * wakes Alex. The meter drains on its own while the room is quiet.
  */
-export default function DioramaScene({ editable, initialSpot, mode, projectSlug, onPickProject }: DioramaSceneProps) {
+export default function DioramaScene({
+  editable,
+  initialSpot,
+  mode,
+  projectSlug,
+  onPickProject,
+  bandId,
+}: DioramaSceneProps) {
   // Pick up where the visitor left off: the meter keeps draining while they
   // read another page, and Alex stays awake (lights on) if they woke him.
   // Read before the first frame so the room never flashes the wrong mood.
   const [start] = useState(startingState);
+  useEffect(() => preloadEffects(), []);
   const [noise, setNoise] = useState(start.noise);
   const [awake, setAwake] = useState(start.awake);
   const [muted, setMuted] = useState(false);
@@ -554,6 +593,14 @@ export default function DioramaScene({ editable, initialSpot, mode, projectSlug,
     [awake, muted],
   );
 
+  const hitDrum = useCallback(
+    (piece: DrumPiece) => {
+      if (!muted) playDrumPiece(piece);
+      if (!awake) setNoise((n) => Math.min(1, n + 0.035));
+    },
+    [awake, muted],
+  );
+
   const letSleep = useCallback(() => {
     setAwake(false);
     setNoise(game.afterSleep);
@@ -562,7 +609,12 @@ export default function DioramaScene({ editable, initialSpot, mode, projectSlug,
 
   // The nonce changes on every request, so choosing the same view again still glides back to it
   const [viewRequest, setViewRequest] = useState<ViewRequest | null>(null);
+  const [drumming, setDrumming] = useState(false);
   const goToView = useCallback((name: ViewName) => {
+    // Behind the kit the drums can be played; going anywhere else puts the sticks down
+    setDrumming(name === 'drummer');
+    if (name === 'drummer') preloadDrums();
+    setHoveredId(null);
     setViewRequest((previous) => ({ name, nonce: (previous?.nonce ?? 0) + 1 }));
   }, []);
 
@@ -574,6 +626,7 @@ export default function DioramaScene({ editable, initialSpot, mode, projectSlug,
     if (previous === mode) return;
     shownMode.current = mode;
     setHoveredId(null);
+    setDrumming(false);
     if (previous === null) {
       if (mode !== 'hub') setViewRequest({ name: MODE_VIEWS[mode], nonce: 1, instant: true });
       return;
@@ -604,6 +657,9 @@ export default function DioramaScene({ editable, initialSpot, mode, projectSlug,
           mode={mode}
           projectSlug={projectSlug}
           onPickProject={onPickProject}
+          bandId={bandId}
+          drumming={drumming}
+          onHitDrum={hitDrum}
           hoveredId={hoveredId}
           onHover={setHoveredId}
           onPick={pick}
@@ -611,6 +667,7 @@ export default function DioramaScene({ editable, initialSpot, mode, projectSlug,
       </Canvas>
       <Hud
         minimal={mode !== 'hub'}
+        drumming={drumming}
         noise={noise}
         awake={awake}
         muted={muted}

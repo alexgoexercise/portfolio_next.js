@@ -330,3 +330,17 @@
     display: none;
   }
 }
+
+.drumHint {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(11, 15, 34, 0.78);
+  color: #f4e9d8;
+  font-size: 0.9rem;
+  pointer-events: none;
+  white-space: nowrap;
+}

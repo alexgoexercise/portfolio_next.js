@@ -1,0 +1,12 @@
+Drum recordings: "Muldjord Kit" by Lars Muldjord / the DrumGizmo team,
+https://github.com/sfzinstruments/DrumGizmo.MuldjordKit
+Licensed under Creative Commons Attribution 4.0 International
+(https://creativecommons.org/licenses/by/4.0/).
+Changes: each hit was mixed from the kit's close and overhead microphones,
+trimmed, and converted to MP3.
+
+The second snare ("snare2") and the splash cymbal are from "Naked Drums" by
+Wilkinson Audio (mixed into SFZ by kinwie),
+https://github.com/sfzinstruments/WilkinsonAudio.NakedDrums
+Licensed under Creative Commons Attribution 4.0 International.
+Changes: mixed from several microphones, trimmed, and converted to MP3.

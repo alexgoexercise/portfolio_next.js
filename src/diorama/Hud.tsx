@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useProgress } from '@react-three/drei';
 import type { Hotspot } from './hotspots';
 import type { ViewName } from './sceneConfig';
@@ -19,6 +19,8 @@ interface HudProps {
   onView: (name: ViewName) => void;
   /** Show nothing but the loading message: the projects page brings its own panel. */
   minimal?: boolean;
+  /** Behind the kit: shows a hint that the drums can be hit. */
+  drumming?: boolean;
 }
 
 function statusText(noise: number, awake: boolean) {
@@ -40,9 +42,14 @@ export default function Hud({
   onLetSleep,
   onView,
   minimal = false,
+  drumming = false,
 }: HudProps) {
   const { active, progress } = useProgress();
   const [viewsOpen, setViewsOpen] = useState(false);
+  // Sitting behind the kit opens the view bar, so the way back out is in sight
+  useEffect(() => {
+    if (drumming) setViewsOpen(true);
+  }, [drumming]);
   const percent = Math.round(Math.min(1, noise) * 100);
 
   if (active) {
@@ -57,6 +64,7 @@ export default function Hud({
 
   return (
     <div className={styles.hud}>
+      {drumming && <div className={styles.drumHint}>Click the drums. Not too loud…</div>}
       <section className={`${styles.panel} ${styles.meter}`} aria-label="Wake-up meter">
         <div className={styles.meterHead}>
           <span>Noise</span>

@@ -1,0 +1,5 @@
+All CC0 (public domain), converted to MP3 and trimmed:
+- keys-*: "Keyboard Soundpack #1" by unicaegames, https://opengameart.org/content/keyboard-soundpack-1-typing-and-single-keystrokes
+- book-*: "Book Flip Sounds" by Voltiment555, https://opengameart.org/content/book-flip-sounds
+  (book-1 also uses "wood-small" from the "RPG Sound Pack", https://opengameart.org/content/rpg-sound-pack)
+- wake-1: "cloth" and "cloth-heavy" from the "RPG Sound Pack", https://opengameart.org/content/rpg-sound-pack

@@ -29,6 +29,7 @@ const TITLES: Record<string, string> = {
   '/diorama/projects': 'Projects · the room',
   '/diorama/about': 'About · the room',
   '/diorama/contacts': 'Contact · the room',
+  '/diorama/music': 'Music · the room',
   '/home': 'Alex Zhao',
   '/about': 'About · Alex Zhao',
   '/projects': 'Projects · Alex Zhao',

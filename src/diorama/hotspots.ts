@@ -44,7 +44,7 @@ export const hotspots: Hotspot[] = [
     id: 'music',
     label: 'The drum kit',
     blurb: 'Alex did not practise any rudiments today.',
-    href: '/projects?music=1',
+    href: '/diorama/music',
     cta: "Stalk Alex's music journey",
     view: { name: 'drummer', label: 'Sit behind the kit' },
     source: 'drumkit',

@@ -7,6 +7,7 @@ import ContactsPanel from './ContactsPanel';
 import { phoneDom } from './paperDom';
 import phoneStyles from './Phone.module.css';
 import PaperStage from './PaperStage';
+import { chosenBand } from './musicView';
 import { chosenSlug } from './projectsView';
 
 /** Which of the room's pages each address is. */
@@ -14,6 +15,7 @@ const ROOM_MODES: Record<string, RoomMode> = {
   '/diorama/projects': 'projects',
   '/diorama/about': 'about',
   '/diorama/contacts': 'contacts',
+  '/diorama/music': 'music',
 };
 
 // three.js needs the browser, so the scene is never rendered on the server.
@@ -80,6 +82,7 @@ export default function RoomLayout({ children }: { children: ReactNode }) {
           mode={mode}
           projectSlug={chosenSlug(router.query.project)}
           onPickProject={onPickProject}
+          bandId={chosenBand(router.query.band)}
         />
       )}
       {aboutShown && (

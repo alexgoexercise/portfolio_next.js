@@ -65,3 +65,8 @@ Push to `master` on GitHub; Vercel builds and deploys automatically.
 ---
 
 Made by Alex Zhao, who should have been asleep hours ago.
+
+## Credits
+
+- Drum sounds: "Muldjord Kit" by Lars Muldjord and the DrumGizmo team ([source](https://github.com/sfzinstruments/DrumGizmo.MuldjordKit)), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The clips in `public/sounds/drums` are mixed from its close and overhead microphones, trimmed and converted to MP3.
+- The side snare and the splash cymbal: "Naked Drums" by Wilkinson Audio ([source](https://github.com/sfzinstruments/WilkinsonAudio.NakedDrums)), also licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), mixed from several microphones, trimmed and converted to MP3.

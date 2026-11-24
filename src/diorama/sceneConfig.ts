@@ -250,6 +250,20 @@ export const sceneConfig = {
           target: [1.08, 1.0, -1.8] as Vec3,
         },
       },
+      /**
+       * Behind the kit, for the music page: like the drummer's view, slid to the
+       * right so the kit sits left of the panel.
+       */
+      music: {
+        fov: 52,
+        position: [-0.1, 1.75, -0.84] as Vec3,
+        target: [0.8, 0.55, 0.86] as Vec3,
+        fitWidth: true,
+        tall: {
+          position: [0.2, 1.95, -0.9] as Vec3,
+          target: [1.1, 0.15, 0.7] as Vec3,
+        },
+      },
       /** The phone on the nightstand, for the Contacts page. */
       phone: {
         fov: 38,
