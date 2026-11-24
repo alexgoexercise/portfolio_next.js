@@ -250,31 +250,36 @@ h3 {
 
 /* -------------------------------------------------------------- navbar */
 
+/* A floating glass pill; the stripes from the poster glow along its lower edge */
 .site-nav {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 8px;
+  left: 12px;
+  right: 12px;
   z-index: 1000;
-  height: var(--nav-h);
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 0 20px;
-  background: rgba(28, 21, 18, 0.94);
-  backdrop-filter: blur(8px);
+  gap: 14px;
+  padding: 0 8px 0 16px;
+  background: rgba(24, 17, 14, 0.62);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  backdrop-filter: blur(14px) saturate(1.3);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
 }
 
-/* The poster stripes run under the bar */
 .site-nav::after {
   content: '';
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -3px;
-  height: 3px;
+  left: 28px;
+  right: 28px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
   background: var(--stripes-across);
+  opacity: 0.85;
 }
 
 .brand {
@@ -282,7 +287,7 @@ h3 {
   align-items: center;
   gap: 10px;
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 19px;
   white-space: nowrap;
 }
 
@@ -292,221 +297,360 @@ h3 {
   height: 14px;
   border-radius: 50%;
   background: var(--orange);
+  box-shadow: 0 0 12px 2px rgba(224, 105, 47, 0.6);
   flex: none;
+  transition: transform 0.3s;
+}
+
+.brand:hover .brand-mark {
+  transform: scale(1.3);
 }
 
 .nav-links {
   display: flex;
-  gap: clamp(12px, 3vw, 28px);
+  gap: 2px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
 .nav-link {
   font-family: var(--font-mono);
-  font-size: 12.5px;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--cream-dim);
-  padding: 6px 0;
-  border-bottom: 2px solid transparent;
-  transition: color 0.15s;
+  padding: 7px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
 }
 
 .nav-link:hover {
   color: var(--cream);
+  background: rgba(241, 228, 200, 0.08);
 }
 
 .nav-link.active {
-  color: var(--amber);
-  border-bottom-color: var(--amber);
+  color: #20130c;
+  background: var(--amber);
 }
 
-@media (max-width: 560px) {
+/* Room | Plain: the same page, in the other version of the site */
+.mode-switch {
+  display: flex;
+  flex: none;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.mode-option {
+  padding: 4px 11px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  border-radius: 999px;
+}
+
+.mode-option:hover {
+  color: var(--cream);
+}
+
+.mode-option[aria-current='true'] {
+  color: var(--cream);
+  background: rgba(241, 228, 200, 0.16);
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
   .site-nav {
-    padding: 0 14px;
+    left: 8px;
+    right: 8px;
+    gap: 8px;
+    padding-left: 12px;
   }
   .brand-text {
     display: none;
   }
   .nav-link {
-    font-size: 11.5px;
-    letter-spacing: 0.06em;
+    padding: 7px 8px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
   }
-}
-
-/* ------------------------------------------- back-to-the-room button */
-
-.room-button {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 900;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: var(--wood-800);
-  border: 1px solid var(--amber);
-  border-radius: var(--radius);
-  transition: background 0.15s, color 0.15s;
-}
-
-/* The bedside lamp, still on */
-.room-button-lamp {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--amber);
-  box-shadow: 0 0 10px 2px rgba(255, 154, 77, 0.7);
-  flex: none;
-}
-
-.room-button:hover {
-  background: var(--amber);
-  color: #20130c;
-}
-
-.room-button:hover .room-button-lamp {
-  background: #20130c;
-  box-shadow: none;
+  .mode-option {
+    padding: 4px 8px;
+    font-size: 10.5px;
+  }
 }
 
 /* ------------------------------------------------- landing page ( / ) */
 
+/* A night sky with the room floating in it. Two ways in; the room is the lit one. */
 .landing {
+  --mx: 0;
+  --my: 0;
+  position: relative;
   min-height: 100dvh;
-  display: grid;
-  place-items: center;
-  padding: 40px 20px;
+  overflow: hidden;
+  background: radial-gradient(120% 90% at 70% 40%, #1f1630 0%, #0d0a18 45%, #07050c 100%);
+  isolation: isolate;
+}
+
+.landing-stars {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+}
+
+/* The poster's sun, huge and low behind the room */
+.landing-sun {
+  position: absolute;
+  z-index: -1;
+  right: 8%;
+  top: 50%;
+  width: min(60vw, 720px);
+  aspect-ratio: 1;
+  translate: calc(var(--mx) * -18px) calc(-50% + var(--my) * -12px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(224, 105, 47, 0.38) 0%, rgba(180, 71, 42, 0.18) 40%, transparent 68%);
+  filter: blur(8px);
 }
 
 .landing-inner {
-  width: 100%;
-  max-width: 980px;
-}
-
-.landing-title {
-  font-size: clamp(46px, 9vw, 92px);
-  letter-spacing: -0.01em;
-  margin: 0 0 10px;
-}
-
-.landing-lede {
-  max-width: 34em;
-  font-size: clamp(16px, 2vw, 19px);
-  color: var(--cream-dim);
-}
-
-.choices {
+  position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-top: 38px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: 24px;
+  min-height: 100dvh;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 40px 28px;
 }
 
-.choice {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--wood-800);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  transition: border-color 0.15s, transform 0.15s;
-}
-
-.choice:hover {
-  border-color: var(--amber);
-  transform: translateY(-3px);
-}
-
-.choice-media {
-  aspect-ratio: 16 / 10;
-  background: #0b0f22;
-  border-bottom: 1px solid var(--line);
-  overflow: hidden;
-}
-
-.choice-media img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* The plain site, pictured as its own table of contents */
-.choice-index {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 26px;
-  background: var(--wood-900);
+.landing-eyebrow {
   font-family: var(--font-mono);
-  font-size: clamp(13px, 1.5vw, 15px);
-  color: var(--cream-dim);
-  list-style: none;
-}
-
-.choice-index li {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.choice-index li::after {
-  content: '';
-  flex: 1;
-  order: 1;
-  border-bottom: 1px dotted var(--line-strong);
-}
-
-.choice-index span {
-  order: 2;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   color: var(--mustard);
 }
 
-.choice-body {
-  padding: 20px 22px 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
+.landing-title {
+  margin: 10px 0 14px;
+  font-size: clamp(54px, 9.5vw, 128px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  background: linear-gradient(100deg, var(--cream) 30%, var(--amber) 75%, var(--orange));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.choice-body h2 {
-  font-size: clamp(24px, 3vw, 30px);
+.landing-stripes {
+  width: min(280px, 60%);
+  height: 4px;
+  margin-bottom: 18px;
+  border-radius: 4px;
+  background: var(--stripes-across);
 }
 
-.choice-body p {
+.landing-lede {
+  max-width: 30em;
+  font-size: clamp(15px, 1.7vw, 18px);
   color: var(--cream-dim);
 }
 
-.choice-cta {
-  margin-top: auto;
-  padding-top: 10px;
+.landing-doors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.door {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 22px;
   font-family: var(--font-mono);
   font-size: 13px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--amber);
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+}
+
+.door:hover {
+  transform: translateY(-2px);
+}
+
+.door-room {
+  color: #20130c;
+  background: var(--amber);
+  border-color: var(--amber);
+  box-shadow: 0 0 30px 2px rgba(255, 154, 77, 0.45);
+}
+
+.door-room:hover {
+  box-shadow: 0 0 46px 6px rgba(255, 154, 77, 0.65);
+}
+
+.door-plain {
+  color: var(--cream);
+  background: rgba(241, 228, 200, 0.06);
+  backdrop-filter: blur(6px);
+}
+
+.door-plain:hover {
+  background: rgba(241, 228, 200, 0.14);
+}
+
+.door-lamp {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #20130c;
+}
+
+.landing-hint {
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--cream-dim);
 }
 
 .landing-foot {
-  margin-top: 30px;
+  position: absolute;
+  left: 28px;
+  bottom: 18px;
   font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--cream-dim);
+  font-size: 11.5px;
+  color: rgba(196, 180, 148, 0.7);
 }
 
-@media (max-width: 720px) {
-  .landing {
-    place-items: start center;
+/* The room: floats, tilts toward the pointer, and is the door to the 3D version */
+.landing-room {
+  position: relative;
+  display: block;
+  perspective: 1400px;
+  cursor: pointer;
+}
+
+.landing-room-tilt {
+  position: relative;
+  transform: rotateY(calc(var(--mx) * 7deg)) rotateX(calc(var(--my) * -5deg));
+  transform-style: preserve-3d;
+  transition: transform 0.25s ease-out;
+}
+
+.landing-room img {
+  display: block;
+  width: 100%;
+  height: auto;
+  animation: room-float 7s ease-in-out infinite;
+  /* Feather the photo's dark backdrop into the sky */
+  -webkit-mask-image: radial-gradient(ellipse 62% 60% at 50% 52%, #000 55%, transparent 100%);
+  mask-image: radial-gradient(ellipse 62% 60% at 50% 52%, #000 55%, transparent 100%);
+  mix-blend-mode: lighten;
+  transition: filter 0.3s;
+}
+
+.landing-room:hover img {
+  filter: brightness(1.1) saturate(1.1);
+}
+
+@keyframes room-float {
+  0%,
+  100% {
+    translate: 0 0;
   }
-  .choices {
+  50% {
+    translate: 0 -14px;
+  }
+}
+
+/* Alex, asleep */
+.landing-zzz {
+  position: absolute;
+  left: 47%;
+  top: 22%;
+  font-family: var(--font-display);
+  color: var(--cream);
+  pointer-events: none;
+}
+
+.landing-zzz span {
+  position: absolute;
+  opacity: 0;
+  font-size: clamp(14px, 2.2vw, 28px);
+  text-shadow: 0 0 12px rgba(255, 220, 170, 0.8);
+  animation: zzz 4.2s ease-in infinite;
+}
+
+.landing-zzz span:nth-child(2) {
+  animation-delay: 1.4s;
+}
+
+.landing-zzz span:nth-child(3) {
+  animation-delay: 2.8s;
+}
+
+@keyframes zzz {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(26px, -70px) scale(1.4) rotate(12deg);
+  }
+}
+
+/* Leaving: the room swells to fill the screen */
+.landing[data-leaving='room'] .landing-room-tilt {
+  transform: scale(2.6);
+  transition: transform 0.7s cubic-bezier(0.6, 0, 0.3, 1), opacity 0.6s 0.1s;
+  opacity: 0;
+}
+
+.landing[data-leaving='room'] .landing-copy,
+.landing[data-leaving='plain'] .landing-inner {
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+@media (max-width: 860px) {
+  .landing-inner {
     grid-template-columns: 1fr;
+    align-content: center;
+    gap: 6px;
+    padding: 76px 20px 56px;
+  }
+  .landing-room {
+    order: -1;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .landing-foot {
+    left: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-room img,
+  .landing-zzz span {
+    animation: none;
   }
 }
 

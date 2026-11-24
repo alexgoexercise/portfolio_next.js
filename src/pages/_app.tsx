@@ -7,7 +7,6 @@ import type { ReactElement, ReactNode } from 'react';
 import Script from 'next/script';
 import { IBM_Plex_Mono, IBM_Plex_Sans, Young_Serif } from 'next/font/google';
 import Navbar from '../components/Navbar';
-import RoomButton from '../components/RoomButton';
 
 // Typefaces: a warm old-style serif for headings, Plex for reading, Plex Mono
 // for labels and dates. Next.js downloads these at build time and serves them
@@ -40,7 +39,6 @@ const TITLES: Record<string, string> = {
 export default function App({ Component, pageProps, router }: AppWithLayoutProps) {
   const path = router.pathname;
   const isLanding = path === '/';
-  const isRoom = path.startsWith('/diorama');
   const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
 
   return (
@@ -53,7 +51,6 @@ export default function App({ Component, pageProps, router }: AppWithLayoutProps
       <Script src="https://kit.fontawesome.com/ec69074f3c.js" crossOrigin="anonymous" strategy="afterInteractive" />
       {!isLanding && <Navbar />}
       {getLayout(<Component {...pageProps} />)}
-      {!isLanding && !isRoom && <RoomButton />}
     </div>
   );
 }
