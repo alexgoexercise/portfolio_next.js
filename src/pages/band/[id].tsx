@@ -144,6 +144,14 @@ export default function BandPage() {
                     <p className="performance-date">{performance.date}</p>
                     <p className="performance-venue">{performance.venue}</p>
                     <p className="performance-description">{performance.description}</p>
+                    {performance.video && (
+                      <a href={performance.video} target="_blank" rel="noopener noreferrer" className={styles.videoIndicator}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M8 5v14l11-7z" fill="currentColor"/>
+                        </svg>
+                        <span>Watch the video</span>
+                      </a>
+                    )}
                     {hasVideos && (
                       <div className={styles.videoIndicator}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

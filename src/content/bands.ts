@@ -9,6 +9,8 @@ export type Performance = {
   venue: string;
   description: string;
   images: PerformanceImage[];
+  /** A video to link to when the show has no photo to carry the link (shown as a "Watch the video" button). */
+  video?: string;
 };
 
 export type Band = {
@@ -179,6 +181,31 @@ export const bandsData: Record<string, Band> = {
           {src: "/band-images/Jazzlings/big-birthday1.jpg"},
           {src: "/band-images/Jazzlings/big-birthday2.jpg"}
         ]
+      },
+      {
+        title: "Live at Muro Coffee",
+        date: "17/10/2025",
+        venue: "Muro Coffee, Singapore",
+        description: "The Jazzlings live at Muro Coffee, one of our community engagement events. Cozy vibe, good music and good matcha coffee.",
+        images: [
+          {src: "/band-images/Jazzlings/muro/1.jpg"},
+          {src: "/band-images/Jazzlings/muro/2.jpg"},
+          {src: "/band-images/Jazzlings/muro/3.jpg"},
+          {src: "/band-images/Jazzlings/muro/4.jpg"},
+          {src: "/band-images/Jazzlings/muro/5.jpg"}
+        ]
+      },
+      {
+        title: "Live at CSHH",
+        date: "31/10/2025",
+        venue: "CSHH, Singapore",
+        description: "Another live for the Jazzlings at CSHH, where we brought good music and good vibes to this famous coffee place.",
+        images: [
+          {src: "/band-images/Jazzlings/cshh/1.jpg", url: "https://b23.tv/wUh56Hd"},
+          {src: "/band-images/Jazzlings/cshh/2.jpg", url: "https://b23.tv/wUh56Hd"},
+          {src: "/band-images/Jazzlings/cshh/3.jpg", url: "https://b23.tv/wUh56Hd"},
+          {src: "/band-images/Jazzlings/cshh/4.jpg", url: "https://b23.tv/wUh56Hd"}
+        ]
       }
     ]
   },
@@ -228,6 +255,15 @@ export const bandsData: Record<string, Band> = {
         description: "We performed a 40 min set including songs from Doja Cat, Bruno Mars, Khalil Fong and more.",
         images:[
           {src: "/band-images/Geyao/cm2.jpg", url: "https://www.bilibili.com/video/BV1KEBoYrE59/?share_source=copy_web"}
+        ]
+      },
+      {
+        title: "Geyao Live 2026",
+        date: "21/09/2026",
+        venue: "Wire Entertainment",
+        description: "A mini reunion show with Concrete Mirage. We performed a good 30 min set; the video is my solo in the song Over by 方大同.",
+        images: [
+          {src: "/band-images/Geyao/geyao-live-2026.jpg", url: "https://b23.tv/L8LfuZi"}
         ]
       }
     ]
@@ -336,4 +372,16 @@ export const bandsData: Record<string, Band> = {
   }
 };
 
-export const bandsList = Object.values(bandsData); 
+export const bandsList = Object.values(bandsData);
+
+/**
+ * Every band's shows, newest first. Dates are written DD/MM/YYYY; shows on the same day keep the order they
+ * are written in (the sort is stable).
+ */
+const dayOf = (date: string) => {
+  const [d, m, y] = date.split('/').map(Number);
+  return new Date(y, (m || 1) - 1, d || 1).getTime();
+};
+for (const band of Object.values(bandsData)) {
+  band.performances.sort((a, b) => dayOf(b.date) - dayOf(a.date));
+}

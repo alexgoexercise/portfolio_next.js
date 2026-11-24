@@ -43,20 +43,39 @@
 }
 
 .pictures {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
 }
 
 .picture {
   position: relative;
-  flex: 0 0 auto;
-  width: 96px;
+  grid-column: span 2;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 3px;
+  border-radius: 6px;
   background: #0d0a09;
+}
+
+/* The first picture is the big one; the rest sit in a row beneath it */
+.picture:first-child {
+  grid-column: 1 / -1;
+  aspect-ratio: 16 / 9;
+}
+
+.pictures[data-count='2'] .picture,
+.pictures[data-count='2'] .picture:first-child {
+  grid-column: span 3;
+  aspect-ratio: 4 / 3;
+}
+
+.pictures[data-count='3'] .picture:not(:first-child) {
+  grid-column: span 3;
+}
+
+.pictures[data-count='1'] .picture:first-child {
+  grid-column: 1 / -1;
 }
 
 .playTag {
@@ -418,8 +437,8 @@
   }
   .shows {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
   .show {
     padding: 14px;
@@ -436,18 +455,27 @@
   .showMeta {
     font-size: 12.5px;
   }
-  .pictures {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .picture {
-    width: calc(50% - 4px);
-    aspect-ratio: 16 / 10;
-  }
 }
 
 @media (min-width: 761px) and (max-width: 1000px) {
   .shows {
     grid-template-columns: 1fr;
   }
+}
+
+/* For a show with a video but no photo to carry the link */
+.watch {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 7px 14px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: #20130c;
+  background: var(--amber);
+  border-radius: 999px;
+}
+
+.watch:hover {
+  background: #ffb877;
 }

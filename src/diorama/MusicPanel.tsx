@@ -200,13 +200,20 @@ export default function MusicPanel() {
                   </p>
                   <h3 className={styles.showTitle}>{show.title}</h3>
                   <p className={styles.showText}>{show.description}</p>
+                  {show.video && (
+                    <a href={show.video} target="_blank" rel="noopener noreferrer" className={styles.watch}>
+                      ▶ Watch the video
+                    </a>
+                  )}
                   {show.images.length > 0 && (
-                    <div className={styles.pictures}>
-                      {show.images.map((picture) => {
+                    <div className={styles.pictures} data-count={Math.min(show.images.length, 5)}>
+                      {show.images.map((picture, at) => {
+                        // One ▶ per video: only the first picture that points at a link is clickable
+                        const first = !!picture.url && show.images.findIndex((p) => p.url === picture.url) === at;
                         const image = (
-                          <Image src={picture.src} alt="" fill sizes="160px" style={{ objectFit: 'cover' }} />
+                          <Image src={picture.src} alt="" fill sizes="(min-width: 1100px) 640px, 92vw" style={{ objectFit: 'cover' }} />
                         );
-                        return picture.url ? (
+                        return first ? (
                           <a
                             key={picture.src}
                             href={picture.url}
