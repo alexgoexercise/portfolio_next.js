@@ -100,7 +100,7 @@ export default function MusicPanel() {
 
   return (
     <div className={base.layer}>
-      <aside className={base.panel} aria-label="Music journey" data-open={open}>
+      <aside className={`${base.panel} ${styles.panel}`} aria-label="Music journey" data-open={open}>
         <div className={base.bar}>
           <Link href="/diorama" className={base.back}>
             ← The room
@@ -117,6 +117,7 @@ export default function MusicPanel() {
               {band.period} · {band.tags.join(' · ')}
             </p>
           </div>
+          <div className={styles.progress}>
           <p className={styles.now}>
             ♪ {track.title}
             {track.artist ? ` · ${track.artist}` : ''}
@@ -135,6 +136,7 @@ export default function MusicPanel() {
           <div className={styles.times}>
             <span>{clock(time.at)}</span>
             <span>{clock(time.length)}</span>
+          </div>
           </div>
           <div className={styles.controls}>
             <button type="button" onClick={() => step(-1)} aria-label="Previous band">
@@ -202,7 +204,7 @@ export default function MusicPanel() {
                     <div className={styles.pictures}>
                       {show.images.map((picture) => {
                         const image = (
-                          <Image src={picture.src} alt="" fill sizes="96px" style={{ objectFit: 'cover' }} />
+                          <Image src={picture.src} alt="" fill sizes="160px" style={{ objectFit: 'cover' }} />
                         );
                         return picture.url ? (
                           <a

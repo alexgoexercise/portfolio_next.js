@@ -8,7 +8,8 @@ import { sceneConfig } from './sceneConfig';
 
 const K = sceneConfig.paper.pxPerMetre;
 const NAV = 58;
-const PANEL = 460; // width the side panel takes on a desktop, in CSS pixels
+/** Width of the text panel (see .panel in MusicPanel.module.css); the record player sits half behind it */
+const panelWidth = (w: number) => (w > 760 ? Math.min(w * 0.6, 920) : 0);
 const ease = (t: number) => t * t * (3 - 2 * t);
 
 /** The platter and spindle sit at this spot on the plinth (local units, plinth is 1 wide). */
@@ -100,13 +101,22 @@ export default function MusicTurntable({ open, bandId }: { open: boolean; bandId
     if (veil.current) veil.current.visible = g.visible;
     if (!g.visible) return;
 
-    // The free area: left of the side panel on a desktop, above the bottom sheet on a phone
+    // On a wide screen the player sits behind the panel's left edge, mostly showing; on a phone it is above the sheet
     const wide = size.width > 760;
-    const areaW = wide ? size.width - PANEL : size.width;
-    const areaH = wide ? size.height - NAV : size.height * 0.52 - NAV;
-    const cx = areaW / 2;
-    const cy = NAV + areaH / 2;
-    const widthPx = Math.min(areaW * 0.7, areaH * 0.9, 700);
+    let cx: number;
+    let cy: number;
+    let widthPx: number;
+    if (wide) {
+      widthPx = Math.min(size.width * 0.5, size.height * 1.15, 820);
+      const panelLeft = size.width - 24 - panelWidth(size.width);
+      cx = Math.max(widthPx * 0.5 + 10, panelLeft - widthPx * 0.12);
+      cy = NAV + (size.height - NAV) / 2;
+    } else {
+      const areaH = size.height * 0.52 - NAV;
+      widthPx = Math.min(size.width * 0.7, areaH * 0.9, 700);
+      cx = size.width / 2;
+      cy = NAV + areaH / 2;
+    }
     const s = (widthPx / K) * t;
     const depth = size.height / 2 / Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) / K;
 

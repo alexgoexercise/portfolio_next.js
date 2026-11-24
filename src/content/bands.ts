@@ -164,7 +164,7 @@ export const bandsData: Record<string, Band> = {
         title: "JASG60",
         date: "30/04/2025",
         venue: "Gardens by the Bay, Singapore",
-        description: "One of the greated jazz event in Singapore organised by the jazzlings to celebrate SG60. It is also the Singapore stop of the international jazz day. I performed as a drummer in the bossa nova band stationed near the flower dome at gardens by the bay.",
+        description: "One of the greatest jazz events in Singapore organised by the jazzlings to celebrate SG60. It is also the Singapore stop of the international jazz day. I performed as a drummer in the bossa nova band stationed near the flower dome at gardens by the bay.",
         images: [
           {src: "/band-images/Jazzlings/jasg60-1.jpg"},
           {src: "/band-images/Jazzlings/jasg60-2.jpg"}

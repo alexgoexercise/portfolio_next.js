@@ -332,3 +332,122 @@
   font-size: 11px;
   color: var(--cream-dim);
 }
+
+/* ---- Wide screens: the panel is the page. It is big, left-aligned and glassy, and the record player shows through behind its left edge ---- */
+
+.progress {
+  display: contents;
+}
+
+@media (min-width: 761px) {
+  .panel.panel {
+    right: 24px;
+    bottom: auto;
+    max-height: calc(100dvh - var(--nav-h) - 42px);
+    width: min(60vw, 920px);
+    padding: 28px clamp(24px, 3.2vw, 48px) 34px;
+    font-size: 16.5px;
+    background: rgba(18, 12, 10, 0.8);
+    backdrop-filter: blur(14px) saturate(1.2);
+  }
+  .player,
+  .mini {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'head controls'
+      'progress progress'
+      'expand expand';
+    align-items: center;
+    text-align: left;
+    column-gap: 24px;
+  }
+  .head {
+    grid-area: head;
+  }
+  .controls {
+    grid-area: controls;
+    margin: 0;
+  }
+  .progress {
+    grid-area: progress;
+    display: block;
+    margin: 6px 0 10px;
+  }
+  .expand {
+    grid-area: expand;
+    justify-self: start;
+  }
+  .title,
+  .miniTitle {
+    margin: 0 0 4px;
+    font-size: clamp(30px, 3.4vw, 46px);
+    line-height: 1.1;
+  }
+  .period {
+    margin: 0;
+    font-size: 13px;
+  }
+  .now {
+    margin: 0 0 6px;
+    font-size: 17px;
+  }
+  .seek,
+  .times {
+    width: 100%;
+  }
+  .shelf {
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .cover {
+    width: 88px;
+    height: 88px;
+  }
+  .cover span {
+    font-size: 11px;
+  }
+  .story {
+    margin-top: 14px;
+  }
+  .role {
+    font-size: 15.5px;
+  }
+  .heading {
+    font-size: 26px;
+  }
+  .shows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .show {
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+  .showTitle {
+    font-size: 19px;
+  }
+  .showText {
+    font-size: 15px;
+  }
+  .showMeta {
+    font-size: 12.5px;
+  }
+  .pictures {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .picture {
+    width: calc(50% - 4px);
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1000px) {
+  .shows {
+    grid-template-columns: 1fr;
+  }
+}
