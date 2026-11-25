@@ -220,7 +220,7 @@ export const zhProjects: Record<string, ZhProject> = {
   },
   'Personal Website': {
     description: [
-      'alexgosleep.com——一个基于 Next.js 的个人作品集，有两个入口：可以互动的 3D 卧室，以及为其他人准备的简洁快速的朴素版。',
+      'alexgosleep.com——一个基于 Next.js 的个人作品集，有两个入口：可以互动的 3D 卧室，以及为其他人准备的简洁快速的文字版。',
       '房间在 Blender 中建模，导出为 GLB（房间加架子鼓），再用 React Three Fiber 在浏览器里渲染。点一点热点就能制造噪音、吵醒修齐，或者跳到“关于”“项目”“音乐”“联系方式”。',
       '网站其余部分包括教育背景与机器人经历、带 Swiper 图集的工程项目和乐队作品集，以及一张带有“仅限本次访问”点赞按钮的联系卡片。',
     ],

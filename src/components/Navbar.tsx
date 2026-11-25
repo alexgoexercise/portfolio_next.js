@@ -74,7 +74,7 @@ export default function Navbar() {
           {t('Room', '房间')}
         </Link>
         <Link href={inRoom ? other : pathname} className="mode-option" aria-current={inRoom ? undefined : 'true'}>
-          {t('Plain', '简洁')}
+          {t('Plain', '文字')}
         </Link>
       </div>
       </div>

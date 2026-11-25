@@ -105,7 +105,7 @@ export default function Landing() {
           <p className="landing-lede">
             {t(
               "Hi, I'm Alex: computer engineer, robot builder and drummer. This is where I keep my work. Choose how you want to meet it.",
-              '嗨，我是修齐：计算机工程师、机器人爱好者，也是个鼓手。我的作品都放在这儿了，挑一种你喜欢的方式来认识我吧。',
+              '嗨，我是修齐，我平时写写代码打打鼓。',
             )}
           </p>
           <div className="landing-doors">
@@ -114,7 +114,7 @@ export default function Landing() {
               {t('Enter the room', '进入房间')}
             </Link>
             <Link href="/home" className="door door-plain" onClick={go('plain')}>
-              {t('Read the plain site →', '看简洁版网站 →')}
+              {t('Read the plain site →', '看文字版网站 →')}
             </Link>
           </div>
           <p className="landing-hint">{t('The room is a 3D bedroom. Try not to wake Alex up.', '房间是个 3D 卧室，小心别把修齐吵醒。')}</p>
