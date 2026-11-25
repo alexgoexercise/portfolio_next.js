@@ -93,9 +93,19 @@ function AcademicPortfolio() {
             )}
           </div>
           <div>
-            {Array.isArray(project.description)
-              ? project.description.map((line, idx) => <p key={idx}>{line}</p>)
-              : <p>{project.description}</p>}
+            {(Array.isArray(project.description) ? project.description : [project.description]).map((line, idx) => (
+              <React.Fragment key={idx}>
+                <p>{line}</p>
+                {project.figures
+                  ?.filter((f) => f.after === idx)
+                  .map((f) => (
+                    <a key={f.src} className="project-figure" href={f.src} target="_blank" rel="noopener noreferrer" title={t('Open the diagram full size', '查看大图')}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={f.src} alt={t(f.alt, f.altZh)} />
+                    </a>
+                  ))}
+              </React.Fragment>
+            ))}
           </div>
           <div className="slider-wrapper">
             <Swiper
@@ -109,14 +119,7 @@ function AcademicPortfolio() {
             >
               {project.images.map((img, index) => (
                 <SwiperSlide key={index}>
-                  <Image
-                    src={img}
-                    alt={`Slide ${index}`}
-                    width={600}
-                    height={400}
-                    className="slider-image"
-                    draggable={false}
-                  />
+                  <Image src={img} alt={`Slide ${index}`} width={600} height={400} className="slider-image" draggable={false} />
                 </SwiperSlide>
               ))}
             </Swiper>

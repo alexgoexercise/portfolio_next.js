@@ -311,6 +311,108 @@ function MiniRoom() {
   );
 }
 
+/**
+ * IBVS Drone Gate Traversal: the quadrotor from the lab. A carbon X frame with four motors, yellow props and
+ * half-round guards, the Jetson stack and battery on top, the D435i camera at the nose (+x) and the
+ * flight controller slung underneath on its little feet.
+ */
+function Drone() {
+  const props = useRef<(THREE.Group | null)[]>([]);
+  useFrame((_, delta) => {
+    props.current.forEach((p, i) => {
+      if (p) p.rotation.y += delta * (i % 2 ? -38 : 38);
+    });
+  });
+  const arm = 0.062;
+  const corners: [number, number][] = [
+    [arm, arm],
+    [arm, -arm],
+    [-arm, arm],
+    [-arm, -arm],
+  ];
+  return (
+    <group position={[0, 0.05, 0]}>
+      {/* The X-shaped carbon frame */}
+      {[Math.PI / 4, -Math.PI / 4].map((r) => (
+        <mesh key={r} rotation={[0, r, 0]}>
+          <boxGeometry args={[0.2, 0.006, 0.012]} />
+          <Paint color="#26282c" rough={0.35} metal={0.3} />
+        </mesh>
+      ))}
+      {/* Motors, props and guards */}
+      {corners.map(([x, z], i) => (
+        <group key={`${x}${z}`} position={[x, 0, z]}>
+          <mesh position={[0, 0.01, 0]}>
+            <cylinderGeometry args={[0.011, 0.011, 0.016, 14]} />
+            <Paint color={COLOUR.dark} metal={0.6} rough={0.35} />
+          </mesh>
+          <group
+            ref={(g) => {
+              props.current[i] = g;
+            }}
+            position={[0, 0.02, 0]}
+          >
+            <mesh>
+              <boxGeometry args={[0.07, 0.002, 0.009]} />
+              <Paint color="#c6f21a" rough={0.4} glow={0.15} />
+            </mesh>
+          </group>
+          {/* Half-round guard on the outer side of each rotor */}
+          <mesh position={[0, 0.012, 0]} rotation={[Math.PI / 2, 0, Math.atan2(z, x) - Math.PI / 2]}>
+            <torusGeometry args={[0.036, 0.0022, 6, 20, Math.PI]} />
+            <Paint color="#26282c" rough={0.4} />
+          </mesh>
+        </group>
+      ))}
+      {/* Jetson Orin stack in the middle, with its honeycomb lid */}
+      <mesh position={[0.012, 0.022, 0]}>
+        <boxGeometry args={[0.07, 0.034, 0.042]} />
+        <Paint color="#1d1f23" rough={0.5} />
+      </mesh>
+      <mesh position={[0.012, 0.0405, 0]}>
+        <cylinderGeometry args={[0.012, 0.012, 0.003, 6]} />
+        <Paint color="#3a3d44" rough={0.5} />
+      </mesh>
+      {/* Battery pack beside it */}
+      <mesh position={[-0.05, 0.026, 0]}>
+        <boxGeometry args={[0.062, 0.026, 0.036]} />
+        <Paint color="#d9dadd" rough={0.45} />
+      </mesh>
+      <mesh position={[-0.05, 0.04, 0]}>
+        <boxGeometry args={[0.03, 0.002, 0.037]} />
+        <Paint color={COLOUR.mustard} />
+      </mesh>
+      {/* RealSense D435i at the nose */}
+      <mesh position={[0.058, 0.026, 0]}>
+        <boxGeometry args={[0.016, 0.018, 0.062]} />
+        <Paint color={COLOUR.steel} metal={0.6} rough={0.35} />
+      </mesh>
+      {[-0.022, 0, 0.022].map((z) => (
+        <mesh key={z} position={[0.0664, 0.026, z]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.0042, 0.0042, 0.001, 12]} />
+          <Paint color="#000000" rough={0.15} />
+        </mesh>
+      ))}
+      {/* Flight controller underneath, on its feet */}
+      <mesh position={[0, -0.014, 0]}>
+        <boxGeometry args={[0.04, 0.012, 0.04]} />
+        <Paint color="#17181b" rough={0.4} />
+      </mesh>
+      {[
+        [-0.028, -0.028],
+        [-0.028, 0.028],
+        [0.028, -0.028],
+        [0.028, 0.028],
+      ].map(([x, z]) => (
+        <mesh key={`${x}${z}`} position={[x, -0.026, z]}>
+          <cylinderGeometry args={[0.005, 0.0065, 0.016, 10]} />
+          <Paint color={COLOUR.teal} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 /** Stand-in for a project that has no model of its own yet: a glowing cube. */
 function Placeholder() {
   return (
@@ -330,6 +432,7 @@ interface PropModel {
 /** The model for each project, by its slug (see projectsView.ts). */
 export const PROP_MODELS: Record<string, PropModel> = {
   autoboat: { Model: Boat, spin: true },
+  'ibvs-drone-gate-traversal': { Model: Drone, spin: true },
   'ar-laser-tag': { Model: Gun, spin: true },
   'rtos-car-racing': { Model: Car, spin: true },
   'cat-aims-at-you': { Model: Cat, spin: false },

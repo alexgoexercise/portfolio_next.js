@@ -299,3 +299,18 @@
   margin: 14px 0 0;
   border-radius: 3px;
 }
+
+/* Diagrams sit inside the text, and open full size when clicked */
+.figure {
+  display: block;
+  margin: 12px 0 16px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

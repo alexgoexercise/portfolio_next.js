@@ -105,7 +105,7 @@ export default function Landing() {
           <p className="landing-lede">
             {t(
               "Hi, I'm Alex: computer engineer, robot builder and drummer. This is where I keep my work. Choose how you want to meet it.",
-              '嗨，我是 Alex：计算机工程师、机器人爱好者，也是个鼓手。我的作品都放在这儿了，挑一种你喜欢的方式来认识我吧。',
+              '嗨，我是修齐：计算机工程师、机器人爱好者，也是个鼓手。我的作品都放在这儿了，挑一种你喜欢的方式来认识我吧。',
             )}
           </p>
           <div className="landing-doors">
@@ -117,14 +117,14 @@ export default function Landing() {
               {t('Read the plain site →', '看简洁版网站 →')}
             </Link>
           </div>
-          <p className="landing-hint">{t('The room is a 3D bedroom. Try not to wake Alex up.', '房间是个 3D 卧室，小心别把 Alex 吵醒。')}</p>
+          <p className="landing-hint">{t('The room is a 3D bedroom. Try not to wake Alex up.', '房间是个 3D 卧室，小心别把修齐吵醒。')}</p>
         </div>
 
         <Link href="/diorama" className="landing-room" onClick={go('room')} aria-label={t('Enter the room', '进入房间')}>
           <div className="landing-room-tilt">
             <Image
               src="/room-preview.jpg"
-              alt={t('A small bedroom at night with a drum kit, a desk and a sleeping Alex', '夜晚的小卧室，里面有一套架子鼓、一张书桌，和一个正在睡觉的 Alex')}
+              alt={t('A small bedroom at night with a drum kit, a desk and a sleeping Alex', '夜晚的小卧室，里面有一套架子鼓、一张书桌，和一个正在睡觉的修齐')}
               width={1400}
               height={1050}
               priority
@@ -137,7 +137,7 @@ export default function Landing() {
           </div>
         </Link>
       </div>
-      <p className="landing-foot">{t('Made by Alex, who should have been asleep hours ago.', 'Alex 做的——他几个小时前就该睡了。')}</p>
+      <p className="landing-foot">{t('Made by Alex, who should have been asleep hours ago.', '修齐做的——他几个小时前就该睡了。')}</p>
     </main>
   );
 }

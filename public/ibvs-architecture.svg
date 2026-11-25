@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 800" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#f1e4c8"/></marker><marker id="ao" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff9a4d"/></marker><marker id="at" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#4fb3ab"/></marker><marker id="ar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#e0674a"/></marker></defs>
+<rect width="480" height="800" rx="14" fill="#17110e"/>
+<text x="24" y="34" fill="#ff9a4d" font-size="12.5" letter-spacing="1.8">SYSTEM ARCHITECTURE</text>
+<rect x="20" y="52" width="440" height="92" rx="12" fill="none" stroke="#5b4a3c" stroke-dasharray="5 5"/><text x="34" y="70" fill="#c9b99c" font-size="11" text-anchor="start" font-weight="400">IN THE ARENA</text>
+<rect x="32" y="80" width="196" height="52" rx="9" fill="#241a15" stroke="#5b4a3c" stroke-width="1.6"/><text x="130.0" y="103.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Vicon server</text><text x="130.0" y="122.0" fill="#c9b99c" font-size="12" text-anchor="middle">pose of the drone</text>
+<rect x="252" y="80" width="196" height="52" rx="9" fill="#241a15" stroke="#5b4a3c" stroke-width="1.6"/><text x="350.0" y="103.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Vicon cameras</text><text x="350.0" y="122.0" fill="#c9b99c" font-size="12" text-anchor="middle">motion capture</text>
+<line x1="252" y1="106" x2="228" y2="106" stroke="#f1e4c8" stroke-width="2" marker-end="url(#a)"/>
+<rect x="120" y="168" width="320" height="56" rx="9" fill="#241a15" stroke="#dfa83f" stroke-width="1.6"/><text x="280.0" y="193.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Intel RealSense D435i</text><text x="280.0" y="212.0" fill="#c9b99c" font-size="12" text-anchor="middle">colour for the gate · depth for obstacles</text>
+<rect x="20" y="250" width="440" height="336" rx="12" fill="#1d2a29" stroke="#4fb3ab" stroke-width="1.8"/><text x="240" y="574" fill="#4fb3ab" font-size="12" text-anchor="middle" font-weight="700">NVIDIA JETSON ORIN NX · ON THE DRONE</text>
+<line x1="146" y1="224" x2="146" y2="292" stroke="#f1e4c8" stroke-width="2" marker-end="url(#a)"/>
+<text x="156" y="252" fill="#c9b99c" font-size="11.5" text-anchor="start" font-weight="400">colour</text>
+<line x1="342" y1="224" x2="342" y2="292" stroke="#f1e4c8" stroke-width="2" marker-end="url(#a)"/>
+<text x="352" y="252" fill="#c9b99c" font-size="11.5" text-anchor="start" font-weight="400">depth</text>
+<rect x="56" y="292" width="180" height="56" rx="9" fill="#241a15" stroke="#5b4a3c" stroke-width="1.6"/><text x="146.0" y="317.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">YOLO gate detector</text><text x="146.0" y="336.0" fill="#c9b99c" font-size="12" text-anchor="middle">finds the gate</text>
+<rect x="252" y="292" width="180" height="56" rx="9" fill="#241a15" stroke="#ff9a4d" stroke-width="1.6"/><text x="342.0" y="317.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Depth avoidance</text><text x="342.0" y="336.0" fill="#c9b99c" font-size="12" text-anchor="middle">potential field</text>
+<line x1="146" y1="348" x2="146" y2="378" stroke="#4fb3ab" stroke-width="2" marker-end="url(#at)"/>
+<line x1="342" y1="348" x2="342" y2="378" stroke="#ff9a4d" stroke-width="2" marker-end="url(#ao)"/>
+<rect x="56" y="378" width="376" height="60" rx="9" fill="#241a15" stroke="#4fb3ab" stroke-width="1.6"/><text x="244.0" y="405.0" fill="#f1e4c8" font-size="16" font-weight="600" text-anchor="middle">ViSP IBVS + avoidance</text><text x="244.0" y="424.0" fill="#c9b99c" font-size="13" text-anchor="middle">v_cmd = v_IBVS + v_avoid</text>
+<rect x="56" y="476" width="180" height="56" rx="9" fill="#241a15" stroke="#5b4a3c" stroke-width="1.6"/><text x="146.0" y="501.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Mocap sender</text><text x="146.0" y="520.0" fill="#c9b99c" font-size="12" text-anchor="middle">Vicon pose → EKF2</text>
+<rect x="252" y="476" width="180" height="56" rx="9" fill="#241a15" stroke="#5b4a3c" stroke-width="1.6"/><text x="342.0" y="501.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">MAVSDK + MAVProxy</text><text x="342.0" y="520.0" fill="#c9b99c" font-size="12" text-anchor="middle">MAVLink router</text>
+<line x1="342" y1="438" x2="342" y2="476" stroke="#f1e4c8" stroke-width="2" marker-end="url(#a)"/>
+<line x1="236" y1="504" x2="252" y2="504" stroke="#f1e4c8" stroke-width="2" marker-end="url(#a)"/>
+<path d="M36 132 L36 504 L56 504" fill="none" stroke="#f1e4c8" stroke-width="2" marker-end="url(#a)"/>
+<text x="46" y="176" fill="#c9b99c" font-size="11.5" text-anchor="start" font-weight="400">pose over</text>
+<text x="46" y="191" fill="#c9b99c" font-size="11.5" text-anchor="start" font-weight="400">Wi-Fi</text>
+<line x1="342" y1="532" x2="342" y2="640" stroke="#ff9a4d" stroke-width="2.4" marker-end="url(#ao)"/>
+<text x="352" y="610" fill="#ff9a4d" font-size="12" text-anchor="start" font-weight="400">MAVLink</text>
+<text x="352" y="626" fill="#ff9a4d" font-size="12" text-anchor="start" font-weight="400">UART</text>
+<rect x="150" y="640" width="300" height="70" rx="9" fill="#241a15" stroke="#ff9a4d" stroke-width="1.6"/><text x="300.0" y="672.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Pixhawk 6X mini · PX4</text><text x="300.0" y="691.0" fill="#c9b99c" font-size="12" text-anchor="middle">EKF2 · attitude / rate control</text>
+<line x1="300" y1="710" x2="300" y2="738" stroke="#ff9a4d" stroke-width="2.4" marker-end="url(#ao)"/>
+<text x="310" y="730" fill="#ff9a4d" font-size="12" text-anchor="start" font-weight="400">PWM</text>
+<rect x="150" y="738" width="300" height="48" rx="9" fill="#241a15" stroke="#5b4a3c" stroke-width="1.6"/><text x="300.0" y="767.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">ESC → 4 motors</text>
+<text x="26" y="660" fill="#c9b99c" font-size="12" text-anchor="start" font-weight="400">Time-critical</text>
+<text x="26" y="676" fill="#c9b99c" font-size="12" text-anchor="start" font-weight="400">control stays</text>
+<text x="26" y="692" fill="#c9b99c" font-size="12" text-anchor="start" font-weight="400">on the flight</text>
+<text x="26" y="708" fill="#c9b99c" font-size="12" text-anchor="start" font-weight="400">controller</text>
+</svg>

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 import { useLang, useT } from '@/i18n';
 import { localProject } from '@/i18n/content';
 import { chosenSlug, roomProjects } from './projectsView';
@@ -81,7 +81,17 @@ export default function ProjectsPanel() {
 
         <div className={styles.text}>
           {paragraphs.map((line, i) => (
-            <p key={i}>{line}</p>
+            <Fragment key={i}>
+              <p>{line}</p>
+              {project.figures
+                ?.filter((f) => f.after === i)
+                .map((f) => (
+                  <a key={f.src} className={styles.figure} href={f.src} target="_blank" rel="noopener noreferrer" title={t('Open the diagram full size', '查看大图')}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={f.src} alt={t(f.alt, f.altZh)} />
+                  </a>
+                ))}
+            </Fragment>
           ))}
         </div>
 

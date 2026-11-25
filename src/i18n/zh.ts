@@ -190,6 +190,14 @@ export const zhProjects: Record<string, ZhProject> = {
       '参与 Targetboat 传感器系统的水上试航和车间调试，从船体电子设备一路做到现场部署。',
     ],
   },
+  'IBVS Drone Gate Traversal': {
+    description: [
+      '我的硕士课题（CEG5003），在 NUS 淡马锡实验室（TLab）黄苏南教授的课题组完成：扩展组里基于 ViSP 的图像视觉伺服（IBVS）框架，让四旋翼无人机仅凭摄像头就能穿过一道 1.07 米宽的门。无人机搭载 Intel RealSense D435i、NVIDIA Jetson Orin NX 和 PX4 Pixhawk 6X。',
+      '避障：基于深度图的人工势场法。D435i 的每个深度点都会给 IBVS 指令叠加一个排斥速度，让无人机在持续跟踪门的同时，避开障碍物和门框——即使门已经移出了画面。实飞中，只用 IBVS 会撞上障碍物，而加入避障后的控制器在全部 20 次测试飞行中都成功穿门。',
+      '可复现：用 Docker 把整套 IBVS 软件栈容器化并发布到 Docker Hub，新无人机的环境配置从大约一周缩短到几条命令。',
+      '少依赖设备：集成 Holybro H-Flow 光流传感器，作为 Vicon 动作捕捉的机载替代方案，让无人机不依赖任何外部定位设施也能穿门。',
+    ],
+  },
   'AR Laser Tag++': {
     description: [
       '开发了一套面向 AR 游戏的可穿戴系统，包含枪、背心和各种传感器。',
@@ -213,7 +221,7 @@ export const zhProjects: Record<string, ZhProject> = {
   'Personal Website': {
     description: [
       'alexgosleep.com——一个基于 Next.js 的个人作品集，有两个入口：可以互动的 3D 卧室，以及为其他人准备的简洁快速的朴素版。',
-      '房间在 Blender 中建模，导出为 GLB（房间加架子鼓），再用 React Three Fiber 在浏览器里渲染。点一点热点就能制造噪音、吵醒 Alex，或者跳到“关于”“项目”“音乐”“联系方式”。',
+      '房间在 Blender 中建模，导出为 GLB（房间加架子鼓），再用 React Three Fiber 在浏览器里渲染。点一点热点就能制造噪音、吵醒修齐，或者跳到“关于”“项目”“音乐”“联系方式”。',
       '网站其余部分包括教育背景与机器人经历、带 Swiper 图集的工程项目和乐队作品集，以及一张带有“仅限本次访问”点赞按钮的联系卡片。',
     ],
     clickNotice: '点击查看源代码',
@@ -232,26 +240,26 @@ export const zhHotspots: Record<string, { label: string; blurb: string; cta?: st
   projects: {
     label: '电脑',
     blurb: '机器人、嵌入式系统，还有我在这台机器上（和 Claude 一起）做出来的东西。',
-    cta: '来围观 Alex 都在做什么项目',
+    cta: '来围观修齐都在做什么项目',
   },
   music: {
     label: '架子鼓',
-    blurb: 'Alex 今天一个基本功都没练。',
-    cta: '围观 Alex 的音乐之旅',
+    blurb: '修齐今天一个基本功都没练。',
+    cta: '围观修齐的音乐之旅',
     view: '坐到鼓后面去',
   },
   about: {
     label: '书架',
     blurb: '想知道我在哪读的书、在哪工作过、会些什么，看这里。',
-    cta: '围观 Alex 的简历',
+    cta: '围观修齐的简历',
   },
   contacts: {
     label: '手机',
     blurb: '邮箱、LinkedIn，以及所有能找到我的地方。',
-    cta: '联系 Alex，顺便关注他的 Instagram',
+    cta: '联系修齐，顺便关注他的 Instagram',
   },
   alex: {
-    label: 'Alex',
+    label: '修齐',
     blurb: '别戳我，别戳我。',
   },
 };

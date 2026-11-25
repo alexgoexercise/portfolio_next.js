@@ -34,8 +34,8 @@ export default function Home() {
   return (
     <div className="page home">
       <p className="eyebrow">{t('Singapore · Computer engineer · Drummer', '新加坡 · 计算机工程师 · 鼓手')}</p>
-      <h1 className="home-title">Alex Zhao</h1>
-      <p className="home-alias">Zhao Lixiuqi 赵李修齐</p>
+      <h1 className="home-title">{t('Alex Zhao', '赵李修齐')}</h1>
+      <p className="home-alias">{t('Zhao Lixiuqi 赵李修齐', 'Zhao Lixiuqi')}</p>
       <p className="home-lede">
         {t(
           "I build embedded systems and robots — from USV software and visual servoing to LiDAR perception — write software, and play the drums. I studied computer engineering at the National University of Singapore and am now doing a Master's there in machine intelligence.",

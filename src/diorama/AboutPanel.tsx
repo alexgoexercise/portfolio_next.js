@@ -60,7 +60,7 @@ export default function AboutPanel() {
         body: (
           <>
             <p className={styles.count}>{t('Singapore', '新加坡')}</p>
-            <h1 className={styles.title}>{t('Alex Zhao Lixiuqi 赵李修齐', '赵李修齐 Alex Zhao')}</h1>
+            <h1 className={styles.title}>{t('Alex Zhao Lixiuqi 赵李修齐', '赵李修齐')}</h1>
             <p>{resume.summary}</p>
           </>
         ),

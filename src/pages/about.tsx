@@ -33,14 +33,14 @@ export default function About() {
     <div className="page resume">
       <header>
         <div className="header-left">
-          <h1>ALEX</h1>
+          <h1>{t('ALEX', '修齐')}</h1>
           <h2>ZHAO LIXIUQI 赵李修齐</h2>
           <p>Singapore | alexzhaolixiuqi@gmail.com | +65 83514349</p>
         </div>
         <div className="header-photo">
           <div className="photo-box">
             <Image src="/photo1.jpg" 
-            alt="Alex Zhao's Photo" 
+            alt={t("Alex Zhao's Photo", '赵李修齐的照片')} 
             onClick={handleImageClick}
             width={120} 
             height={180} 

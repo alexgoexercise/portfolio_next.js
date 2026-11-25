@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 520" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#f1e4c8"/></marker><marker id="ao" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff9a4d"/></marker><marker id="at" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#4fb3ab"/></marker><marker id="ar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#e0674a"/></marker></defs>
+<rect width="480" height="520" rx="14" fill="#17110e"/>
+<text x="24" y="34" fill="#ff9a4d" font-size="12.5" letter-spacing="1.8">HOW THE TWO COMMANDS ARE BUILT</text>
+<text x="132.0" y="66" fill="#4fb3ab" font-size="12" text-anchor="middle" font-weight="700">ATTRACT · colour</text>
+<rect x="36" y="78" width="192" height="52" rx="9" fill="#241a15" stroke="#4fb3ab" stroke-width="1.6"/><text x="132.0" y="109.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Colour image</text>
+<rect x="36" y="156" width="192" height="52" rx="9" fill="#241a15" stroke="#4fb3ab" stroke-width="1.6"/><text x="132.0" y="179.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">YOLO detector</text><text x="132.0" y="198.0" fill="#c9b99c" font-size="12" text-anchor="middle">finds the gate corners</text>
+<rect x="36" y="234" width="192" height="60" rx="9" fill="#241a15" stroke="#4fb3ab" stroke-width="1.6"/><text x="132.0" y="261.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">IBVS control law</text><text x="132.0" y="280.0" fill="#c9b99c" font-size="12" text-anchor="middle">−λ J⁺ (s − s*)</text>
+<line x1="132.0" y1="130" x2="132.0" y2="156" stroke="#4fb3ab" stroke-width="2" marker-end="url(#at)"/>
+<line x1="132.0" y1="208" x2="132.0" y2="234" stroke="#4fb3ab" stroke-width="2" marker-end="url(#at)"/>
+<text x="348.0" y="66" fill="#ff9a4d" font-size="12" text-anchor="middle" font-weight="700">REPEL · depth</text>
+<rect x="252" y="78" width="192" height="52" rx="9" fill="#241a15" stroke="#dfa83f" stroke-width="1.6"/><text x="348.0" y="101.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Depth image</text><text x="348.0" y="120.0" fill="#c9b99c" font-size="12" text-anchor="middle">D435i</text>
+<rect x="252" y="156" width="192" height="52" rx="9" fill="#241a15" stroke="#ff9a4d" stroke-width="1.6"/><text x="348.0" y="179.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Subsample</text><text x="348.0" y="198.0" fill="#c9b99c" font-size="12" text-anchor="middle">every 16th pixel → 3D points</text>
+<rect x="252" y="234" width="192" height="60" rx="9" fill="#241a15" stroke="#ff9a4d" stroke-width="1.6"/><text x="348.0" y="261.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Keep 0.1 &lt; ρ &lt; 1.2 m</text><text x="348.0" y="280.0" fill="#c9b99c" font-size="12" text-anchor="middle">sum of −∇U_rep</text>
+<rect x="252" y="320" width="192" height="52" rx="9" fill="#241a15" stroke="#ff9a4d" stroke-width="1.6"/><text x="348.0" y="343.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">Limit speed</text><text x="348.0" y="362.0" fill="#c9b99c" font-size="12" text-anchor="middle">‖v_avoid‖ ≤ 0.8 m/s</text>
+<line x1="348.0" y1="130" x2="348.0" y2="156" stroke="#ff9a4d" stroke-width="2" marker-end="url(#ao)"/>
+<line x1="348.0" y1="208" x2="348.0" y2="234" stroke="#ff9a4d" stroke-width="2" marker-end="url(#ao)"/>
+<line x1="348.0" y1="294" x2="348.0" y2="320" stroke="#ff9a4d" stroke-width="2" marker-end="url(#ao)"/>
+<circle cx="240" cy="412" r="22" fill="#241a15" stroke="#f1e4c8" stroke-width="2"/><text x="240" y="421" fill="#f1e4c8" font-size="28" text-anchor="middle" font-weight="600">+</text>
+<path d="M132.0 294 L132.0 412 L216 412" fill="none" stroke="#4fb3ab" stroke-width="2" marker-end="url(#at)"/>
+<text x="140.0" y="340" fill="#4fb3ab" font-size="14" text-anchor="start" font-weight="700">v_IBVS</text>
+<path d="M348.0 372 L348.0 412 L264 412" fill="none" stroke="#ff9a4d" stroke-width="2" marker-end="url(#ao)"/>
+<text x="356.0" y="392" fill="#e0674a" font-size="14" text-anchor="start" font-weight="700">v_avoid</text>
+<line x1="240" y1="434" x2="240" y2="456" stroke="#f1e4c8" stroke-width="2" marker-end="url(#a)"/>
+<rect x="110" y="456" width="260" height="52" rx="9" fill="#241a15" stroke="#ff9a4d" stroke-width="1.6"/><text x="240.0" y="479.0" fill="#f1e4c8" font-size="15" font-weight="600" text-anchor="middle">v_cmd → PX4</text><text x="240.0" y="498.0" fill="#c9b99c" font-size="12" text-anchor="middle">Offboard velocity setpoint</text>
+</svg>

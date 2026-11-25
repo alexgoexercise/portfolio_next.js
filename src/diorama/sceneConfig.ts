@@ -165,7 +165,7 @@ export const sceneConfig = {
     /** Middle of the row. */
     center: [1.03, 1.12, -1.15] as Vec3,
     /** Gap between neighbouring models. */
-    spacing: 0.34,
+    spacing: 0.31,
     /** How far below its place a model starts, before it rises. */
     riseFrom: -0.4,
     /** The chosen project comes forward, grows and turns. */

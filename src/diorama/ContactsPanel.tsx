@@ -84,7 +84,7 @@ export default function ContactsPanel() {
   return (
     <div className={styles.screen}>
       <div className={styles.status}>
-        <span>Alex</span>
+        <span>{t('Alex', '修齐')}</span>
         <span className={styles.island} aria-hidden="true" />
         <span>5G</span>
       </div>

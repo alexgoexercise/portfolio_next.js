@@ -108,7 +108,7 @@
 .card {
   position: absolute;
   left: 16px;
-  bottom: 20px;
+  bottom: 72px;
   width: min(320px, calc(100vw - 32px));
   padding: 14px 16px 16px;
   pointer-events: auto;
@@ -162,45 +162,42 @@
   background: rgba(241, 228, 200, 0.14);
 }
 
-/* Camera view buttons, bottom right */
+/* Camera: a round icon button in the bottom-left corner, next to the music one; its views open above it */
 .views {
   position: absolute;
-  right: 16px;
-  /* Sits above the site's Music switch, which takes the bottom right corner */
-  bottom: 74px;
-  min-width: 112px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
-  padding: 8px;
-  max-width: calc(100vw - 32px);
+  left: 66px;
+  bottom: 20px;
 }
 
 .viewsToggle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 4px 6px;
-  background: none;
-  border: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   color: var(--cream);
-  font-size: 11.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  background: var(--ink);
+  border: 1px solid rgba(241, 228, 200, 0.18);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
 }
 
-.viewsToggle:hover {
+.viewsToggle:hover,
+.viewsToggle[aria-expanded='true'] {
   color: var(--amber);
+  border-color: var(--amber);
 }
 
 .viewsList {
+  position: absolute;
+  left: 0;
+  bottom: 50px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 6px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 8px;
 }
 
 .viewButton {
@@ -313,12 +310,18 @@
   .cardText {
     margin: 4px 0 10px;
   }
-  /* The view buttons move to the top right, out of the way of the card; the move hint is for mouse users */
+  /* The round buttons move to the top right, out of the way of the card; the move hint is for mouse users */
   .views {
     top: calc(var(--nav-h) + 12px);
-    right: 10px;
+    right: 58px;
+    left: auto;
     bottom: auto;
-    padding: 6px;
+  }
+  .viewsList {
+    top: 48px;
+    right: 0;
+    left: auto;
+    bottom: auto;
   }
   .viewHint {
     display: none;

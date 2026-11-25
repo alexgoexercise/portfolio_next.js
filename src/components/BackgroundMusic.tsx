@@ -84,6 +84,7 @@ export default function BackgroundMusic() {
     <button
       type="button"
       className="bg-music"
+      data-muted={muted || undefined}
       aria-label={muted ? t('Turn the background music on', '打开背景音乐') : t('Turn the background music off', '关闭背景音乐')}
       title={muted ? t('Music on', '打开音乐') : t('Music off', '关闭音乐')}
       onClick={() => {
@@ -95,8 +96,12 @@ export default function BackgroundMusic() {
         } catch {}
       }}
     >
-      <span>{t('Music', '音乐')}</span>
-      <span aria-hidden="true">{muted ? t('off', '关') : t('on', '开')}</span>
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M9 18V5l12-2v13" />
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="18" cy="16" r="3" />
+        {muted && <line x1="2" y1="2" x2="22" y2="22" />}
+      </svg>
     </button>
   );
 }

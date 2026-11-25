@@ -57,7 +57,7 @@ export default function Contacts() {
       <div className="contact-card">
         <Image
           src="/photo1.jpg"
-          alt="Alex Zhao"
+          alt={t('Alex Zhao', '赵李修齐')}
           className="contact-photo"
           width={120}
           height={120}
@@ -65,7 +65,7 @@ export default function Contacts() {
           onClick={handleImageClick}
           title={t('Click me!', '点我！')}
         />
-        <h2 className="contact-name">Alex Zhao</h2>
+        <h2 className="contact-name">{t('Alex Zhao', '赵李修齐')}</h2>
         <p className="contact-role">{t("Let's connect!", '来聊聊吧！')}</p>
         
         {/* Like Button */}

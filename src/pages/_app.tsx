@@ -31,11 +31,11 @@ const TITLES_ZH: Record<string, string> = {
   '/diorama/about': '关于 · 房间',
   '/diorama/contacts': '联系 · 房间',
   '/diorama/music': '音乐 · 房间',
-  '/home': 'Alex Zhao 赵李修齐',
-  '/about': '关于 · Alex Zhao',
-  '/projects': '项目 · Alex Zhao',
-  '/contacts': '联系 · Alex Zhao',
-  '/band/[id]': '音乐 · Alex Zhao',
+  '/home': '赵李修齐',
+  '/about': '关于 · 赵李修齐',
+  '/projects': '项目 · 赵李修齐',
+  '/contacts': '联系 · 赵李修齐',
+  '/band/[id]': '音乐 · 赵李修齐',
 };
 
 const TITLES: Record<string, string> = {

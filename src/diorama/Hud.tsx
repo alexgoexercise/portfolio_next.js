@@ -82,16 +82,16 @@ export default function Hud({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={percent}
-          aria-label={t('How close Alex is to waking up', 'Alex 离醒来还有多远')}
+          aria-label={t('How close Alex is to waking up', '修齐离醒来还有多远')}
         >
           <div className={styles.fill} style={{ width: `${percent}%` }} />
         </div>
         <p className={styles.hint}>
           {awake
-            ? t('Too loud. Alex is up now, and he is looking at you in confusion.', '太吵了。Alex 醒了，正一脸懵地看着你。')
+            ? t('Too loud. Alex is up now, and he is looking at you in confusion.', '太吵了。修齐醒了，正一脸懵地看着你。')
             : t(
                 'Alex is asleep. You can click around the room, but every sound brings him closer to waking.',
-                'Alex 睡着了。你可以在房间里随便点，但每发出一次声音，他就离醒来更近一步。',
+                '修齐睡着了。你可以在房间里随便点，但每发出一次声音，他就离醒来更近一步。',
               )}
         </p>
         <button type="button" className={styles.mute} onClick={onToggleMute}>
@@ -99,19 +99,23 @@ export default function Hud({
         </button>
       </section>
 
-      <section className={`${styles.panel} ${styles.views}`} aria-label={t('Camera', '视角')}>
+      <section className={styles.views} aria-label={t('Camera', '视角')}>
         <button
           type="button"
           className={styles.viewsToggle}
           aria-expanded={viewsOpen}
           aria-controls="camera-views"
+          aria-label={t('Camera views', '视角切换')}
+          title={t('Camera views', '视角切换')}
           onClick={() => setViewsOpen((open) => !open)}
         >
-          <span>{t('Camera', '视角')}</span>
-          <span aria-hidden="true">{viewsOpen ? '−' : '+'}</span>
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
         </button>
         {viewsOpen && (
-          <div id="camera-views" className={styles.viewsList}>
+          <div id="camera-views" className={`${styles.panel} ${styles.viewsList}`}>
             <button type="button" className={styles.viewButton} onClick={() => onView('overview')}>
               {t('Overview', '全景')}
             </button>
@@ -125,8 +129,8 @@ export default function Hud({
 
       {awake && (
         <section className={`${styles.panel} ${styles.banner}`} role="status">
-          <p className={styles.bannerTitle}>{t('You woke Alex.', '你把 Alex 吵醒了。')}</p>
-          <p className={styles.bannerText}>{t('Alex was having a really good dream.', 'Alex 刚才正做着一个美梦呢。')}</p>
+          <p className={styles.bannerTitle}>{t('You woke Alex.', '你把修齐吵醒了。')}</p>
+          <p className={styles.bannerText}>{t('Alex was having a really good dream.', '修齐刚才正做着一个美梦呢。')}</p>
           <button type="button" className={styles.sleepButton} onClick={onLetSleep}>
             {t('Sorry. Please go back to sleep', '对不起，请继续睡吧')}
           </button>
