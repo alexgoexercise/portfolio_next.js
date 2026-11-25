@@ -151,7 +151,7 @@ export default function CameraRig({
 }: {
   request: ViewRequest | null;
   locked?: boolean;
-  /** Fingers do not move the camera (behind the drum kit, where they are for playing). The mouse still can. */
+  /** Behind the drum kit one finger plays instead of moving the camera; two fingers dragging still turn it. */
   touchLocked?: boolean;
 }) {
   const controls = useRef<Controls>(null);
@@ -176,7 +176,8 @@ export default function CameraRig({
     const c = controls.current;
     if (!c) return;
     c.touches.ONE = touchLocked ? (-1 as THREE.TOUCH) : THREE.TOUCH.ROTATE;
-    c.touches.TWO = touchLocked ? (-1 as THREE.TOUCH) : THREE.TOUCH.DOLLY_PAN;
+    // Behind the kit one finger plays a drum, and two fingers dragging together turn the view
+    c.touches.TWO = touchLocked ? THREE.TOUCH.ROTATE : THREE.TOUCH.DOLLY_PAN;
   }, [touchLocked]);
 
   // Locking the camera switches the visitor's controls off; unlocking hands them back
