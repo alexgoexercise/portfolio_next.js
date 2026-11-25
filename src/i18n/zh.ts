@@ -23,7 +23,7 @@ export interface ZhBand {
 
 export const zhBands: Record<string, ZhBand> = {
   '1': {
-    description: '新加坡国立大学文化活动中心（现隶属艺术中心）旗下的社团，专攻华语流行（Mandopop）演出。',
+    description: '新加坡国立大学CAC（现隶属CFA）旗下的社团，专攻华语流行（Mandopop）演出。',
     role: '鼓手、贝斯手、Exco成员（2022-2023 年任副主席兼宣传总监）',
     tags: ['华语流行', '流行', '摇滚'],
     clickNotice: '点击关注 Instagram',
