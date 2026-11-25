@@ -23,6 +23,11 @@ export interface ViewPreset {
   fitWidth?: boolean;
   /** A different camera for tall screens (phones), where the text sits below the room instead of beside it. */
   tall?: { position: Vec3; target: Vec3 };
+  /**
+   * Slide gradually from the normal camera to the tall one as the screen goes from square to as tall as a
+   * phone, so every screen shape gets a camera that fits, instead of one switch at "taller than wide".
+   */
+  blendTall?: boolean;
 }
 
 /** The default viewpoint: the same as the "Cam_Hero" camera in room.blend. */
@@ -221,6 +226,13 @@ export const sceneConfig = {
         fov: 52,
         position: [0.2, 1.75, -1.0] as Vec3,
         target: [1.1, 0.55, 0.7] as Vec3,
+        // Narrow screens: the lens widens (see fitWidth) and the camera backs off and rises, so the whole kit stays in view
+        fitWidth: true,
+        blendTall: true,
+        tall: {
+          position: [-0.3, 2.45, -1.8] as Vec3,
+          target: [1.05, 0.5, 0.6] as Vec3,
+        },
       },
       /**
        * Facing the desk from the middle of the room, for the projects page.

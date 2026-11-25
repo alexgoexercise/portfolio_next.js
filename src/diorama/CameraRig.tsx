@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, type ElementRef } from 'react';
 import { OrbitControls } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { sceneConfig, type ViewName, type ViewPreset } from './sceneConfig';
+import { sceneConfig, type Vec3, type ViewName, type ViewPreset } from './sceneConfig';
 
 /**
  * The camera: what the visitor can do with it, and what keeps them from
@@ -38,6 +38,16 @@ function lensFor(view: ViewPreset, aspect: number) {
 
 /** Where a view puts the camera on a screen of this shape. */
 function placeFor(view: ViewPreset, aspect: number) {
+  if (view.tall && view.blendTall) {
+    // From a square screen (0 = the normal camera) to a phone's (1 = the tall camera)
+    const k = THREE.MathUtils.smoothstep(1 - aspect, 0, 0.5);
+    const mix = (a: Vec3, b: Vec3): Vec3 => [
+      THREE.MathUtils.lerp(a[0], b[0], k),
+      THREE.MathUtils.lerp(a[1], b[1], k),
+      THREE.MathUtils.lerp(a[2], b[2], k),
+    ];
+    return { position: mix(view.position, view.tall.position), target: mix(view.target, view.tall.target) };
+  }
   const tall = view.tall && aspect < 1 ? view.tall : view;
   return { position: tall.position, target: tall.target };
 }
