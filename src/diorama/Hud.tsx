@@ -27,9 +27,9 @@ interface HudProps {
 
 function statusText(noise: number, awake: boolean, t: (en: string, zh: string) => string) {
   if (awake) return t('Awake', '醒了');
-  if (noise > 0.66) return t('Stirring', '快醒了');
-  if (noise > 0.3) return t('Restless', '睡不踏实');
-  return t('Fast asleep', '睡得正香');
+  if (noise > 0.66) return t('Stirring', '又翻了个身');
+  if (noise > 0.3) return t('Restless', '翻了个身');
+  return t('Fast asleep', '睡得很香');
 }
 
 /** Everything drawn on top of the 3D room. */
@@ -73,7 +73,7 @@ export default function Hud({
       {drumming && <div className={styles.drumHint}>{t('Click the drums. Not too loud…', '点一点鼓吧，别太大声……')}</div>}
       <section className={`${styles.panel} ${styles.meter}`} aria-label={t('Wake-up meter', '唤醒指数')}>
         <div className={styles.meterHead}>
-          <span>{t('Noise', '噪音')}</span>
+          <span>{t('Noise', '噪音等级')}</span>
           <span className={awake ? styles.statusAwake : styles.status}>{statusText(noise, awake, t)}</span>
         </div>
         <div
@@ -82,16 +82,16 @@ export default function Hud({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={percent}
-          aria-label={t('How close Alex is to waking up', '修齐离醒来还有多远')}
+          aria-label={t('How close Alex is to waking up', '修齐怒气值')}
         >
           <div className={styles.fill} style={{ width: `${percent}%` }} />
         </div>
         <p className={styles.hint}>
           {awake
-            ? t('Too loud. Alex is up now, and he is looking at you in confusion.', '太吵了。修齐醒了，正一脸懵地看着你。')
+            ? t('Too loud. Alex is up now, and he is looking at you in confusion.', '修齐醒了，一脸懵逼地看着你。')
             : t(
                 'Alex is asleep. You can click around the room, but every sound brings him closer to waking.',
-                '修齐睡着了。你可以在房间里随便点，但每发出一次声音，他就离醒来更近一步。',
+                '在房间随便点点是可以的，只要别把修齐吵醒就行',
               )}
         </p>
         <button type="button" className={styles.mute} onClick={onToggleMute}>

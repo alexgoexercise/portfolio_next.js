@@ -43,7 +43,7 @@ export default function RoomLoader() {
     <>
       {!gone && (
         <div className={styles.curtain} data-done={firstDone} role="status" aria-live="polite">
-          <p className={styles.line}>{t('Waking up the room…', '正在叫醒房间…')}</p>
+          <p className={styles.line}>{t('Waking up the room…', '正在进入房间…')}</p>
           <div className={styles.track}>
             <div className={styles.fill} style={{ width: `${firstDone ? 100 : Math.max(shown, 6)}%` }} />
           </div>

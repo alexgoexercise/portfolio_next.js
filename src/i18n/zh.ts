@@ -24,36 +24,36 @@ export interface ZhBand {
 export const zhBands: Record<string, ZhBand> = {
   '1': {
     description: '新加坡国立大学文化活动中心（现隶属艺术中心）旗下的社团，专攻华语流行（Mandopop）演出。',
-    role: '鼓手、贝斯手、执委会成员（2022-2023 年任副主席兼宣传总监）',
+    role: '鼓手、贝斯手、Exco成员（2022-2023 年任副主席兼宣传总监）',
     tags: ['华语流行', '流行', '摇滚'],
     clickNotice: '点击关注 Instagram',
     shows: {
       'Prelude 2021: 雨中漫步': {
         venue: 'Shaw Foundation Alumni House（线上直播）',
-        description: '在 NUS Voices 的第一场演出。',
+        description: '我在 NUS Voices 的第一场正式演出。',
       },
       'Emerge 2022: 夏夜幻月': {
-        description: '疫情之后 Voices 的第一场线下演出。我打了好多首歌，其中还有一大段周杰伦串烧。',
+        description: '这是疫情之后NUS Voices 的第一场线下演出。我报名打了好多首歌，最喜欢的是一个周杰伦的串烧组曲。',
       },
       'Supernova 2022': {
-        description: 'Supernova 第一次在 NUS 举办，它也是 NUS 每年规模最大的演出之一。',
+        description: '参加了第一届NUS Supernova音乐节，当时一个乐队还能有20min的演出时间。',
       },
       'Prelude 2022: 梦境乐园': {
-        description: '我加入执委会之后，Voices 的第一场音乐会。和团队一起筹办一场音乐会，对我来说是个全新的挑战。',
+        description: '我加入Exco之后的第一场音乐会。作为组织者举办音乐会，和演出乐手的感受完全不一样了。',
       },
       'Emerge 2023: 寻星者': {
         description: '大概是 NUS Voices 办过的最大的一场音乐会，现场观众超过 600 人（场地是 UCC Hall）。',
       },
       'Prelude 2023: 拥抱过去': {
-        description: '第一次在 NUS Voices 兼任贝斯手，同时在鼓上演奏了我最喜欢的歌之一《流沙》。',
+        description: '第一次在 NUS Voices 兼任贝斯手，同时演了我当时好喜欢的《流沙Reimagined》。',
       },
       'Prelude 2024: 爱的余晖': {
-        description: '这次弹了更多首贝斯，不过还是抢到了《小镇姑娘》的鼓。',
+        description: '这次弹了更多贝斯，还演了《小镇姑娘》（这首打的鼓）。',
       },
       'Overdrive 2025': {
         venue: 'NUS 中央图书馆',
         description:
-          '迷你音乐节风格的音乐会。节目单里我演奏了“tender”“emo whiskey”和《神预言》，压轴还有一段致敬方大同的表演。',
+          '迷你音乐节风格的演出。演了《tender》《emo whiskey》《神预言》，还压轴表演了一个致敬方大同的《好不容易》。',
       },
     },
   },
@@ -76,29 +76,29 @@ export const zhBands: Record<string, ZhBand> = {
       JASG60: {
         venue: '滨海湾花园，新加坡',
         description:
-          '新加坡最盛大的爵士活动之一，由 Jazzlings 为庆祝建国 60 周年（SG60）而办，同时也是国际爵士日的新加坡站。我在设在滨海湾花园花穹附近的波萨诺瓦乐队里担任鼓手。',
+          '新加坡最盛大的爵士活动之一，由 Jazzlings 为庆祝建国 60 周年（SG60）而办，同时也是国际爵士日的新加坡站。我在的乐队风格是波萨诺瓦。',
       },
       "Former Prime Minister's Birthday Gig": {
         title: '前总理生日演出',
         venue: '富丽敦酒店，新加坡',
         description:
-          '和 Jazzlings 一起为前总理吴作栋的生日庆典演出，曲目从《Moon River》这样的爵士标准曲，到《恰似你的温柔》这样的华语经典。',
+          '和 Jazzlings 一起为前总理吴作栋的生日庆典演出，曲目有从《Moon River》这样的爵士标准曲，到《恰似你的温柔》这样的华语经典。',
       },
       'Live at Muro Coffee': {
         title: 'Muro Coffee 现场演出',
         venue: 'Muro Coffee，新加坡',
-        description: 'Jazzlings 在 Muro Coffee 的现场，是我们社区活动的一部分。氛围温馨，音乐好听，抹茶咖啡也很好喝。',
+        description: 'Jazzlings 在 Muro Coffee 的现场，是我们社区活动的一部分。氛围温馨，音乐好听，抹茶咖啡也好喝。',
       },
       'Live at CSHH': {
         title: 'CSHH 现场演出',
         venue: 'CSHH，新加坡',
-        description: 'Jazzlings 的又一场现场，这次在大名鼎鼎的咖啡馆 CSHH，我们把好音乐和好氛围都带了过去。',
+        description: 'Jazzlings 的又一场现场，这次是在小有名气的咖啡馆 CSHH。',
       },
     },
   },
   '3': {
     short: '水泥幻象',
-    description: 'NUSGeyao 旗下的乐队，主攻放克（Funk）和 R&B 歌曲的翻演。',
+    description: '在NUSGeyao 成立的乐队，主攻放克（Funk）和 R&B 歌曲的翻演。',
     period: '2022 - 至今',
     role: '鼓手',
     tags: ['放克', 'R&B'],
@@ -111,43 +111,43 @@ export const zhBands: Record<string, ZhBand> = {
       },
       '红白歌会 2023': {
         venue: 'NUS Auditorium 3',
-        description: '我们演出了 Stevie Wonder 的《Superstition》，点击图片就能看视频！',
+        description: '我们演出了 Stevie Wonder 的《Superstition》，看视频！',
       },
       'NUS SLF 2024': {
         venue: 'NUS UTown',
         description: '作为 NUS Geyao 的代表之一，在 NUS 2024 学生生活节（Student Life Fair）上演出。',
       },
       '红白歌会 2024': {
-        description: '我们打了 40 分钟的完整一套，曲目有 Doja Cat、Bruno Mars、方大同等人的歌。',
+        description: '演了40分钟的set，曲目有 Doja Cat、Bruno Mars、方大同等人的歌。',
       },
       'Geyao Live 2026': {
-        description: '水泥幻象的一次迷你重聚演出，我们扎扎实实演了 30 分钟。视频是我在方大同《Over》里的鼓独奏。',
+        description: '水泥幻象隔了好久的重聚演出，视频是我在方大同《Over》里的鼓solo。',
       },
     },
   },
   '4': {
-    description: 'NUSGeyao 旗下的乐队，专门翻演二手玫瑰的歌。',
+    description: '在NUSGeyao 成立的乐队，专门翻演二手玫瑰的歌。',
     period: '2024 - 至今',
     role: '鼓手',
     tags: ['摇滚', '中文摇滚'],
     shows: {
       'Full Power 1.0': {
-        description: '第一次和 Rosies 同台，酣畅淋漓地打了 40 分钟摇滚，翻演二手玫瑰的歌，包括《仙儿》《枉凝眉》等等。',
+        description: '在wire entertainment爽演40分钟，曲目包括《仙儿》《枉凝眉》等等。',
       },
       '大连理工 潮汐·脉冲 音乐节': {
-        description: '又一次和 Rosies 一起演出。我们作为受邀嘉宾乐队，参加了大连理工大学沙丁鱼乐队主办的“潮汐·脉冲”音乐节。',
+        description: '又一次和 Rosies 一起演出。受贝老师邀请，参加了大连理工大学沙丁鱼乐队主办的“潮汐·脉冲”音乐节。',
       },
     },
   },
   '5': {
-    description: 'NUSGeyao 旗下的乐队，翻演万能青年旅店的歌。',
+    description: '在NUSGeyao 成立的乐队，翻演万能青年旅店的歌。',
     period: '2024',
     role: '鼓手',
     tags: ['摇滚', '中文摇滚'],
     shows: {
       'Full Power 1.0': {
         description:
-          '和安得万全法的兄弟们一起，竭尽全力向传奇乐队万能青年旅店致敬，翻演了《在这颗行星所有的酒馆》《永嘉彗星》《杀死那个石家庄人》等名曲，还翻演了惘闻的《Lonely God》。',
+          '向万青致敬，翻演了《在这颗行星所有的酒馆》《永嘉彗星》《杀死那个石家庄人》等名曲，还翻演了惘闻的《Lonely God》。',
       },
     },
   },
@@ -166,11 +166,11 @@ export const zhBands: Record<string, ZhBand> = {
       'Sem 2 Showcase 2023: The Rhythm': {
         title: '2023 第二学期汇演：The Rhythm',
         venue: 'NUS UCC 剧院',
-        description: '第一次在 NUS UCC 演出，也是我第二次和 NJB 合作，当时还是个爵士新手。',
+        description: '第一次在 NUS UCC 演出，也是我第二次和 NJB 合作，当时还是个爵士小菜鸡。',
       },
       "Sem 1 Showcase 2023: Feastin'": {
         title: "2023 第一学期汇演：Feastin'",
-        description: '和 NJB 的小型大乐队一起，鼓足了劲儿打完 8 首高强度的曲子。',
+        description: '和 NJB 的小型大乐队一起，演了8首强度很大的曲子。',
       },
     },
   },
@@ -239,24 +239,24 @@ export const zhSocials: Record<string, string> = {
 export const zhHotspots: Record<string, { label: string; blurb: string; cta?: string; view?: string }> = {
   projects: {
     label: '电脑',
-    blurb: '机器人、嵌入式系统，还有我在这台机器上（和 Claude 一起）做出来的东西。',
-    cta: '来围观修齐都在做什么项目',
+    blurb: '我和Claude合砍81分...',
+    cta: '来看看修齐都在做什么项目',
   },
   music: {
     label: '架子鼓',
-    blurb: '修齐今天一个基本功都没练。',
-    cta: '围观修齐的音乐之旅',
-    view: '坐到鼓后面去',
+    blurb: '修齐今天没练鼓。',
+    cta: '看看修齐的乐队经历',
+    view: '鼓手视角',
   },
   about: {
     label: '书架',
-    blurb: '想知道我在哪读的书、在哪工作过、会些什么，看这里。',
-    cta: '围观修齐的简历',
+    blurb: '想知道我的上学和实习经历吗。',
+    cta: '看看修齐的简历',
   },
   contacts: {
     label: '手机',
-    blurb: '邮箱、LinkedIn，以及所有能找到我的地方。',
-    cta: '联系修齐，顺便关注他的 Instagram',
+    blurb: '这是我的所有联系方式。',
+    cta: '修齐的联系方式(最好顺便关注他的 Instagram)',
   },
   alex: {
     label: '修齐',
@@ -315,7 +315,7 @@ export const zhExperience: ResumeEntry[] = [
     points: [
       '使用 Next.js、React、Tailwind CSS、Vercel、Postgres 和 Prisma 构建并部署营销网站和管理后台。',
       '分析目标用户群体，迭代网站文案与用户体验，以提升用户参与度和转化率。',
-      '调研并落实 SEO 最佳实践（语义化 HTML、结构化数据、站点地图、元标签、性能优化）。',
+      '调研并落实 SEO 的最佳实践（语义化 HTML、结构化数据、站点地图、元标签、性能优化）。',
     ],
   },
   {
