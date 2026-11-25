@@ -134,7 +134,16 @@ interface Glide {
   elapsed: number;
 }
 
-export default function CameraRig({ request, locked = false }: { request: ViewRequest | null; locked?: boolean }) {
+export default function CameraRig({
+  request,
+  locked = false,
+  touchLocked = false,
+}: {
+  request: ViewRequest | null;
+  locked?: boolean;
+  /** Fingers do not move the camera (behind the drum kit, where they are for playing). The mouse still can. */
+  touchLocked?: boolean;
+}) {
   const controls = useRef<Controls>(null);
   // While locked (the projects page) the visitor cannot move the camera
   const lockedRef = useRef(locked);
@@ -151,6 +160,14 @@ export default function CameraRig({ request, locked = false }: { request: ViewRe
     glide.current = null;
     if (controls.current) controls.current.enabled = !lockedRef.current;
   }, []);
+
+  // With the touch lock on, fingers go to the drums instead of orbiting, so two or more can play at once
+  useEffect(() => {
+    const c = controls.current;
+    if (!c) return;
+    c.touches.ONE = touchLocked ? (-1 as THREE.TOUCH) : THREE.TOUCH.ROTATE;
+    c.touches.TWO = touchLocked ? (-1 as THREE.TOUCH) : THREE.TOUCH.DOLLY_PAN;
+  }, [touchLocked]);
 
   // Locking the camera switches the visitor's controls off; unlocking hands them back
   useEffect(() => {

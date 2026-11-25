@@ -451,6 +451,7 @@ interface SceneProps extends HotspotsProps {
   /** The camera is behind the kit, so its drums and cymbals can be hit. */
   drumming: boolean;
   onHitDrum: (piece: DrumPiece) => void;
+  keyHints: boolean;
 }
 
 function Scene({
@@ -462,6 +463,7 @@ function Scene({
   bandId,
   drumming,
   onHitDrum,
+  keyHints,
   hoveredId,
   onHover,
   onPick,
@@ -481,12 +483,12 @@ function Scene({
     <>
       <color attach="background" args={[background]} />
       <PerspectiveCamera makeDefault fov={fov} position={sceneConfig.camera.position} />
-      <CameraRig request={viewRequest} locked={mode !== 'hub'} />
+      <CameraRig request={viewRequest} locked={mode !== 'hub'} touchLocked={drumming && mode === 'hub'} />
       <Lamps awake={awake} />
       <Suspense fallback={null}>
         <Room awake={awake} />
         <group visible={mode !== 'music'}>
-          <DrumKit drumming={drumming && mode === 'hub'} onHit={onHitDrum} />
+          <DrumKit drumming={drumming && mode === 'hub'} onHit={onHitDrum} showHints={keyHints} />
         </group>
         <Alex awake={awake} />
         <Duvet awake={awake} />
@@ -620,6 +622,21 @@ export default function DioramaScene({
   // The nonce changes on every request, so choosing the same view again still glides back to it
   const [viewRequest, setViewRequest] = useState<ViewRequest | null>(null);
   const [drumming, setDrumming] = useState(false);
+  // The key caps over the drums can be switched off; the choice is remembered
+  const [keyHints, setKeyHints] = useState(true);
+  useEffect(() => {
+    try {
+      if (localStorage.getItem('drum-key-hints') === '0') setKeyHints(false);
+    } catch {}
+  }, []);
+  const toggleKeyHints = useCallback(() => {
+    setKeyHints((on) => {
+      try {
+        localStorage.setItem('drum-key-hints', on ? '0' : '1');
+      } catch {}
+      return !on;
+    });
+  }, []);
   const goToView = useCallback((name: ViewName) => {
     // Behind the kit the drums can be played; going anywhere else puts the sticks down
     setDrumming(name === 'drummer');
@@ -670,6 +687,7 @@ export default function DioramaScene({
           bandId={bandId}
           drumming={drumming}
           onHitDrum={hitDrum}
+          keyHints={keyHints}
           hoveredId={hoveredId}
           onHover={setHoveredId}
           onPick={pick}
@@ -687,6 +705,8 @@ export default function DioramaScene({
         onCloseCard={() => setSelectedId(null)}
         onLetSleep={letSleep}
         onView={goToView}
+        keyHints={keyHints}
+        onToggleKeyHints={toggleKeyHints}
       />
     </div>
   );

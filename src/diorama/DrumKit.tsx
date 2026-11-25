@@ -1,6 +1,6 @@
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
-import { useEffect, useMemo, useRef } from 'react';
+import { Html, useGLTF } from '@react-three/drei';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { sceneConfig } from './sceneConfig';
 import type { DrumPiece } from './sounds';
@@ -38,6 +38,28 @@ const PIECES: Piece[] = [
   { id: 'tom4', label: 'Floor tom', at: [0.31, -0.53], z: [0.24, 0.68], radius: 0.26 },
   { id: 'kick', label: 'Kick', at: [1.17, -1.03], z: [0, 0.54], box: { x: [0.84, 1.5], y: [-1.35, -0.71] } },
 ];
+
+/**
+ * The computer keyboard as a drum kit, laid out like the kit looks from the drummer's seat: the toms and
+ * snares on the home row (left to right), the cymbals on the row above, and the kick on the space bar.
+ * Keys are physical positions (KeyboardEvent.code), so the layout is the same on any keyboard language.
+ */
+const KEY_FOR_PIECE: Record<number, { code: string; label: string }> = {
+  8: { code: 'KeyA', label: 'A' }, // side snare, the far left
+  3: { code: 'KeyS', label: 'S' }, // hi-hat
+  9: { code: 'KeyD', label: 'D' }, // snare
+  7: { code: 'KeyF', label: 'F' }, // high tom
+  10: { code: 'KeyG', label: 'G' }, // tom
+  11: { code: 'KeyH', label: 'H' }, // floor tom
+  1: { code: 'KeyQ', label: 'Q' }, // far left crash
+  0: { code: 'KeyW', label: 'W' }, // big crash
+  6: { code: 'KeyE', label: 'E' }, // splash
+  5: { code: 'KeyR', label: 'R' }, // ride
+  2: { code: 'KeyT', label: 'T' }, // right crash
+  4: { code: 'KeyY', label: 'Y' }, // stack
+  12: { code: 'Space', label: 'Space' }, // kick
+};
+const PIECE_FOR_CODE = new Map(Object.entries(KEY_FOR_PIECE).map(([i, k]) => [k.code, Number(i)]));
 
 /** How far a point is into a piece, as a share of its size (under 1 means inside), or Infinity if outside. */
 function depthIn(piece: Piece, x: number, y: number, z: number) {
@@ -127,6 +149,8 @@ interface DrumKitProps {
   /** Whether hitting the drums is on (the camera is behind the kit). */
   drumming: boolean;
   onHit: (piece: DrumPiece) => void;
+  /** Show the key caps over the pieces (the visitor can switch them off). */
+  showHints?: boolean;
 }
 
 /**
@@ -134,7 +158,7 @@ interface DrumKitProps {
  * Behind the kit, every drum and cymbal can be hit: it plays its sound and
  * the piece shudders (cymbals swing on their stands, drums jump).
  */
-export default function DrumKit({ drumming, onHit }: DrumKitProps) {
+export default function DrumKit({ drumming, onHit, showHints = true }: DrumKitProps) {
   const { scene } = useGLTF(sceneConfig.drumKitUrl, sceneConfig.dracoPath);
   const built = useMemo(() => split(scene), [scene]);
   const groups = useRef<(THREE.Group | null)[]>([]);
@@ -187,6 +211,38 @@ export default function DrumKit({ drumming, onHit }: DrumKitProps) {
     onHit(PIECES[index].id);
   };
 
+  // A touch hits the moment the finger lands, and every finger is its own hit, so several pieces can be
+  // played at once. The click that follows a touch is then ignored so the piece is not hit twice.
+  const lastTouchHit = useRef(0);
+
+  // Keys play the kit too. Every key press hits its piece straight away and its sound is laid over the one
+  // before, so fast rolls work; a held key does not repeat. The listener sits in the capture phase so the
+  // camera's own W A S D keys (which share these letters) never see these presses.
+  const strikeRef = useRef(strike);
+  strikeRef.current = strike;
+  useEffect(() => {
+    if (!drumming) return;
+    const down = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+      const index = PIECE_FOR_CODE.get(e.code);
+      if (index === undefined) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.repeat) return;
+      strikeRef.current(index);
+    };
+    window.addEventListener('keydown', down, true);
+    return () => window.removeEventListener('keydown', down, true);
+  }, [drumming]);
+
+  // Key caps over the pieces, for a keyboard (hidden on touch screens)
+  const [showKeys, setShowKeys] = useState(false);
+  useEffect(() => {
+    setShowKeys(window.matchMedia('(pointer: fine)').matches);
+  }, []);
+
   return (
     <>
       {built.fixed.map((mesh, i) => (
@@ -203,6 +259,38 @@ export default function DrumKit({ drumming, onHit }: DrumKitProps) {
         );
       })}
       {drumming &&
+        showKeys &&
+        showHints &&
+        PIECES.map((piece, i) => {
+          const key = KEY_FOR_PIECE[i];
+          if (!key) return null;
+          const pivot = pivotOf(piece);
+          return (
+            <Html key={`cap${i}`} position={[pivot.x, piece.z[1] + 0.03, pivot.z]} center zIndexRange={[0, 0]} style={{ pointerEvents: 'none' }}>
+              <span
+                style={{
+                  display: 'grid',
+                  placeItems: 'center',
+                  minWidth: 30,
+                  height: 30,
+                  padding: '0 7px',
+                  font: '600 13px var(--font-mono, monospace)',
+                  color: 'rgba(255, 244, 226, 0.95)',
+                  textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+                  // A see-through bubble: the drum shows through it
+                  background: 'rgba(20, 14, 12, 0.22)',
+                  border: '1px solid rgba(255, 244, 226, 0.5)',
+                  borderRadius: 999,
+                  backdropFilter: 'blur(2px)',
+                  userSelect: 'none',
+                }}
+              >
+                {key.label}
+              </span>
+            </Html>
+          );
+        })}
+      {drumming &&
         PIECES.map((piece, i) => {
           const pivot = pivotOf(piece);
           const height = piece.z[1] - piece.z[0];
@@ -217,8 +305,16 @@ export default function DrumKit({ drumming, onHit }: DrumKitProps) {
               onPointerOut={() => {
                 document.body.style.cursor = '';
               }}
+              onPointerDown={(e: ThreeEvent<PointerEvent>) => {
+                const type = e.nativeEvent.pointerType;
+                if (type !== 'touch' && type !== 'pen') return; // the mouse hits on click, so a drag can still orbit
+                e.stopPropagation();
+                lastTouchHit.current = performance.now();
+                strike(i);
+              }}
               onClick={(e: ThreeEvent<MouseEvent>) => {
                 e.stopPropagation();
+                if (performance.now() - lastTouchHit.current < 700) return; // already hit by the touch
                 if (e.delta > 6) return; // a drag to orbit, not a hit
                 strike(i);
               }}

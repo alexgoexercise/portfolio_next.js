@@ -23,6 +23,9 @@ interface HudProps {
   minimal?: boolean;
   /** Behind the kit: shows a hint that the drums can be hit. */
   drumming?: boolean;
+  /** Whether the key caps over the drums are showing, and how to switch them. */
+  keyHints?: boolean;
+  onToggleKeyHints?: () => void;
 }
 
 function statusText(noise: number, awake: boolean, t: (en: string, zh: string) => string) {
@@ -45,6 +48,8 @@ export default function Hud({
   onView,
   minimal = false,
   drumming = false,
+  keyHints = true,
+  onToggleKeyHints,
 }: HudProps) {
   const { active, progress } = useProgress();
   const { lang } = useLang();
@@ -70,7 +75,7 @@ export default function Hud({
 
   return (
     <div className={styles.hud}>
-      {drumming && <div className={styles.drumHint}>{t('Click the drums. Not too loud…', '点一点鼓吧，别太大声……')}</div>}
+      {drumming && <div className={styles.drumHint}>{t('Click the drums, or play them with the keys. Not too loud…', '点一点鼓，或者用键盘来演奏，别太大声……')}</div>}
       <section className={`${styles.panel} ${styles.meter}`} aria-label={t('Wake-up meter', '唤醒指数')}>
         <div className={styles.meterHead}>
           <span>{t('Noise', '噪音等级')}</span>
@@ -126,6 +131,23 @@ export default function Hud({
           </div>
         )}
       </section>
+
+      {drumming && onToggleKeyHints && (
+        <button
+          type="button"
+          className={styles.hintsToggle}
+          aria-pressed={keyHints}
+          aria-label={keyHints ? t('Hide the key hints', '隐藏按键提示') : t('Show the key hints', '显示按键提示')}
+          title={keyHints ? t('Hide the key hints', '隐藏按键提示') : t('Show the key hints', '显示按键提示')}
+          onClick={onToggleKeyHints}
+        >
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="2" y="6" width="20" height="12" rx="2.5" />
+            <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10" />
+            {!keyHints && <line x1="3" y1="3" x2="21" y2="21" />}
+          </svg>
+        </button>
+      )}
 
       {awake && (
         <section className={`${styles.panel} ${styles.banner}`} role="status">

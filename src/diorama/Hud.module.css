@@ -162,6 +162,38 @@
   background: rgba(241, 228, 200, 0.14);
 }
 
+/* Key hints on or off: a third round button, only for people with a keyboard and a mouse */
+.hintsToggle {
+  display: none;
+  position: absolute;
+  left: 116px;
+  bottom: 20px;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  color: var(--cream);
+  background: var(--ink);
+  border: 1px solid rgba(241, 228, 200, 0.18);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
+}
+
+.hintsToggle[aria-pressed='false'] {
+  color: rgba(241, 228, 200, 0.5);
+}
+
+.hintsToggle:hover {
+  color: var(--amber);
+  border-color: var(--amber);
+}
+
+@media (pointer: fine) {
+  .hintsToggle {
+    display: grid;
+  }
+}
+
 /* Camera: a round icon button in the bottom-left corner, next to the music one; its views open above it */
 .views {
   position: absolute;
@@ -325,6 +357,12 @@
   }
   .viewHint {
     display: none;
+  }
+  .hintsToggle {
+    left: auto;
+    right: 106px;
+    bottom: auto;
+    top: calc(var(--nav-h) + 12px);
   }
   /* Keep the meter clear of the banner and the card on narrow screens */
   .banner {
