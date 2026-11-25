@@ -236,7 +236,8 @@ export const sceneConfig = {
         // Phones: the panel covers the lower half, so the models are lifted into the upper half
         tall: {
           position: [1.05, 2.5, 0.9] as Vec3,
-          target: [1.05, 0.35, -1.15] as Vec3,
+          // Aimed lower, so the models sit higher on the screen, clear of the text sheet
+          target: [1.05, 0.0, -1.15] as Vec3,
         },
       },
       /** The shelf above the desk, for the About page: centred, with the folder floating in front of it. */

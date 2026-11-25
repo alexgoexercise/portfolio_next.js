@@ -48,8 +48,14 @@ function ShowcaseItem({ slug, index, count, active, chosen, hovered, onPick, onH
       (chosen ? center[1] + lift.offset[1] : center[1]) +
       Math.sin(t * 0.9 + index) * 0.012 +
       (1 - rise.current) * riseFrom;
-    const targetZ = chosen ? center[2] + lift.offset[2] : center[2] - 0.05 * Math.abs(k);
-    const size = (chosen ? lift.scale : hovered ? othersScale * 1.1 : othersScale) * rise.current;
+    // On a phone (taller than wide) the text sheet covers the lower half, so the chosen model barely comes
+    // forward (coming forward moves it down the screen) and grows a little less
+    const portrait = aspect < 1;
+    const targetZ = chosen
+      ? center[2] + lift.offset[2] * (portrait ? 0.15 : 1)
+      : center[2] - 0.05 * Math.abs(k);
+    const chosenScale = portrait ? Math.min(lift.scale, 1.6) : lift.scale;
+    const size = (chosen ? chosenScale : hovered ? othersScale * 1.1 : othersScale) * rise.current;
 
     if (!placed.current) {
       // First appearance: start in place, under the desk, instead of flying in from the middle of the room
