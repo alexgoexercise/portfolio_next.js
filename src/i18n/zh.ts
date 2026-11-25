@@ -238,29 +238,29 @@ export const zhSocials: Record<string, string> = {
 
 export const zhHotspots: Record<string, { label: string; blurb: string; cta?: string; view?: string }> = {
   projects: {
-    label: '电脑',
+    label: '修齐的电脑',
     blurb: '我和Claude合砍81分...',
     cta: '来看看修齐都在做什么项目',
   },
   music: {
-    label: '架子鼓',
+    label: '修齐的架子鼓',
     blurb: '修齐今天没练鼓。',
     cta: '看看修齐的乐队经历',
     view: '鼓手视角',
   },
   about: {
-    label: '书架',
+    label: '修齐的书架',
     blurb: '想知道我的上学和实习经历吗。',
     cta: '看看修齐的简历',
   },
   contacts: {
-    label: '手机',
+    label: '修齐的手机',
     blurb: '这是我的所有联系方式。',
     cta: '修齐的联系方式(最好顺便关注他的 Instagram)',
   },
   alex: {
     label: '修齐',
-    blurb: '别戳我，别戳我。',
+    blurb: '别戳我啊。',
   },
 };
 
