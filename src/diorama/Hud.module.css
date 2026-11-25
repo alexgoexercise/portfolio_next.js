@@ -93,6 +93,30 @@
   opacity: 1;
 }
 
+/* Behind the drum kit the meter is only a thin bar along the top, so nothing covers the drums */
+.meter[data-compact] {
+  top: calc(var(--nav-h) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(320px, 60vw);
+  padding: 0;
+  background: none;
+  border: 0;
+  backdrop-filter: none;
+}
+
+.meter[data-compact] .meterHead,
+.meter[data-compact] .hint,
+.meter[data-compact] .mute {
+  display: none;
+}
+
+.meter[data-compact] .track {
+  margin: 0;
+  height: 7px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
+}
+
 /* Name of whatever the pointer is over */
 .hoverLabel {
   position: absolute;
@@ -386,4 +410,34 @@
   font-size: 0.9rem;
   pointer-events: none;
   white-space: nowrap;
+  /* The hint is only for the first few seconds behind the kit, then it gets out of the way of the drums */
+  animation: hintAway 0.7s ease 6s forwards;
+}
+
+@keyframes hintAway {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Short screens (a phone on its side): the panels shrink so the room, and the drum kit, get the space */
+@media (max-height: 560px) {
+  .meter {
+    top: calc(var(--nav-h) + 10px);
+    left: 10px;
+    width: 188px;
+    padding: 7px 10px 8px;
+  }
+  .meter .hint {
+    display: none;
+  }
+  .meter .mute {
+    margin-top: 5px;
+  }
+  .drumHint {
+    bottom: 14px;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+  }
 }

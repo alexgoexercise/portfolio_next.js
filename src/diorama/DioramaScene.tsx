@@ -675,7 +675,7 @@ export default function DioramaScene({
         background: sceneConfig.background,
       }}
     >
-      <Leva hidden={!editable} collapsed titleBar={{ position: { x: 0, y: 70 } }} />
+      <Leva hidden={!editable || drumming} collapsed titleBar={{ position: { x: 0, y: 70 } }} />
       {/* "flat" turns off tone mapping: the bake already has the final colours */}
       <Canvas flat dpr={[1, 2]} onPointerMissed={() => setSelectedId(null)}>
         <Scene

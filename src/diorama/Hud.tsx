@@ -76,7 +76,11 @@ export default function Hud({
   return (
     <div className={styles.hud}>
       {drumming && <div className={styles.drumHint}>{t('Click the drums, or play them with the keys. Not too loud…', '点一点鼓，或者用键盘来演奏，别太大声……')}</div>}
-      <section className={`${styles.panel} ${styles.meter}`} aria-label={t('Wake-up meter', '唤醒指数')}>
+      <section
+        className={`${styles.panel} ${styles.meter}`}
+        data-compact={drumming || undefined}
+        aria-label={t('Wake-up meter', '唤醒指数')}
+      >
         <div className={styles.meterHead}>
           <span>{t('Noise', '噪音等级')}</span>
           <span className={awake ? styles.statusAwake : styles.status}>{statusText(noise, awake, t)}</span>

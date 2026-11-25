@@ -176,8 +176,10 @@ export default function CameraRig({
     const c = controls.current;
     if (!c) return;
     c.touches.ONE = touchLocked ? (-1 as THREE.TOUCH) : THREE.TOUCH.ROTATE;
-    // Behind the kit one finger plays a drum, and two fingers dragging together turn the view
-    c.touches.TWO = touchLocked ? THREE.TOUCH.ROTATE : THREE.TOUCH.DOLLY_PAN;
+    // Behind the kit one finger plays a drum, and two fingers turn the view (drag them together) and move it
+    // closer or further (pinch). OrbitControls only knows two-finger modes that include a dolly; a plain
+    // ROTATE for two fingers is ignored, which is why that did nothing.
+    c.touches.TWO = touchLocked ? THREE.TOUCH.DOLLY_ROTATE : THREE.TOUCH.DOLLY_PAN;
   }, [touchLocked]);
 
   // Locking the camera switches the visitor's controls off; unlocking hands them back
